@@ -7,3 +7,7 @@
 * {
   font-family: Nunito, sans-serif;
 }
+
+body {
+  background: linear-gradient(19.69deg, #131413 51.91%, #191919 99.42%);
+}

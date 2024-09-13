@@ -8,6 +8,7 @@ import { SessionProvider } from 'next-auth/react';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { Toaster } from 'react-hot-toast';
+import Header from '@/components/Header/Header';
 
 const inter = Inter({ subsets: ['latin'] });
 

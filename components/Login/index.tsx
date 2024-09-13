@@ -6,7 +6,7 @@ import Button from '../Elements/Button';
 import Header from '../Header/Header';
 import Input from '../Elements/Input';
 import Menu from '../Elements/Menu';
-import { signIn, signOut } from 'next-auth/react';
+// import { signIn, signOut } from 'next-auth/react';
 import SocialLogin from './Social';
 
 const Login = () => {
