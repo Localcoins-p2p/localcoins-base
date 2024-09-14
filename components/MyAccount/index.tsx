@@ -4,6 +4,9 @@ import MainHeading from '../Elements/MainHeading';
 import ProfileHeader from './ProfileHeader';
 import Trades from './Trades';
 import UserCard from './UserCard';
+import AccountManagement from './AccountManagement';
+import P2PPaymentMethods from './P2PPaymentMethods';
+import Image from 'next/image';
 
 const MyAccount = () => {
   const tradesData = [
@@ -18,6 +21,12 @@ const MyAccount = () => {
       n: ' Negative (0)',
     },
   ];
+  const users = [
+    { heading: 'Gouth', name: 'umar', phone: '5465465465' },
+    { heading: 'John', name: 'doe', phone: '1234567890' },
+    { heading: 'Jane', name: 'smith', phone: '9876543210' },
+  ];
+  
   return (
     <div className="w-[85%] mx-auto mb-14">
       <NewHeader />
@@ -47,12 +56,22 @@ const MyAccount = () => {
         ))}
 
         <div className="border border-[#454545] rounded-[10px] flex justify-center items-center h-[168px] px-4">
-          <div className="bg-yellow-500 rounded-full  w-[29px] h-[29px] flex items-center justify-center">
-            <div className="text-black text-lg">...</div>
-          </div>
+         <Image src={"/assets/common/menutwo.svg"} height={29} width={29} alt='vv'/>
         </div>
       </div>
-      <UserCard heading='Gouth' name='umar ' phone='5465465465'/>
+      <div className='my-10'>
+      <AccountManagement/>
+      </div>
+      <div className='mb-6'>
+      <P2PPaymentMethods/>
+      </div>
+      
+      {users.map((user, index) => (
+        <div key={index} className='my-4'>
+        <UserCard {...user} />
+        </div>
+      ))}
+     
     </div>
   );
 };
