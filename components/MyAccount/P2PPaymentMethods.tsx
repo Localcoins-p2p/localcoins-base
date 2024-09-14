@@ -14,7 +14,7 @@ const P2PPaymentMethods = () => {
           </p>
         </div>
 
-        <div>
+        <div className='hidden md:block'>
           <button className="bg-[#454545] hover:bg-gray-600 text-white px-6 py-3 rounded-md flex items-center space-x-2">
             <span className="text-xl">+</span>
             <span>Add Payment Method</span>

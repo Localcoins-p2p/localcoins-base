@@ -19,7 +19,7 @@ const AccountManagement = () => {
       <Link
         key={index}
         href={link.href}
-        className={`px-4 py-2 ${
+        className={`px-4 min-w-max py-2 ${
           activeIndex === index
             ? 'rounded-[5px] bg-[#F3AA05] text-black'
             : 'text-white'

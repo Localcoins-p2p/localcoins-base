@@ -44,7 +44,7 @@ const MyAccount = () => {
         <ProfileHeader />
       </div>
 
-      <div className="flex  space-x-3 my-10">
+      <div className="flex lg:flex-row flex-container1 flex-container  gap-3 my-10">
         {tradesData.map((trade, index) => (
           <Trades
             key={index}
@@ -55,11 +55,11 @@ const MyAccount = () => {
           />
         ))}
 
-        <div className="border border-[#454545] rounded-[10px] flex justify-center items-center h-[168px] px-4">
+        <div className="border hidden border-[#454545] rounded-[10px] lg:flex justify-center items-center h-[168px] px-4">
          <Image src={"/assets/common/menutwo.svg"} height={29} width={29} alt='vv'/>
         </div>
       </div>
-      <div className='my-10'>
+      <div className='my-10 overflow-x-scroll no-scrollbar'>
       <AccountManagement/>
       </div>
       <div className='mb-6'>
