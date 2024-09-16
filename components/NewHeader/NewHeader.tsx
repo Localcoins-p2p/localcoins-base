@@ -7,8 +7,9 @@ const NewHeader = () => {
     <header className="py-4 ">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Image src="/" alt="LocalCoins Logo" width={40} height={40} />
-          <span className="text-white font-bold text-lg">LOCALCOINS</span>
+          <Image className='hidden sm:block' src="/assets/common/logosvg.svg" alt="LocalCoins Logo" width={354} height={80} />
+          <Image className='sm:hidden' src="/assets/common/logoresp.svg" alt="LocalCoins Logo" width={67} height={62} />
+          {/* <span className="text-white font-bold text-lg">LOCALCOINS</span> */}
         </div>
         <div className="flex items-center space-x-4">
         <button className="bg-[#F3AA05] p-2  text-black sm:p-4 rounded-[10px] flex items-center ">

@@ -101,7 +101,7 @@ const P2PTable: React.FC = () => {
   return (
     <div>
       <table className="table-auto w-full text-left">
-        <thead className="text-[#A6A6A6] text-[14px] font-[400]">
+        <thead className="hidden md:table-header-group text-[#A6A6A6] text-[14px] font-[400]">
           <tr>
             <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">Advertisers</th>
             <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">Price</th>

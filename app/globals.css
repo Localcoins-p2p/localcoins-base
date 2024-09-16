@@ -20,6 +20,14 @@ body {
   }
   
 }
+@media screen and (max-width: 768px) {
+  .flex-boxx {
+    display: flex;
+    flex-direction: column;
+  
+  }
+  
+}
 @media screen and (min-width: 640px) and (max-width: 1024px) {
   .flex-container1 {
     display: flex;
@@ -43,3 +51,7 @@ body {
   -ms-overflow-style: none;  
 }
 
+
+.backgbody{
+  background: linear-gradient(19.69deg, #131413 51.91%, #191919 99.42%);
+}
