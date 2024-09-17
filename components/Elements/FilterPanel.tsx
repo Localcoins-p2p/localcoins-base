@@ -4,6 +4,11 @@ import { TiArrowSortedDown } from 'react-icons/ti';
 import { CiGlobe } from 'react-icons/ci';
 import Image from 'next/image';
 import Select from 'react-select';
+import ModalComponent from './ModalComponent';
+import StepProgress from './StepProgress';
+import SellToSetPrice from './SellToSetPrice';
+import SellToSetAmountPayMeth from './SellToSetAmountPayMeth';
+import RemarksAndAutoRes from './RemarksAndAutoRes';
 
 const paymentOptions = [
   { value: 'All Payments', label: 'All Payments' },
@@ -70,7 +75,23 @@ const FilterPanel = () => {
     currencyOptions[0]
   );
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+
+
+
+  const handleNext = () => {
+    setCurrentStep(currentStep + 1); 
+  };
 
   return (
     <div className=" text-white flex justify-center sm:justify-between items-center  space-x-4">
@@ -126,7 +147,7 @@ const FilterPanel = () => {
           isSearchable={false}
         />
       </div>
-      <button className="sm:flex hidden  items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700">
+      <button onClick={handleOpenModal} className="sm:flex hidden  items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700">
         <Image
           src={'/assets/common/filterIcon.svg'}
           height={17}
@@ -134,6 +155,21 @@ const FilterPanel = () => {
           alt="s"
         />
       </button>
+      <ModalComponent
+        title="Filter Options"
+        isOpen={isModalOpen}
+        onClose={handleCloseModal} 
+        header={<div>Modal Header</div>}
+      >
+        <div className='max-h-[90vh] overflow-auto no-scrollbar'>
+          
+      <StepProgress currentStep={currentStep} />
+
+      {currentStep === 1 && <SellToSetPrice onNext={handleNext} />}
+      {currentStep === 2 && <SellToSetAmountPayMeth onNext={handleNext} />}
+      {currentStep === 3 && <RemarksAndAutoRes onNext={handleNext} />}
+        </div>
+      </ModalComponent>
     </div>
   );
 };
