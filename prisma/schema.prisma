@@ -8,26 +8,49 @@ datasource db {
 }
 
 model User {
-  // id for relational database
-  // id   String    @id @default(cuid())
-  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  name                String?   @default("")
-  email               String?   @default("")
-  phone               String?   @default("")
-  address             String?   @default("")
-  state               String?   @default("")
-  country             String?   @default("")
-  dob                 String?   @default("")
-  isEmailVerified     Boolean   @default(false)
-  isPhoneVerified     Boolean   @default(false) 
-  pwHash              String?   @default("")
+  name            String? @default("")
+  email           String? @default("")
+  phone           String? @default("")
+  address         String? @default("")
+  state           String? @default("")
+  country         String? @default("")
+  dob             String? @default("")
+  isEmailVerified Boolean @default(false)
+  isPhoneVerified Boolean @default(false)
+  pwHash          String? @default("")
 
-  publicKey           String    @unique
-  nonce               String?
+  acceptedPaymentMethods  String[]
+  publicKey               String  @unique
+  nonce                   String?
 
-  phoneOtp            String?   @default("")
-  phoneOtpDoC         DateTime?
+  phoneOtp                String?   @default("")
+  phoneOtpDoC             DateTime?
 
-  isAdmin             Boolean   @default(false)
+  isAdmin                 Boolean @default(false)
+  SaleBuyer               Sale[] @relation("SellerRelation")
+  SaleSeller              Sale[] @relation("BuyerRelation")
+}
+
+model Sale {
+  id                String @id @default(auto())   @map("_id") @db.ObjectId
+  sellerId          String                        @db.ObjectId
+  seller            User                          @relation("SellerRelation", fields: [sellerId], references: [id])
+
+  buyerId           String?                       @db.ObjectId
+  buyer             User?                         @relation("BuyerRelation", fields: [buyerId], references: [id])
+
+  amount            Int
+  token             String?
+
+  screenshot        String?
+  screenshotMethod  String?
+  screenshotAt      DateTime?
+
+  paidAt            DateTime?
+  finishedAt        DateTime?
+  canceledAt        DateTime?
+
+  createdAt         DateTime                      @default(now())
 }
