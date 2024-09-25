@@ -13,8 +13,8 @@ model User {
   id                  String    @id @default(auto()) @map("_id") @db.ObjectId
 
   name                String?   @default("")
-  email               String?   @default("") @unique
-  phone               String?   @default("") @unique
+  email               String?   @default("")
+  phone               String?   @default("")
   address             String?   @default("")
   state               String?   @default("")
   country             String?   @default("")
@@ -22,6 +22,9 @@ model User {
   isEmailVerified     Boolean   @default(false)
   isPhoneVerified     Boolean   @default(false) 
   pwHash              String?   @default("")
+
+  publicKey           String    @unique
+  nonce               String?
 
   phoneOtp            String?   @default("")
   phoneOtpDoC         DateTime?

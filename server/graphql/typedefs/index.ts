@@ -40,7 +40,11 @@ const typeDefs = gql`
       country: String
       password: String!
     ): User
-    login(email: String!, password: String!): LoginResponse!
+    login(
+      publicKey: String!
+      nonce: String!
+      signedMessage: String!
+    ): LoginResponse!
     sendResetPasswordLink(email: String!): MessageResponse!
     resetPassword(password: String!, token: String!): StatusResponse!
     sendVerificationEmail(email: String!): MessageResponse!

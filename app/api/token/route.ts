@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
+/*
 export const GET = async () => {
   const session = await getServerSession({
     secret: process.env.AUTH_SECRET,
@@ -28,3 +29,4 @@ export const GET = async () => {
   }
   return NextResponse.json({ message: 'user not found', error: true });
 };
+*/

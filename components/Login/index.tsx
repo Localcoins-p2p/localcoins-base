@@ -1,63 +1,76 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import '../../styles/login.css';
-import Button from '../Elements/Button';
-import Header from '../Header/Header';
-import Input from '../Elements/Input';
-import Menu from '../Elements/Menu';
-// import { signIn, signOut } from 'next-auth/react';
-import SocialLogin from './Social';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
+import { useEffect, useState } from 'react';
+import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
+import { gql, useMutation } from 'urql';
+
+export const LOGIN = gql`
+  mutation Login(
+    $publicKey: String!
+    $nonce: String!
+    $signedMessage: String!
+  ) {
+    login(publicKey: $publicKey, nonce: $nonce, signedMessage: $signedMessage) {
+      token
+      user {
+        email
+        id
+      }
+      error
+    }
+  }
+`;
 
 const Login = () => {
-  const [loginMenuIndex, setLoginMenuIndex] = useState(0);
+  const { publicKey, connect, disconnect, connected, signMessage, select } =
+    useWallet();
+  const [nonce, setNonce] = useState<string | null>(null);
+  const [{ fetching, data }, login] = useMutation(LOGIN);
 
-  const isEmail = React.useMemo(() => {
-    return loginMenuIndex == 0;
-  }, [loginMenuIndex]);
+  useEffect(() => {
+    if (connected && publicKey) {
+      setNonce('abc' || Math.random().toString(36).substring(2));
+    }
+  }, [connected, publicKey]);
+
+  const handleLogin = async () => {
+    await select(PhantomWalletName);
+
+    connect();
+
+    if (!publicKey || !nonce) return;
+
+    const encodedMessage = new TextEncoder().encode(nonce);
+    const signedMessage = await signMessage?.(encodedMessage);
+
+    login({
+      publicKey: publicKey.toString(),
+      signedMessage: JSON.stringify(signedMessage),
+      nonce,
+    });
+
+    // const response = await fetch('/api/login', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //     publicKey: publicKey.toString(),
+    //     signedMessage,
+    //     nonce,
+    //   }),
+    // });
+    // const result = await response.json();
+  };
 
   return (
-    <>
-      <form action="">
-        <div className="login">
-          <div className="header">
-            <Header />
-          </div>
-          <div className="login-content">
-            <div className="hello">
-              <Menu
-                menuItems={['Email', 'Phone']}
-                selected={loginMenuIndex}
-                setSelected={setLoginMenuIndex}
-              />
-            </div>
-            <Input
-              placeholder={`Enter your ${
-                ['Email', 'Phone Number'][loginMenuIndex]
-              }`}
-              type="text"
-            />
-            {isEmail && (
-              <Input placeholder="Enter your password" type="password" />
-            )}
-            <div className="tou-check">
-              <input type="checkbox" className="checkbox" />
-              <p className="checkbox-text">Keep me signed in</p>
-            </div>
-            <Button text="Login" type="submit" />
-            <p className="forgot-password">Forgot Password?</p>
-            <p className="account-info">
-              Don&apos;t have an account?{' '}
-              <span className="login-btn">Sign Up</span>
-            </p>
-          </div>
-        </div>
-        <div className="help">
-          <a href="#">Help!</a>
-        </div>
-      </form>
-      <SocialLogin />
-    </>
+    <div className="text-white">
+      <>
+        <p>Connected with: {publicKey?.toString()}</p>
+        <button onClick={handleLogin}>Login</button>
+        <button onClick={disconnect}>Disconnect</button>
+      </>
+    </div>
   );
 };
 
