@@ -1,87 +1,69 @@
-import * as anchor from '@project-serum/anchor';
 import idl from '@/idl/idl.json';
-import {
-  Connection,
-  PublicKey,
-  SystemProgram,
-  Transaction,
-  TransactionInstruction,
-  Keypair,
-  sendAndConfirmTransaction,
-} from '@solana/web3.js';
-import { Buffer } from 'buffer';
+import * as anchor from '@project-serum/anchor';
+
+import { Connection, PublicKey } from '@solana/web3.js';
 
 export const connectAnchorProvider = async () => {
-  if (!window.solana) {
-    return { error: 'Solana not present' };
-  }
-  const provider = window.solana;
-  if (!provider) {
-    throw new Error('Phantom wallet not found');
-  }
-  const wallet = await provider.connect();
   const connection = new Connection(
     'https://api.devnet.solana.com',
     'confirmed'
+  );
+  if (!window.solana) {
+    return { error: 'Solana not present' };
+  }
+  const sprovider = window.solana;
+  if (!sprovider) {
+    throw new Error('Phantom wallet not found');
+  }
+  const wallet = await sprovider.connect();
+  const provider = new anchor.AnchorProvider(
+    connection,
+    wallet,
+    anchor.AnchorProvider.defaultOptions()
   );
 
   return { wallet, connection, provider };
 };
 
-export const createSale = async ({ amount }: { amount: number }) => {
-  const programId = new anchor.web3.PublicKey(
-    process.env.NEXT_PUBLIC_PROGRAM_ID as string
-  );
-  const { wallet, provider, connection } = await connectAnchorProvider();
-  const program = new anchor.Program(
-    JSON.parse(JSON.stringify(idl)),
-    programId,
-    provider
-  );
-  const SALE_SEED = 'sale';
-  const MASTER_SEED = 'master';
+// Program ID from the ID
 
-  const saleAmount = new anchor.BN(amount);
-  const authority = wallet.publicKey;
+// Function to create a sale
+export async function createSale(amount: number) {
+  try {
+    const { provider, wallet } = await connectAnchorProvider();
+    const authority = wallet.publicKey;
 
-  const [salePda, saleBump] = await PublicKey.findProgramAddress(
-    [Buffer.from(SALE_SEED), authority.toBuffer()],
-    programId
-  );
+    // Generate PDA for sale
+    const programId = new PublicKey(
+      process.env.NEXT_PUBLIC_PROGRAM_ID as string
+    );
 
-  const [masterPda] = await PublicKey.findProgramAddress(
-    [Buffer.from('master')],
-    programId
-  );
+    // Create program instance
+    const program = new anchor.Program(idl as any, programId, provider);
+    const [salePda] = await PublicKey.findProgramAddress(
+      [Buffer.from('sale'), authority.toBuffer()],
+      programId
+    );
 
-  // Create the transaction instruction for createSale
-  const instruction = new TransactionInstruction({
-    keys: [
-      { pubkey: salePda, isSigner: false, isWritable: true },
-      { pubkey: masterPda, isSigner: false, isWritable: true },
-      { pubkey: authority, isSigner: true, isWritable: true },
-      {
-        pubkey: SystemProgram.programId,
-        isSigner: false,
-        isWritable: false,
-      },
-    ],
-    programId: programId,
-    data: Buffer.from(
-      Uint8Array.of(1, ...new anchor.BN(amount).toArray('le', 8))
-    ),
-  });
+    const [masterPda] = await PublicKey.findProgramAddress(
+      [Buffer.from('master')],
+      programId
+    );
 
-  const transaction = new Transaction().add(instruction);
+    console.log('MAster', masterPda.toBase58());
+    // Call the createSale function
+    const tx = await program.methods
+      .createSale(new anchor.BN(1000000)) // Amount should be passed as a BN
+      .accounts({
+        sale: salePda,
+        master: masterPda,
+        authority: authority,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc(); // Send the transaction
 
-  transaction.feePayer = authority;
-  const { blockhash } = (await connection?.getLatestBlockhash()) || {};
-  transaction.recentBlockhash = blockhash;
-
-  const signedTransaction = await provider.signTransaction(transaction);
-  const signature =
-    (await connection?.sendRawTransaction(signedTransaction.serialize())) || '';
-
-  await connection?.confirmTransaction(signature);
-  console.log('Transaction successful with signature:', signature);
-};
+    console.log('Transaction successful with signature:', tx);
+  } catch (error) {
+    console.error('Error creating sale:', error);
+  }
+}
