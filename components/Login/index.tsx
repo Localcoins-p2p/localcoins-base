@@ -5,6 +5,7 @@ import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 import { gql, useMutation } from 'urql';
+import { createSale } from '@/utils/escrowClient';
 
 export const GENERATE_NONCE = gql`
   mutation GenerateNonce($publicKey: String!) {
@@ -73,6 +74,10 @@ const Login = () => {
         <p>Connected with: {publicKey?.toString()}</p>
         <button onClick={handleLogin}>Login</button>
         <button onClick={disconnect}>Disconnect</button>
+
+        <button onClick={() => createSale({ amount: 1000000 })}>
+          Create Sale
+        </button>
       </>
     </div>
   );

@@ -1,0 +1,128 @@
+{
+  "version": "0.1.0",
+  "name": "escrow",
+  "instructions": [
+    {
+      "name": "initMaster",
+      "accounts": [
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "createSale",
+      "accounts": [
+        { "name": "sale", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "amount", "type": "u64" }]
+    },
+    {
+      "name": "addBuyer",
+      "accounts": [
+        { "name": "sale", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "saleId", "type": "u32" }]
+    },
+    {
+      "name": "removeBuyer",
+      "accounts": [
+        { "name": "sale", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "saleId", "type": "u32" }]
+    },
+    {
+      "name": "forceRemoveBuyer",
+      "accounts": [
+        { "name": "sale", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "saleId", "type": "u32" }]
+    },
+    {
+      "name": "markPaid",
+      "accounts": [
+        { "name": "sale", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "saleId", "type": "u32" }]
+    },
+    {
+      "name": "claimPayment",
+      "accounts": [
+        { "name": "sale", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "saleId", "type": "u32" }]
+    },
+    {
+      "name": "cancelSale",
+      "accounts": [
+        { "name": "sale", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "saleId", "type": "u32" }]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Master",
+      "type": {
+        "kind": "struct",
+        "fields": [{ "name": "lastId", "type": "u32" }]
+      }
+    },
+    {
+      "name": "Sale",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "id", "type": "u32" },
+          { "name": "authority", "type": "publicKey" },
+          { "name": "amount", "type": "u64" },
+          { "name": "seller", "type": "publicKey" },
+          { "name": "buyer", "type": "publicKey" },
+          { "name": "buyerAddedAt", "type": { "option": "i64" } },
+          { "name": "isCanceled", "type": "bool" },
+          { "name": "isPaid", "type": "bool" },
+          { "name": "isFinished", "type": "bool" }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "SaleNotPaid", "msg": "Escrow unpaid" },
+    { "code": 6001, "name": "SaleAlreadyPaid", "msg": "Escrow already paid" },
+    {
+      "code": 6002,
+      "name": "SaleAlreadyFinished",
+      "msg": "Escrow already finished"
+    },
+    { "code": 6003, "name": "BuyerNotSet", "msg": "Buyer is not set!" },
+    {
+      "code": 6004,
+      "name": "BuyerAssignedAlready",
+      "msg": "Buyer assigned already"
+    },
+    { "code": 6005, "name": "SaleCaneled", "msg": "Sale Canceled" },
+    { "code": 6006, "name": "Unauthorized", "msg": "Unauthorized" }
+  ]
+}
