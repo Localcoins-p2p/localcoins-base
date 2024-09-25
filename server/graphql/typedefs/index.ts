@@ -28,6 +28,11 @@ const typeDefs = gql`
     message: String!
   }
 
+  type NonceResponse {
+    nonce: String
+    error: String
+  }
+
   type Query {
     user: User
   }
@@ -51,6 +56,7 @@ const typeDefs = gql`
     verifyEmail(token: String!): StatusResponse!
     updateAdminStatus(userId: String!, status: Boolean): User
     deleteUser(id: String!): User
+    generateNonce(publicKey: String!): NonceResponse
 
     sendPhoneOtp(phoneNo: String): StatusResponse
     phoneOtpLogin(otp: String, phoneNo: String): LoginResponse!

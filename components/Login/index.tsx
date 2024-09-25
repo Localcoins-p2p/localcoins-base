@@ -6,6 +6,15 @@ import { useEffect, useState } from 'react';
 import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 import { gql, useMutation } from 'urql';
 
+export const GENERATE_NONCE = gql`
+  mutation GenerateNonce($publicKey: String!) {
+    generateNonce(publicKey: $publicKey) {
+      nonce
+      error
+    }
+  }
+`;
+
 export const LOGIN = gql`
   mutation Login(
     $publicKey: String!
@@ -28,6 +37,8 @@ const Login = () => {
     useWallet();
   const [nonce, setNonce] = useState<string | null>(null);
   const [{ fetching, data }, login] = useMutation(LOGIN);
+  const [{ fetching: generatingNonce }, generateNonce] =
+    useMutation(GENERATE_NONCE);
 
   useEffect(() => {
     if (connected && publicKey) {
@@ -37,10 +48,14 @@ const Login = () => {
 
   const handleLogin = async () => {
     await select(PhantomWalletName);
-
     connect();
 
-    if (!publicKey || !nonce) return;
+    if (!publicKey) return;
+
+    const nonceResponse = await generateNonce({
+      publicKey: publicKey.toString(),
+    });
+    const nonce = nonceResponse.data?.generateNonce?.nonce;
 
     const encodedMessage = new TextEncoder().encode(nonce);
     const signedMessage = await signMessage?.(encodedMessage);
@@ -50,17 +65,6 @@ const Login = () => {
       signedMessage: JSON.stringify(signedMessage),
       nonce,
     });
-
-    // const response = await fetch('/api/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     publicKey: publicKey.toString(),
-    //     signedMessage,
-    //     nonce,
-    //   }),
-    // });
-    // const result = await response.json();
   };
 
   return (

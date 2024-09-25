@@ -54,14 +54,14 @@ export const login = async (
   _: unknown,
   { publicKey, signedMessage, nonce }: LoginUserInput
 ) => {
-  const parsedSignedMessage: any = JSON.parse(signedMessage);
-  // const user = await prisma.user.findUnique({ where: { publicKey } });
-  // if (!user) {
-  //   return {
-  //     error: 'Something is wrong',
-  //   };
-  // }
+  const user = await prisma.user.findUnique({ where: { publicKey, nonce } });
+  if (!user) {
+    return {
+      error: 'User not found',
+    };
+  }
 
+  const parsedSignedMessage: any = JSON.parse(signedMessage);
   const message = new TextEncoder().encode(nonce);
   const signature = new Uint8Array(parsedSignedMessage.data);
   const publicKeyDecoded = new PublicKey(publicKey);
@@ -72,19 +72,35 @@ export const login = async (
     publicKeyDecoded.toBytes()
   );
 
-  console.log('Is Verified', isVerified);
-
-  if (true) {
-    //const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string);
-    // return {
-    //   user,
-    //   token,
-    // };
+  if (isVerified) {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string);
+    return {
+      user,
+      token,
+    };
   } else {
     return {
       error: 'Incorrect email or password',
     };
   }
+};
+
+export const generateNonce = async (
+  _: unknown,
+  { publicKey }: { publicKey: string }
+) => {
+  const nonce = Math.random().toString(36).substring(2);
+  await prisma.user.upsert({
+    where: { publicKey },
+    create: {
+      nonce,
+      publicKey,
+    },
+    update: {
+      nonce,
+    },
+  });
+  return { nonce };
 };
 
 export const deleteUser = adminOnly(async (_: unknown, { id }) => {
