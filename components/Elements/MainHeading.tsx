@@ -6,11 +6,13 @@ const MainHeading = ({
   para,
   t1,
   t2,
+  time,
 }: {
   title: string;
   para: string;
   t1: string;
   t2: string;
+  time?: string;
 }) => {
   return (
     <div className="border-l-[5px] border-[#d79502] flex flex-col h-full w-full gap-y-4 pl-3 ">
@@ -18,7 +20,9 @@ const MainHeading = ({
         {title}
       </div>
       <div className="flex justify-between w-full gap-x-3">
-        <div className="text-[#FFFFFF]">{para}</div>
+        <div className="text-[#FFFFFF]">
+          {para} {time && <span className="text-[#F3AA05]">{time}</span>}
+        </div>
         <div className="text-[#FFFFFF] hidden lg:flex justify-between text-[16px] font-[600] items-center gap-x-4">
           <div className="flex">
             <Image
