@@ -152,6 +152,7 @@ const P2PTable: React.FC = () => {
             {sales.map((row: any, index: number) => (
               <P2PTableRow
                 key={index}
+                sale={row}
                 advertiser={row.seller}
                 price={row.unitPrice}
                 available={row.amount}

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import BuyButton from './BuyButton';
 
 interface P2PRowProps {
   advertiser: {
@@ -12,6 +13,7 @@ interface P2PRowProps {
   available: string;
   limit: string;
   payments: Array<{ name: string; color: string }>;
+  sale: any;
 }
 
 const P2PTableRow: React.FC<P2PRowProps> = ({
@@ -20,6 +22,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
   available,
   limit,
   payments,
+  sale,
 }) => {
   return (
     <tr className="border-t py-4 md:py-0 border-gray-700 flex-boxx">
@@ -81,9 +84,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
         </div>
       </td>
       <td className="hidden md:table-cell py-4 text-end">
-        <button className="bg-[#3AA53E] text-white text-[16px] font-[600] px-4 py-2 rounded-[5px]">
-          Buy USDT
-        </button>
+        <BuyButton saleId={sale.id} />
       </td>
     </tr>
   );
