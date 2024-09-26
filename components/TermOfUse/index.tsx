@@ -20,12 +20,12 @@ const TermOfUse = () => {
     {
       heading: '',
       description:
-        'Your use of the platform is in compliance with all applicable laws and regulations. If you are using the platform on behalf of an entity, you warrant that you have the legal authority to bind that entity to these Terms and Conditions.',
+        'Your use of the platform ion behalf of an entity, you warrant that you have the legal authority to bind that entity to these Terms and Conditions.',
     },
   ];
   const infoItems1 = [
     {
-      heading: 'Compliance with Laws: ',
+      heading: 'Compliance with Laws:s in compliance with all applicable laws and regulations. If you are using the platform  ',
       description:
         ' You are responsible for ensuring that your use of the platform complies with all applicable local, national, and international laws, including those related to cryptocurrency trading, taxation, and anti-money laundering (AML) regulations.',
     },
