@@ -78,9 +78,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
               </div>
             ))}
           </div>
-          <button className="bg-[#3AA53E] md:hidden text-white text-[16px] font-[600] px-4 py-2 rounded-[5px]">
-            Buy USDT
-          </button>
+          <BuyButton saleId={sale.id} />
         </div>
       </td>
       <td className="hidden md:table-cell py-4 text-end">
