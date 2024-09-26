@@ -33,6 +33,15 @@ model User {
   SaleSeller              Sale[] @relation("BuyerRelation")
 }
 
+model Screenshot {
+  id                String                @id @default(auto())   @map("_id") @db.ObjectId
+  saleId            String                @db.ObjectId
+  imageUrl          String
+  method            String
+  paidById          String                @db.ObjectId
+  sale              Sale                  @relation(fields: [saleId], references: [id])
+}
+
 model Sale {
   id                String @id @default(auto())   @map("_id") @db.ObjectId
   sellerId          String                        @db.ObjectId
@@ -47,8 +56,8 @@ model Sale {
 
   tx                String?
 
-  screenshot        String?
-  screenshotMethods  String[]
+  screenshots       Screenshot[]
+  screenshotMethods String[]
   screenshotAt      DateTime?
 
   paidAt            DateTime?

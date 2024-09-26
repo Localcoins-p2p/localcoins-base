@@ -48,6 +48,13 @@ const typeDefs = gql`
   type SaleResponse {
     sales: [Sale]
   }
+  type Screenshot {
+    id: String!
+    imageUrl: String!
+    method: String!
+    paidById: String!
+    sale: Sale!
+  }
 
   type Query {
     user: User
@@ -84,6 +91,15 @@ const typeDefs = gql`
       screenshotMethods: [String]
       tx: String
     ): Sale
+    addRemoveBuyer(id: String!, command: String!): Sale
+    cancelSale(id: String!): Sale
+    markSalePaid(id: String!): Sale
+    markSaleFinished(id: String!): Sale
+    addScreenshot(
+      saleId: String!
+      imageUrl: String!
+      method: String!
+    ): Screenshot
   }
 
   ${projectTypedefs}
