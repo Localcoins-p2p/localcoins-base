@@ -47,6 +47,10 @@ const MyOrder = () => {
   });
   const [sale] = data?.sales?.sales || [];
 
+  if (!sale) {
+    return 'Loading...';
+  }
+
   return (
     <div className="w-[85%] mx-auto ">
       <NewHeader />
@@ -65,7 +69,7 @@ const MyOrder = () => {
           <OrderComponent sale={sale} />
         </div>
         <div className="col-span-5 mt-6 rounded-[15px] h-full">
-          <ChatBox />
+          <ChatBox sale={sale} />
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-const ChatBox = () => {
+const ChatBox = ({ sale }: { sale: any }) => {
   const [message, setMessage] = useState('');
 
   return (
@@ -19,7 +19,7 @@ const ChatBox = () => {
               className="rounded-full"
             />
             <div className="ml-3">
-              <h4 className="text-sm font-semibold">Juan Dela Cruz</h4>
+              <h4 className="text-sm font-semibold">{sale.seller?.name}</h4>
               <div className="flex space-x-2 text-xs text-yellow-500">
                 <span>Trades</span>
                 <span>|</span>
@@ -29,7 +29,7 @@ const ChatBox = () => {
           </div>
         </div>
 
-        {/* Message Body */}
+        {/*
         <div className="p-4 bg-gray-50">
           <div className="flex items-end space-x-2">
             <Image
@@ -48,6 +48,7 @@ const ChatBox = () => {
             </div>
           </div>
         </div>
+        */}
       </div>
 
       {/* Input Field */}
