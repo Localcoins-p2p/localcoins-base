@@ -1,14 +1,28 @@
 import React from 'react';
+import toast from 'react-hot-toast';
+import { gql, useMutation } from 'urql';
 
 interface OrderComponentProps {
-  sale: {
-    amount: number;
-    unitPrice: number;
-  };
+  sale: any;
   showConfirmPaymentReceivedButton: boolean;
   showConfirmPaymentSentButton: boolean;
   loading: boolean;
 }
+
+const ADD_SCREENSHOT = gql`
+  mutation AddScreenshot(
+    $saleId: String!
+    $imageUrl: String!
+    $method: String!
+  ) {
+    addScreenshot(saleId: $saleId, imageUrl: $imageUrl, method: $method) {
+      id
+      imageUrl
+      method
+      paidById
+    }
+  }
+`;
 
 const OrderComponent: React.FC<OrderComponentProps> = ({
   sale,
@@ -16,6 +30,19 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   showConfirmPaymentSentButton,
   loading,
 }) => {
+  const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
+
+  const handleAddScreenshot = async (imageUrl: string, method: string) => {
+    try {
+      await addScreenshotMutation({
+        variables: { saleId: sale.id, imageUrl, method },
+      });
+      toast.success('Screenshot added successfully');
+    } catch (error) {
+      toast.error('Failed to add screenshot');
+    }
+  };
+
   return (
     <div className="p-6 text-white max-w-[612px] w-full">
       <div className="border-l-2 border-white relative pl-4">
@@ -112,7 +139,10 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         </p>
         {showConfirmPaymentSentButton && (
           <div className="flex justify-between ml-4">
-            <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg">
+            <button
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg"
+              onClick={() => handleAddScreenshot('.', '.')}
+            >
               {loading && '...'}
               Transferred, Notify Seller
             </button>
