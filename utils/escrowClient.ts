@@ -28,7 +28,7 @@ export const connectAnchorProvider = async () => {
 // Program ID from the ID
 
 // Function to create a sale
-export async function createSale(amount: number) {
+export async function createSale({ amount }: { amount: number }) {
   try {
     const { provider, wallet } = await connectAnchorProvider();
     const authority = wallet.publicKey;

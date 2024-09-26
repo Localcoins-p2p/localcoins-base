@@ -14,6 +14,16 @@ const typeDefs = gql`
     isAdmin: Boolean
   }
 
+  type Sale {
+    id: ID!
+    amount: Float
+    unitPrice: Float
+    screenshotMehtods: [String]
+    seller: User
+    buyer: User
+    createdAt: Date
+  }
+
   type LoginResponse {
     token: String
     error: String
@@ -60,6 +70,12 @@ const typeDefs = gql`
 
     sendPhoneOtp(phoneNo: String): StatusResponse
     phoneOtpLogin(otp: String, phoneNo: String): LoginResponse!
+
+    createSale(
+      amount: Float
+      unitPrice: Float
+      screenshotMethods: [String]
+    ): Sale
   }
 
   ${projectTypedefs}

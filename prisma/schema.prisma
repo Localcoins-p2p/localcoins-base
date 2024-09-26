@@ -46,7 +46,7 @@ model Sale {
   unitPrice         Float
 
   screenshot        String?
-  screenshotMethod  String?
+  screenshotMethods  String[]
   screenshotAt      DateTime?
 
   paidAt            DateTime?

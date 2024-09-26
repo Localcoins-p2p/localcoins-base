@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { CiGlobe } from 'react-icons/ci';
 import Image from 'next/image';
@@ -9,6 +9,11 @@ import StepProgress from './StepProgress';
 import SellToSetPrice from './SellToSetPrice';
 import SellToSetAmountPayMeth from './SellToSetAmountPayMeth';
 import RemarksAndAutoRes from './RemarksAndAutoRes';
+import { createSale } from '@/utils/escrowClient';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { BN, web3 } from '@project-serum/anchor';
+import { getMasterAddress, getProgram, SALE_SEED } from '@/utils/program';
+import { PublicKey, SystemProgram } from '@solana/web3.js';
 
 const paymentOptions = [
   { value: 'All Payments', label: 'All Payments' },
@@ -88,6 +93,7 @@ const customStyles = {
   }),
 };
 const FilterPanel = () => {
+  const { connection } = useConnection();
   const [selectedPayment, setSelectedPayment] = useState<any>(
     paymentOptions[0]
   );
@@ -99,6 +105,7 @@ const FilterPanel = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const { publicKey, sendTransaction, connected } = useWallet();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -108,9 +115,48 @@ const FilterPanel = () => {
     setIsModalOpen(false);
   };
 
-  const handleNext = () => {
+  const program = useMemo(() => {
+    if (connection) {
+      return getProgram(connection, { publicKey, sendTransaction });
+    }
+    return null;
+  }, [connection, publicKey, sendTransaction]);
+
+  const handleCreateSale = async ({ amount }: { amount: number }) => {
+    const programId = new web3.PublicKey(
+      process.env.NEXT_PUBLIC_PROGRAM_ID as string
+    );
+    if (!program) {
+      return;
+    }
+    const masterPda = await getMasterAddress();
+    const saleId = new BN(
+      (await program.account.master.fetch(masterPda)).lastId + 1
+    );
+
+    const [salePda, saleBump] = await PublicKey.findProgramAddress(
+      [Buffer.from(SALE_SEED), saleId.toArrayLike(Buffer, 'le', 4)],
+      programId
+    );
+    const authority = publicKey;
+
+    const transaction = new web3.Transaction().add(
+      program.instruction.createSale(new BN(data.totalAmount), {
+        accounts: {
+          sale: salePda,
+          master: masterPda,
+          authority: authority as PublicKey,
+          systemProgram: SystemProgram.programId,
+        },
+      })
+    );
+    const txHash = await sendTransaction(transaction, connection);
+    console.log('Hash', txHash);
+  };
+
+  const handleNext = async () => {
     if (currentStep == 3) {
-      alert(data.amount);
+      await handleCreateSale({ amount: data.totalAmount * 1000000000 });
       return;
     }
     setCurrentStep(currentStep + 1);

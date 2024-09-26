@@ -67,7 +67,9 @@ const Login = () => {
         <p>Connected with: {publicKey?.toString()}</p>
         <button onClick={handleLogin}>Login</button>
         <button onClick={disconnect}>Disconnect</button>
-        <button onClick={() => createSale(1000)}>Create Sale</button>
+        <button onClick={() => createSale({ amount: 1000 })}>
+          Create Sale
+        </button>
       </>
     </div>
   );
