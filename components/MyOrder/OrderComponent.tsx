@@ -1,6 +1,10 @@
 import React from 'react';
 import toast from 'react-hot-toast';
 import { gql, useMutation } from 'urql';
+import { getMasterAddress, SALE_SEED } from '@/utils/program';
+import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+import { BN } from '@project-serum/anchor';
+import useSolana from '@/utils/useSolana';
 
 interface OrderComponentProps {
   sale: any;
@@ -31,6 +35,8 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   loading,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
+  const { connection, program, programId, publicKey, sendTransaction } =
+    useSolana();
 
   const handleAddScreenshot = async (imageUrl: string, method: string) => {
     try {
@@ -40,6 +46,32 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
       toast.success('Screenshot added successfully');
     } catch (error) {
       toast.error('Failed to add screenshot');
+    }
+  };
+
+  const handlePaymentReceived = async () => {
+    try {
+      const masterPda = await getMasterAddress();
+      const onChainSaleId = new BN(sale.onChainSaleId);
+      alert(sale.onChainSaleId);
+      const [salePda, saleBump] = await PublicKey.findProgramAddress(
+        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+        programId
+      );
+      const authority = publicKey;
+      const transaction = new Transaction().add(
+        (program as any).instruction.markPaid(onChainSaleId, {
+          accounts: {
+            sale: salePda,
+            master: masterPda,
+            authority: authority as PublicKey,
+            systemProgram: SystemProgram.programId,
+          },
+        })
+      );
+      const txHash = await sendTransaction(transaction, connection);
+    } catch (err) {
+    } finally {
     }
   };
 
@@ -151,7 +183,10 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         )}
         {showConfirmPaymentReceivedButton && (
           <div className="flex justify-between ml-4">
-            <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg">
+            <button
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg"
+              onClick={handlePaymentReceived}
+            >
               {loading && '...'}
               Payment Received
             </button>

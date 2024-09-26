@@ -8,6 +8,7 @@ import ChatBox from './ChatBox';
 import { gql, useQuery } from 'urql';
 import { useSearchParams } from 'next/navigation';
 import { AppContext } from '@/utils/context';
+import useSolana from '@/utils/useSolana';
 
 const GET_SALE = gql`
   query Sales($salesId: String) {
@@ -35,6 +36,7 @@ const GET_SALE = gql`
         createdAt
         paidAt
         canceledAt
+        onChainSaleId
         finishedAt
       }
     }
@@ -58,10 +60,8 @@ const MyOrder = () => {
   useEffect(() => {
     setSale(_sale);
     const refetch = _sale && !_sale?.paidAt && !_sale?.canceledAt;
-    console.log('REFETCH', refetch);
     if (refetch) {
       setTimeout(() => {
-        console.log('Calling...');
         fetchSale({ requestPolicy: 'network-only' });
       }, 3000);
     }
