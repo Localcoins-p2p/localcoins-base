@@ -22,13 +22,34 @@ const regionOptions = [
 ];
 
 const currencyOptions = [
-  { value: 'USD', label: <span ><span className='text-[#F3AA05] mr-2'>$</span>USD</span>  },
-  { value: 'EUR', label: <span ><span className='text-[#F3AA05] mr-2'>$</span>PKR</span>  },
-  { value: 'GBP', label: <span ><span className='text-[#F3AA05] mr-2'>$</span>GBP</span>  },
+  {
+    value: 'USD',
+    label: (
+      <span>
+        <span className="text-[#F3AA05] mr-2">$</span>USD
+      </span>
+    ),
+  },
+  {
+    value: 'EUR',
+    label: (
+      <span>
+        <span className="text-[#F3AA05] mr-2">$</span>PKR
+      </span>
+    ),
+  },
+  {
+    value: 'GBP',
+    label: (
+      <span>
+        <span className="text-[#F3AA05] mr-2">$</span>GBP
+      </span>
+    ),
+  },
 ];
 
 const customStyles = {
-  control: (provided:any, state:any) => ({
+  control: (provided: any, state: any) => ({
     ...provided,
     backgroundColor: 'transparent',
     border: 'none',
@@ -40,23 +61,23 @@ const customStyles = {
       borderColor: '#4D4D4D',
     },
   }),
-  singleValue: (provided:any) => ({
+  singleValue: (provided: any) => ({
     ...provided,
     color: 'white',
   }),
   indicatorSeparator: () => ({
     display: 'none',
   }),
-  dropdownIndicator: (provided:any) => ({
+  dropdownIndicator: (provided: any) => ({
     ...provided,
     color: 'white',
   }),
-  menu: (provided:any) => ({
+  menu: (provided: any) => ({
     ...provided,
     backgroundColor: '#000',
     color: 'white',
   }),
-  option: (provided:any, state:any) => ({
+  option: (provided: any, state: any) => ({
     ...provided,
     backgroundColor: state.isFocused ? '#4D4D4D' : '#000',
     color: state.isFocused ? 'white' : 'gray',
@@ -70,6 +91,7 @@ const FilterPanel = () => {
   const [selectedPayment, setSelectedPayment] = useState<any>(
     paymentOptions[0]
   );
+  const [data, setData] = useState<any>({});
   const [selectedRegion, setSelectedRegion] = useState<any>(regionOptions[0]);
   const [selectedCurrency, setSelectedCurrency] = useState<any>(
     currencyOptions[0]
@@ -86,11 +108,12 @@ const FilterPanel = () => {
     setIsModalOpen(false);
   };
 
-
-
-
   const handleNext = () => {
-    setCurrentStep(currentStep + 1); 
+    if (currentStep == 3) {
+      alert(data.amount);
+      return;
+    }
+    setCurrentStep(currentStep + 1);
   };
 
   return (
@@ -102,7 +125,7 @@ const FilterPanel = () => {
           placeholder="Transaction amount"
         />
         <Select
-          className="w-[100px] border-l border-[#393939]" 
+          className="w-[100px] border-l border-[#393939]"
           value={selectedCurrency}
           onChange={setSelectedCurrency}
           options={currencyOptions}
@@ -147,7 +170,10 @@ const FilterPanel = () => {
           isSearchable={false}
         />
       </div>
-      <button onClick={handleOpenModal} className="sm:flex hidden  items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700">
+      <button
+        onClick={handleOpenModal}
+        className="sm:flex hidden  items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700"
+      >
         <Image
           src={'/assets/common/filterIcon.svg'}
           height={17}
@@ -158,16 +184,29 @@ const FilterPanel = () => {
       <ModalComponent
         title="Filter Options"
         isOpen={isModalOpen}
-        onClose={handleCloseModal} 
+        onClose={handleCloseModal}
         header={<div>Modal Header</div>}
       >
-        <div className='max-h-[90vh] overflow-auto no-scrollbar'>
-          
-      <StepProgress currentStep={currentStep} />
+        <div className="max-h-[90vh] overflow-auto no-scrollbar">
+          <StepProgress currentStep={currentStep} />
 
-      {currentStep === 1 && <SellToSetPrice onNext={handleNext} />}
-      {currentStep === 2 && <SellToSetAmountPayMeth onNext={handleNext} />}
-      {currentStep === 3 && <RemarksAndAutoRes onNext={handleNext} />}
+          {currentStep === 1 && (
+            <SellToSetPrice onNext={handleNext} data={data} setData={setData} />
+          )}
+          {currentStep === 2 && (
+            <SellToSetAmountPayMeth
+              onNext={handleNext}
+              data={data}
+              setData={setData}
+            />
+          )}
+          {currentStep === 3 && (
+            <RemarksAndAutoRes
+              onNext={handleNext}
+              data={data}
+              setData={setData}
+            />
+          )}
         </div>
       </ModalComponent>
     </div>

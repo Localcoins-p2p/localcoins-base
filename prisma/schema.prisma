@@ -41,8 +41,9 @@ model Sale {
   buyerId           String?                       @db.ObjectId
   buyer             User?                         @relation("BuyerRelation", fields: [buyerId], references: [id])
 
-  amount            Int
+  amount            Float
   token             String?
+  unitPrice         Float
 
   screenshot        String?
   screenshotMethod  String?

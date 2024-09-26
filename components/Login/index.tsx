@@ -36,16 +36,9 @@ export const LOGIN = gql`
 const Login = () => {
   const { publicKey, connect, disconnect, connected, signMessage, select } =
     useWallet();
-  const [nonce, setNonce] = useState<string | null>(null);
   const [{ fetching, data }, login] = useMutation(LOGIN);
   const [{ fetching: generatingNonce }, generateNonce] =
     useMutation(GENERATE_NONCE);
-
-  useEffect(() => {
-    if (connected && publicKey) {
-      setNonce('abc' || Math.random().toString(36).substring(2));
-    }
-  }, [connected, publicKey]);
 
   const handleLogin = async () => {
     await select(PhantomWalletName);
@@ -74,7 +67,6 @@ const Login = () => {
         <p>Connected with: {publicKey?.toString()}</p>
         <button onClick={handleLogin}>Login</button>
         <button onClick={disconnect}>Disconnect</button>
-
         <button onClick={() => createSale(1000)}>Create Sale</button>
       </>
     </div>
