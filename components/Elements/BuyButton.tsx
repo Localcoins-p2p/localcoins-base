@@ -4,6 +4,7 @@ import { getMasterAddress, SALE_SEED } from '@/utils/program';
 import { BN } from '@project-serum/anchor';
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface IProps {
   saleId: string;
@@ -20,6 +21,7 @@ const addRemoveBuyerMutation = gql`
 
 function BuyButton({ saleId, onChainSaleId: _onChainSaleId }: IProps) {
   const [{ fetching }, addBuyer] = useMutation(addRemoveBuyerMutation);
+  const router = useRouter();
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
   const [loading, setLoading] = useState(false);
@@ -46,6 +48,7 @@ function BuyButton({ saleId, onChainSaleId: _onChainSaleId }: IProps) {
       );
       const txHash = await sendTransaction(transaction, connection);
       await addBuyer({ id: saleId, command: 'ADD' });
+      router.push(`/my-order?sale=${saleId}`);
     } catch (err) {
     } finally {
       setLoading(false);

@@ -15,6 +15,7 @@ import { BN, web3 } from '@project-serum/anchor';
 import { getMasterAddress, getProgram, SALE_SEED } from '@/utils/program';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { gql, useMutation } from 'urql';
+import { useRouter } from 'next/navigation';
 
 const paymentOptions = [
   { value: 'All Payments', label: 'All Payments' },
@@ -155,6 +156,7 @@ const FilterPanel = () => {
     }
     return null;
   }, [connection, publicKey, sendTransaction]);
+  const router = useRouter();
 
   const handleCreateSale = async ({ amount }: { amount: number }) => {
     const programId = new web3.PublicKey(
@@ -200,6 +202,8 @@ const FilterPanel = () => {
         onChainSaleId,
         unitPrice: 1,
         screenshotMethods: [],
+      }).then((data) => {
+        router.push(`/my-order?sale=${data?.data?.createSale?.id}`);
       });
       return;
     }
