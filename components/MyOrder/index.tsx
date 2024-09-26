@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import NewHeader from '../NewHeader/NewHeader';
 import MainHeading from '../Elements/MainHeading';
 import OrderComponent from './OrderComponent';
@@ -44,15 +44,28 @@ const GET_SALE = gql`
 const MyOrder = () => {
   const searchParams = useSearchParams();
   const salesId = searchParams.get('sale');
-  const [{ fetching, data }] = useQuery({
+  const [sale, setSale] = useState<any>();
+  const [{ fetching, data }, fetchSale] = useQuery({
     query: GET_SALE,
     variables: { salesId },
     pause: !salesId,
   });
-  const [sale] = data?.sales?.sales || [];
+  const [_sale] = data?.sales?.sales || [];
   const {
     context: { user },
   } = useContext(AppContext);
+
+  useEffect(() => {
+    setSale(_sale);
+    const refetch = _sale && !_sale?.paidAt && !_sale?.canceledAt;
+    console.log('REFETCH', refetch);
+    if (refetch) {
+      setTimeout(() => {
+        console.log('Calling...');
+        fetchSale({ requestPolicy: 'network-only' });
+      }, 3000);
+    }
+  }, [_sale]);
 
   const isSeller = user?.id === sale?.seller?.id;
   const isBuyer = user?.id === sale?.buyer?.id;
@@ -85,6 +98,7 @@ const MyOrder = () => {
             sale={sale}
             showConfirmPaymentSentButton={showConfirmPaymentSentButton}
             showConfirmPaymentReceivedButton={showConfirmPaymentReceivedButton}
+            loading={fetching}
           />
         </div>
         <div className="col-span-5 mt-6 rounded-[15px] h-full">

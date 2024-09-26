@@ -7,12 +7,14 @@ interface OrderComponentProps {
   };
   showConfirmPaymentReceivedButton: boolean;
   showConfirmPaymentSentButton: boolean;
+  loading: boolean;
 }
 
 const OrderComponent: React.FC<OrderComponentProps> = ({
   sale,
   showConfirmPaymentReceivedButton,
   showConfirmPaymentSentButton,
+  loading,
 }) => {
   return (
     <div className="p-6 text-white max-w-[612px] w-full">
@@ -111,6 +113,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         {showConfirmPaymentSentButton && (
           <div className="flex justify-between ml-4">
             <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg">
+              {loading && '...'}
               Transferred, Notify Seller
             </button>
             <button className="text-[#F3AA05] font-semibold ">Cancel</button>
@@ -119,6 +122,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         {showConfirmPaymentReceivedButton && (
           <div className="flex justify-between ml-4">
             <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg">
+              {loading && '...'}
               Payment Received
             </button>
             <button className="text-[#F3AA05] font-semibold ">Cancel</button>
