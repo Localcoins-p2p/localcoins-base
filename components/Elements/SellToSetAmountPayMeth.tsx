@@ -52,13 +52,9 @@ const SellToSetAmountPayMeth = ({ onNext }: any) => {
     const [paymentMethod, setPaymentMethod] = useState<any>(null);
     const [timeLimit, setTimeLimit] = useState('15 min');
     const [selecteTime, setSelecteTime] = useState<any>(Time[0]);
-
-    // State for input fields
     const [totalAmount, setTotalAmount] = useState('Max 2200.99');
     const [orderLimitMin, setOrderLimitMin] = useState('500');
     const [orderLimitMax, setOrderLimitMax] = useState('2200.99');
-
-    // Handle input changes and log to console
     const handleTotalAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTotalAmount(e.target.value);
         console.log('Total Amount:', e.target.value);
