@@ -177,7 +177,7 @@ const FilterPanel = () => {
     const authority = publicKey;
 
     const transaction = new web3.Transaction().add(
-      program.instruction.createSale(new BN(data.totalAmount), {
+      program.instruction.createSale(new BN(amount), {
         accounts: {
           sale: salePda,
           master: masterPda,
@@ -192,7 +192,6 @@ const FilterPanel = () => {
 
   const handleNext = async () => {
     if (currentStep == 3) {
-      alert(data.amount);
       const { txHash, onChainSaleId } =
         (await handleCreateSale({ amount: data.amount * 1000000000 })) || {};
       createSaleMutation({

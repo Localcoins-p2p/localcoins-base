@@ -10,6 +10,7 @@ interface OrderComponentProps {
   sale: any;
   showConfirmPaymentReceivedButton: boolean;
   showConfirmPaymentSentButton: boolean;
+  showClaimPaymentButton: boolean;
   loading: boolean;
 }
 
@@ -41,6 +42,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   sale,
   showConfirmPaymentReceivedButton,
   showConfirmPaymentSentButton,
+  showClaimPaymentButton,
   loading,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
@@ -70,6 +72,32 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
       const authority = publicKey;
       const transaction = new Transaction().add(
         (program as any).instruction.markPaid(onChainSaleId, {
+          accounts: {
+            sale: salePda,
+            master: masterPda,
+            authority: authority as PublicKey,
+            systemProgram: SystemProgram.programId,
+          },
+        })
+      );
+      const txHash = await sendTransaction(transaction, connection);
+      await markPaidMutation({ saleId: sale.id });
+    } catch (err) {
+    } finally {
+    }
+  };
+
+  const handleClaimPayment = async () => {
+    try {
+      const masterPda = await getMasterAddress();
+      const onChainSaleId = new BN(sale.onChainSaleId);
+      const [salePda, saleBump] = await PublicKey.findProgramAddress(
+        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+        programId
+      );
+      const authority = publicKey;
+      const transaction = new Transaction().add(
+        (program as any).instruction.claimPayment(onChainSaleId, {
           accounts: {
             sale: salePda,
             master: masterPda,
@@ -199,6 +227,18 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             >
               {loading && '...'}
               Payment Received
+            </button>
+            <button className="text-[#F3AA05] font-semibold ">Cancel</button>
+          </div>
+        )}
+        {showClaimPaymentButton && (
+          <div className="flex justify-between ml-4">
+            <button
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg"
+              onClick={handleClaimPayment}
+            >
+              {loading && '...'}
+              Claim Payment
             </button>
             <button className="text-[#F3AA05] font-semibold ">Cancel</button>
           </div>

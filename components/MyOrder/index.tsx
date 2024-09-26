@@ -73,7 +73,8 @@ const MyOrder = () => {
   const showConfirmPaymentReceivedButton =
     isSeller && !sale?.paidAt && !sale?.canceledAt;
   const showConfirmPaymentSentButton =
-    isBuyer && !sale?.isPaidAt && !sale?.isCanceled;
+    isBuyer && !sale?.paidAt && !sale?.isCanceled;
+  const showClaimPaymentButton = isBuyer && sale?.paidAt && !sale.isFinished;
 
   if (!sale) {
     return 'Loading...';
@@ -98,6 +99,7 @@ const MyOrder = () => {
             sale={sale}
             showConfirmPaymentSentButton={showConfirmPaymentSentButton}
             showConfirmPaymentReceivedButton={showConfirmPaymentReceivedButton}
+            showClaimPaymentButton={showClaimPaymentButton}
             loading={fetching}
           />
         </div>
