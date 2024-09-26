@@ -24,8 +24,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const endpoint =
-    'https://capable-rough-road.solana-devnet.discover.quiknode.pro/ef4d29ab3f286ac54013bd9e161445c749a2dd5e/';
+  const endpoint = 'https://api.devnet.solana.com';
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
   useEffect(() => {
