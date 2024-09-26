@@ -22,9 +22,12 @@ const typeDefs = gql`
     screenshotMehtods: [String]
     seller: User
     buyer: User
-    createdAt: Date
     tx: String
     onChainSaleId: Int
+    createdAt: Date
+    finishedAt: Date
+    paidAt: Date
+    canceledAt: Date
   }
 
   type LoginResponse {

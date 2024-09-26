@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useContext } from 'react';
 import NewHeader from '../NewHeader/NewHeader';
 import MainHeading from '../Elements/MainHeading';
 import OrderComponent from './OrderComponent';
 import ChatBox from './ChatBox';
 import { gql, useQuery } from 'urql';
 import { useSearchParams } from 'next/navigation';
+import { AppContext } from '@/utils/context';
 
 const GET_SALE = gql`
   query Sales($salesId: String) {
@@ -17,7 +18,6 @@ const GET_SALE = gql`
           id
           publicKey
         }
-        createdAt
         id
         tx
         seller {
@@ -32,6 +32,10 @@ const GET_SALE = gql`
         }
         screenshotMehtods
         unitPrice
+        createdAt
+        paidAt
+        canceledAt
+        finishedAt
       }
     }
   }
@@ -46,6 +50,17 @@ const MyOrder = () => {
     pause: !salesId,
   });
   const [sale] = data?.sales?.sales || [];
+  const {
+    context: { user },
+  } = useContext(AppContext);
+
+  const isSeller = user?.id === sale?.seller?.id;
+  const isBuyer = user?.id === sale?.buyer?.id;
+
+  const showConfirmPaymentReceivedButton =
+    isSeller && !sale?.paidAt && !sale?.canceledAt;
+  const showConfirmPaymentSentButton =
+    isBuyer && !sale?.isPaidAt && !sale?.isCanceled;
 
   if (!sale) {
     return 'Loading...';
@@ -66,7 +81,11 @@ const MyOrder = () => {
       </div>
       <div className="grid grid-cols-12 mt-4">
         <div className="col-span-7 w-full">
-          <OrderComponent sale={sale} />
+          <OrderComponent
+            sale={sale}
+            showConfirmPaymentSentButton={showConfirmPaymentSentButton}
+            showConfirmPaymentReceivedButton={showConfirmPaymentReceivedButton}
+          />
         </div>
         <div className="col-span-5 mt-6 rounded-[15px] h-full">
           <ChatBox sale={sale} />

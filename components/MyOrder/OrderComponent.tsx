@@ -1,8 +1,21 @@
 import React from 'react';
 
-const OrderComponent = ({ sale }: { sale: any }) => {
+interface OrderComponentProps {
+  sale: {
+    amount: number;
+    unitPrice: number;
+  };
+  showConfirmPaymentReceivedButton: boolean;
+  showConfirmPaymentSentButton: boolean;
+}
+
+const OrderComponent: React.FC<OrderComponentProps> = ({
+  sale,
+  showConfirmPaymentReceivedButton,
+  showConfirmPaymentSentButton,
+}) => {
   return (
-    <div className="  p-6 text-white max-w-[612px] w-full">
+    <div className="p-6 text-white max-w-[612px] w-full">
       <div className="border-l-2 border-white relative pl-4">
         <div>
           <div className="flex items-center mb-4">
@@ -11,7 +24,7 @@ const OrderComponent = ({ sale }: { sale: any }) => {
             </div>
             <h2 className="ml-4 text-[23px] font-semibold">Order Created</h2>
           </div>
-          <div className=" border border-[#4D4D4D] p-4 rounded-[5px]">
+          <div className="border border-[#4D4D4D] p-4 rounded-[5px]">
             <div className="flex justify-between">
               <span className="text-[#A6A6A6] text-[18px]">Fiat Amount</span>
               <span className="text-[#0ECB81] text-[18px] font-bold">
@@ -90,17 +103,27 @@ const OrderComponent = ({ sale }: { sale: any }) => {
           </div>
         </div>
       </div>
-      <div className=" pl-4">
+      <div className="pl-4">
         <p className="text-[#FFFFFF] text-[18px] font-[400] mb-4 ml-4">
           After payment, remember to click the &apos;Transferred, Notify
           Seller&apos; button to facilitate the crypto release by the seller.
         </p>
-        <div className="flex  justify-between ml-4">
-          <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg">
-            Transferred, Notify Seller
-          </button>
-          <button className=" text-[#F3AA05] font-semibold ">Cancel</button>
-        </div>
+        {showConfirmPaymentSentButton && (
+          <div className="flex justify-between ml-4">
+            <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg">
+              Transferred, Notify Seller
+            </button>
+            <button className="text-[#F3AA05] font-semibold ">Cancel</button>
+          </div>
+        )}
+        {showConfirmPaymentReceivedButton && (
+          <div className="flex justify-between ml-4">
+            <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg">
+              Payment Received
+            </button>
+            <button className="text-[#F3AA05] font-semibold ">Cancel</button>
+          </div>
+        )}
       </div>
     </div>
   );
