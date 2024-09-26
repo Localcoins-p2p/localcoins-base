@@ -47,7 +47,7 @@ const customStyles = {
   }),
 };
 
-const SellToSetAmountPayMeth = ({ onNext, setData }: any) => {
+const SellToSetAmountPayMeth = ({ onNext, setData, data }: any) => {
   const [tab, setTab] = useState('buy');
   const [paymentMethod, setPaymentMethod] = useState<any>(null);
   const [timeLimit, setTimeLimit] = useState('15 min');
@@ -59,7 +59,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData }: any) => {
 
   const handleTotalAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTotalAmount(parseFloat(e.target.value));
-    setData({ amount: parseFloat(e.target.value) });
+    setData({ ...data, amount: parseFloat(e.target.value) });
   };
 
   const handleOrderLimitMinChange = (

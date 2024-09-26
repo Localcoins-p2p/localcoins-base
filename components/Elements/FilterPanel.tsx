@@ -189,13 +189,13 @@ const FilterPanel = () => {
 
   const handleNext = async () => {
     if (currentStep == 3) {
-      const tx = await handleCreateSale({
-        amount: data.totalAmount * 1000000000,
-      });
+      alert(data.amount);
+      const tx = await handleCreateSale({ amount: data.amount * 1000000000 });
       createSaleMutation({
-        amount: data.totalAmount * 1000000000,
+        amount: data.amount * 1000000000,
         tx,
         unitPrice: 1,
+        screenshotMethods: [],
       });
       return;
     }
