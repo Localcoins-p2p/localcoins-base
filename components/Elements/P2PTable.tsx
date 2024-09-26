@@ -16,6 +16,7 @@ const GET_SALES = gql`
         createdAt
         id
         tx
+        onChainSaleId
         seller {
           name
           publicKey

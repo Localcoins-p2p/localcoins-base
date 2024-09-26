@@ -78,11 +78,15 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
               </div>
             ))}
           </div>
-          <BuyButton saleId={sale.id} />
+          <span className="md:hidden float-right">
+            <BuyButton saleId={sale.id} onChainSaleId={sale.onChainSaleId} />
+          </span>
         </div>
       </td>
-      <td className="hidden md:table-cell py-4 text-end">
-        <BuyButton saleId={sale.id} />
+      <td className="md:table-cell py-4 text-end">
+        <span className="hidden md:inline">
+          <BuyButton saleId={sale.id} onChainSaleId={sale.onChainSaleId} />
+        </span>
       </td>
     </tr>
   );

@@ -6,13 +6,15 @@ import { IGqlContext } from '@/types';
 export const createSale = isLoggedIn(
   async (
     _: unknown,
-    { amount, unitPrice, screenshotMethods }: Prisma.Sale,
+    { amount, unitPrice, screenshotMethods, tx, onChainSaleId }: Prisma.Sale,
     { user }: IGqlContext
   ) => {
     return prisma.sale.create({
       data: {
         amount,
         unitPrice,
+        tx,
+        onChainSaleId,
         screenshotMethods,
         sellerId: user?.id as string,
       },

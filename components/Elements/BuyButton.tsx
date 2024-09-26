@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 interface IProps {
   saleId: string;
+  onChainSaleId: number;
 }
 
 const addRemoveBuyerMutation = gql`
@@ -17,7 +18,7 @@ const addRemoveBuyerMutation = gql`
   }
 `;
 
-function BuyButton({ saleId }: IProps) {
+function BuyButton({ saleId, onChainSaleId: _onChainSaleId }: IProps) {
   const [{ fetching }, addBuyer] = useMutation(addRemoveBuyerMutation);
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
@@ -25,15 +26,9 @@ function BuyButton({ saleId }: IProps) {
 
   const handleAddBuyer = async () => {
     try {
-      await addBuyer({ id: saleId, command: 'ADD' });
+      setLoading(true);
       const masterPda = await getMasterAddress();
-      console.log(
-        '>>>',
-        (await (program as any).account.master.fetch(masterPda)).lastId
-      );
-      const onChainSaleId = new BN(
-        (await (program as any).account.master.fetch(masterPda)).lastId
-      );
+      const onChainSaleId = new BN(_onChainSaleId);
       const [salePda, saleBump] = await PublicKey.findProgramAddress(
         [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
         programId
@@ -50,6 +45,7 @@ function BuyButton({ saleId }: IProps) {
         })
       );
       const txHash = await sendTransaction(transaction, connection);
+      await addBuyer({ id: saleId, command: 'ADD' });
     } catch (err) {
     } finally {
       setLoading(false);

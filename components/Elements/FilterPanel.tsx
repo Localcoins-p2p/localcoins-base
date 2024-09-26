@@ -100,12 +100,14 @@ export const CREATE_SALE = gql`
     $unitPrice: Float
     $screenshotMethods: [String]
     $tx: String
+    $onChainSaleId: Int
   ) {
     createSale(
       amount: $amount
       unitPrice: $unitPrice
       screenshotMethods: $screenshotMethods
       tx: $tx
+      onChainSaleId: $onChainSaleId
     ) {
       amount
       buyer {
@@ -162,6 +164,8 @@ const FilterPanel = () => {
       return;
     }
     const masterPda = await getMasterAddress();
+    const onChainSaleId =
+      (await program.account.master.fetch(masterPda)).lastId + 1;
     const saleId = new BN(
       (await program.account.master.fetch(masterPda)).lastId + 1
     );
@@ -183,17 +187,18 @@ const FilterPanel = () => {
       })
     );
     const txHash = await sendTransaction(transaction, connection);
-    console.log('Hash', txHash);
-    return txHash;
+    return { txHash, onChainSaleId };
   };
 
   const handleNext = async () => {
     if (currentStep == 3) {
       alert(data.amount);
-      const tx = await handleCreateSale({ amount: data.amount * 1000000000 });
+      const { txHash, onChainSaleId } =
+        (await handleCreateSale({ amount: data.amount * 1000000000 })) || {};
       createSaleMutation({
         amount: data.amount * 1000000000,
-        tx,
+        tx: txHash,
+        onChainSaleId,
         unitPrice: 1,
         screenshotMethods: [],
       });

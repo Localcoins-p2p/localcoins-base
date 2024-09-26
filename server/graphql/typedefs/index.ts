@@ -24,6 +24,7 @@ const typeDefs = gql`
     buyer: User
     createdAt: Date
     tx: String
+    onChainSaleId: Int
   }
 
   type LoginResponse {
@@ -89,6 +90,7 @@ const typeDefs = gql`
       amount: Float
       unitPrice: Float
       screenshotMethods: [String]
+      onChainSaleId: Int
       tx: String
     ): Sale
     addRemoveBuyer(id: String!, command: String!): Sale
