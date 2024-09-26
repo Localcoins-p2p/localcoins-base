@@ -38,6 +38,14 @@ const MARK_PAID = gql`
   }
 `;
 
+const MARK_FINISHED = gql`
+  mutation MarkSaleFinished($markSaleFinishedId: String!) {
+    markSaleFinished(id: $markSaleFinishedId) {
+      id
+    }
+  }
+`;
+
 const OrderComponent: React.FC<OrderComponentProps> = ({
   sale,
   showConfirmPaymentReceivedButton,
@@ -47,6 +55,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
+  const [{}, markFinished] = useMutation(MARK_FINISHED);
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
 
@@ -107,7 +116,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         })
       );
       const txHash = await sendTransaction(transaction, connection);
-      await markPaidMutation({ saleId: sale.id });
+      await markFinished({ saleId: sale.id });
     } catch (err) {
     } finally {
     }
