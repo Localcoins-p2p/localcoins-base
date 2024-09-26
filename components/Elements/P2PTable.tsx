@@ -1,7 +1,32 @@
-// P2PTable.tsx
+'use client';
+
 import React from 'react';
 import P2PTableRow from './P2PTableRow';
+import { gql, useQuery } from 'urql';
 
+const GET_SALES = gql`
+  query Sales {
+    sales {
+      sales {
+        amount
+        buyer {
+          id
+          publicKey
+        }
+        createdAt
+        id
+        tx
+        seller {
+          name
+          publicKey
+          id
+        }
+        screenshotMehtods
+        unitPrice
+      }
+    }
+  }
+`;
 
 const p2pData = [
   {
@@ -94,37 +119,52 @@ const p2pData = [
       { name: 'BPI', color: '#FF2E00' },
     ],
   },
-  
 ];
 
 const P2PTable: React.FC = () => {
-  return (
-    <div>
-      <table className="table-auto w-full text-left">
-        <thead className="hidden md:table-header-group text-[#A6A6A6] text-[14px] font-[400]">
-          <tr>
-            <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">Advertisers</th>
-            <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">Price</th>
-            <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">Available/Order Limit</th>
-            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">Payment</th>
-            <th className=" py-2 text-end text-[#A6A6A6] text-[14px] font-[400]">Trade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {p2pData.map((row, index) => (
-            <P2PTableRow
-              key={index}
-              advertiser={row.advertiser}
-              price={row.price}
-              available={row.available}
-              limit={row.limit}
-              payments={row.payments}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  const [{ data, fetching }] = useQuery({ query: GET_SALES });
+  const sales = data?.sales?.sales || [];
+
+  if (data) {
+    return (
+      <div>
+        <table className="table-auto w-full text-left">
+          <thead className="hidden md:table-header-group text-[#A6A6A6] text-[14px] font-[400]">
+            <tr>
+              <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">
+                Advertisers
+              </th>
+              <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">
+                Price
+              </th>
+              <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">
+                Available/Order Limit
+              </th>
+              <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+                Payment
+              </th>
+              <th className=" py-2 text-end text-[#A6A6A6] text-[14px] font-[400]">
+                Trade
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {sales.map((row: any, index: number) => (
+              <P2PTableRow
+                key={index}
+                advertiser={row.seller}
+                price={row.unitPrice}
+                available={row.amount}
+                limit={row.amount}
+                payments={row.payments || []}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+  return null;
 };
 
 export default P2PTable;
