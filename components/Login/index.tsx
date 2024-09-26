@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 import { gql, useMutation } from 'urql';
 import { createSale } from '@/utils/escrowClient';
+import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
 
 export const GENERATE_NONCE = gql`
   mutation GenerateNonce($publicKey: String!) {
@@ -54,11 +56,17 @@ const Login = () => {
     const encodedMessage = new TextEncoder().encode(nonce);
     const signedMessage = await signMessage?.(encodedMessage);
 
-    login({
+    const response = await login({
       publicKey: publicKey.toString(),
       signedMessage: JSON.stringify(signedMessage),
       nonce,
     });
+    if (response.data?.login?.token) {
+      Cookies.set('token', response.data?.login?.token as string);
+      toast.success('Login Successful');
+    } else {
+      toast.error('Invalid signature');
+    }
   };
 
   return (

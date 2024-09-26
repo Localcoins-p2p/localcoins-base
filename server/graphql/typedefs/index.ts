@@ -12,6 +12,7 @@ const typeDefs = gql`
     state: String
     country: String
     isAdmin: Boolean
+    publicKey: String
   }
 
   type Sale {
@@ -22,6 +23,7 @@ const typeDefs = gql`
     seller: User
     buyer: User
     createdAt: Date
+    tx: String
   }
 
   type LoginResponse {
@@ -43,8 +45,13 @@ const typeDefs = gql`
     error: String
   }
 
+  type SaleResponse {
+    sales: [Sale]
+  }
+
   type Query {
     user: User
+    sales: SaleResponse
   }
   type Mutation {
     registerUser(
@@ -75,6 +82,7 @@ const typeDefs = gql`
       amount: Float
       unitPrice: Float
       screenshotMethods: [String]
+      tx: String
     ): Sale
   }
 

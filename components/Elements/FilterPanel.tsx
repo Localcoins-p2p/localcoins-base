@@ -14,6 +14,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { BN, web3 } from '@project-serum/anchor';
 import { getMasterAddress, getProgram, SALE_SEED } from '@/utils/program';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
+import { gql, useMutation } from 'urql';
 
 const paymentOptions = [
   { value: 'All Payments', label: 'All Payments' },
@@ -92,11 +93,42 @@ const customStyles = {
     },
   }),
 };
+
+export const CREATE_SALE = gql`
+  mutation Mutation(
+    $amount: Float
+    $unitPrice: Float
+    $screenshotMethods: [String]
+    $tx: String
+  ) {
+    createSale(
+      amount: $amount
+      unitPrice: $unitPrice
+      screenshotMethods: $screenshotMethods
+      tx: $tx
+    ) {
+      amount
+      buyer {
+        id
+        name
+        publicKey
+      }
+      createdAt
+      id
+      screenshotMehtods
+      tx
+      unitPrice
+    }
+  }
+`;
+
 const FilterPanel = () => {
   const { connection } = useConnection();
   const [selectedPayment, setSelectedPayment] = useState<any>(
     paymentOptions[0]
   );
+  const [{ fetching: creatingSale }, createSaleMutation] =
+    useMutation(CREATE_SALE);
   const [data, setData] = useState<any>({});
   const [selectedRegion, setSelectedRegion] = useState<any>(regionOptions[0]);
   const [selectedCurrency, setSelectedCurrency] = useState<any>(
@@ -152,11 +184,19 @@ const FilterPanel = () => {
     );
     const txHash = await sendTransaction(transaction, connection);
     console.log('Hash', txHash);
+    return txHash;
   };
 
   const handleNext = async () => {
     if (currentStep == 3) {
-      await handleCreateSale({ amount: data.totalAmount * 1000000000 });
+      const tx = await handleCreateSale({
+        amount: data.totalAmount * 1000000000,
+      });
+      createSaleMutation({
+        amount: data.totalAmount * 1000000000,
+        tx,
+        unitPrice: 1,
+      });
       return;
     }
     setCurrentStep(currentStep + 1);

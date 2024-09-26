@@ -1,5 +1,6 @@
 import prisma from '@/prisma/prisma';
 
-export const sales = () => {
-  return prisma.sale.findMany({});
+export const sales = async () => {
+  const sales = await prisma.sale.findMany({});
+  return { sales };
 };

@@ -45,6 +45,8 @@ model Sale {
   token             String?
   unitPrice         Float
 
+  tx                String?
+
   screenshot        String?
   screenshotMethods  String[]
   screenshotAt      DateTime?
