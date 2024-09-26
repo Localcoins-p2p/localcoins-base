@@ -59,7 +59,7 @@ const typeDefs = gql`
 
   type Query {
     user: User
-    sales: SaleResponse
+    sales(id: String): SaleResponse
   }
   type Mutation {
     registerUser(

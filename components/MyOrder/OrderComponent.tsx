@@ -1,6 +1,6 @@
 import React from 'react';
 
-const OrderComponent = () => {
+const OrderComponent = ({ sale }: { sale: any }) => {
   return (
     <div className="  p-6 text-white max-w-[612px] w-full">
       <div className="border-l-2 border-white relative pl-4">
@@ -15,7 +15,7 @@ const OrderComponent = () => {
             <div className="flex justify-between">
               <span className="text-[#A6A6A6] text-[18px]">Fiat Amount</span>
               <span className="text-[#0ECB81] text-[18px] font-bold">
-                550.10
+                {sale.amount * sale.unitPrice}
               </span>
             </div>
             <div className="flex justify-between mt-2">
@@ -23,7 +23,7 @@ const OrderComponent = () => {
                 Price
               </span>
               <span className="text-[#FFFFFF] text-[18px] font-[600]">
-                55.01
+                ${sale.unitPrice}
               </span>
             </div>
             <div className="flex justify-between mt-2">
@@ -31,7 +31,7 @@ const OrderComponent = () => {
                 Receive Quantity
               </span>
               <span className="text-[#FFFFFF] text-[18px] font-[600]">
-                10 USDT
+                {sale.amount}
               </span>
             </div>
           </div>
