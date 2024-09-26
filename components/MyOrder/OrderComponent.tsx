@@ -28,6 +28,15 @@ const ADD_SCREENSHOT = gql`
   }
 `;
 
+const MARK_PAID = gql`
+  mutation MarkPaid($saleId: String!) {
+    markSalePaid(id: $saleId) {
+      id
+      paidAt
+    }
+  }
+`;
+
 const OrderComponent: React.FC<OrderComponentProps> = ({
   sale,
   showConfirmPaymentReceivedButton,
@@ -35,6 +44,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   loading,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
+  const [{}, markPaidMutation] = useMutation(MARK_PAID);
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
 
@@ -53,7 +63,6 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     try {
       const masterPda = await getMasterAddress();
       const onChainSaleId = new BN(sale.onChainSaleId);
-      alert(sale.onChainSaleId);
       const [salePda, saleBump] = await PublicKey.findProgramAddress(
         [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
         programId
@@ -70,6 +79,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         })
       );
       const txHash = await sendTransaction(transaction, connection);
+      await markPaidMutation({ saleId: sale.id });
     } catch (err) {
     } finally {
     }
