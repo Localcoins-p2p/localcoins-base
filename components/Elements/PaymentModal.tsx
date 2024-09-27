@@ -16,7 +16,6 @@ const customStyles = {
     boxShadow: '0px 0px 7px rgba(0, 0, 0, 0.2)',
     transition: 'all 0.3s',
     overflow: 'visible',
-    // paddingBottom: "40px"
     
   },
   overlay: { zIndex: 1000 },

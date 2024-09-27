@@ -1,20 +1,26 @@
 'use client'
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const AccountManagement = () => {
+const AccountManagement = ({onTabChange}:{onTabChange:any}) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const links = [
-    { href: '#', label: 'P2P Payment Methods' },
-    { href: '#', label: 'Feedback (17)' },
-    { href: '#', label: 'Blocked Users' },
-    { href: '#', label: 'Follows' },
-    { href: '#', label: 'Restriction Removal Center' },
-    { href: '#', label: 'Notification Settings' },
+    { href: '', label: 'P2P Payment Methods' },
+    { href: '', label: 'Sale Order' },
+    { href: '', label: 'Purchase Order' },
+    // { href: '#', label: 'Feedback (17)' },
+    // { href: '#', label: 'Blocked Users' },
+    // { href: '#', label: 'Follows' },
+    // { href: '#', label: 'Restriction Removal Center' },
+    // { href: '#', label: 'Notification Settings' },
   ];
 
+  useEffect(() => {
+    onTabChange(activeIndex);
+  }, [activeIndex, onTabChange]);
+
   return (
-    <div className=" flex justify-between items-center">
+    <div className=" flex gap-3 items-center">
     {links.map((link, index) => (
       <Link
         key={index}

@@ -24,7 +24,6 @@ const P2PTrading = () => {
         {' '}
         <FilterPanel />
       </div>
-
       <P2PTable />
       <Footer />
     </div>

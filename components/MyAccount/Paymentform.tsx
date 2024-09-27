@@ -1,24 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface PaymentFormProps {
-  onSubmit: (paymentMethod: string, paymentNumber: string,accountName:string) => void;
+  onSubmit: (
+    paymentMethod: string,
+    paymentNumber: string,
+    accountName: string
+  ) => void;
+  selectedUser: any;
 }
 
-const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit }) => {
+const PaymentForm: React.FC<PaymentFormProps> = ({
+  onSubmit,
+  selectedUser,
+}) => {
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [accountNumber, setAccountNumber] = useState('')
-  const [accountName, setAccountName] = useState('')
+  const [accountNumber, setAccountNumber] = useState('');
+  const [accountName, setAccountName] = useState('');
 
+  const { name, phone, heading } = selectedUser;
+
+  useEffect(() => {
+    if (phone) {
+      setAccountNumber(phone);
+    }
+  }, [phone]);
+
+  useEffect(() => {
+    if (heading) {
+      setPaymentMethod(heading);
+    }
+  }, [phone]);
+
+  useEffect(() => {
+    if (name) {
+      setAccountName(name);
+    }
+  }, [phone]);
 
   const handleSubmit = () => {
-    onSubmit(paymentMethod, accountNumber ,accountName)
-
+    onSubmit(paymentMethod, accountNumber, accountName);
   };
 
   return (
     <div className="p-4">
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Payment Method</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Payment Method
+        </label>
         <input
           type="text"
           placeholder="Enter Payment Method"
@@ -29,23 +57,28 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit }) => {
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Account Number</label>
-        <input
-          type="text"
-          placeholder="Enter Account Number"
-          value={accountNumber}
-          onChange={(e) => setAccountNumber(e.target.value)}
-          className="mt-1 block  px-3 py-2 w-64 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Account Name</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Account Name
+        </label>
         <input
           type="text"
           placeholder="Enter Account Name"
           value={accountName}
           onChange={(e) => setAccountName(e.target.value)}
-          className="mt-1 block  px-3 py-2 w-64 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mt-1 block px-3 py-2 w-64 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Account Number
+        </label>
+        <input
+          type="text"
+          placeholder="Enter Account Number"
+          value={accountNumber}
+          onChange={(e) => setAccountNumber(e.target.value)}
+          className="mt-1 block px-3 py-2 w-64 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
 

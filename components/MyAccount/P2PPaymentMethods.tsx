@@ -1,11 +1,16 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PaymentModal from '../Elements/PaymentModal';
 import PaymentForm from './Paymentform';
 
-const P2PPaymentMethods = () => {
+const P2PPaymentMethods = ({selectedUser,isEditing}:{selectedUser:any,isEditing:boolean}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+
+  useEffect(() => {
+    setIsModalOpen(isEditing);
+  }, [isEditing]);
+  
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -26,7 +31,7 @@ const P2PPaymentMethods = () => {
           <h2 className="text-[23px] font-[600] mb-2">P2P Payment Methods</h2>
           <p className="text-[#A6A6A6] text-[18px] font-[400] max-w-xl">
             When you sell cryptocurrencies, the payment methods you add will be displayed to buyers as
-            options for receiving payment. Please ensure that the account owner's name matches your
+            options for receiving payment. Please ensure that the account owner&lsquo;s name matches your
             verified name on Local Coins. You can add up to 20 different payment methods.
           </p>
         </div>
@@ -44,7 +49,7 @@ const P2PPaymentMethods = () => {
         header={<div>Modal Header</div>}
       >
         <div className="max-h-[90vh] overflow-auto no-scrollbar">
-         <PaymentForm onSubmit={handleFormSubmit }/>
+         <PaymentForm onSubmit={handleFormSubmit } selectedUser={selectedUser}/>
         </div>
       </PaymentModal>
 

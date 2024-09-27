@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import NewHeader from '../NewHeader/NewHeader';
 import MainHeading from '../Elements/MainHeading';
 import ProfileHeader from './ProfileHeader';
@@ -7,6 +8,7 @@ import UserCard from './UserCard';
 import AccountManagement from './AccountManagement';
 import P2PPaymentMethods from './P2PPaymentMethods';
 import Image from 'next/image';
+import P2PTable from '../Elements/P2PTable';
 
 const MyAccount = () => {
   const tradesData = [
@@ -26,7 +28,19 @@ const MyAccount = () => {
     { heading: 'John', name: 'doe', phone: '1234567890' },
     { heading: 'Jane', name: 'smith', phone: '9876543210' },
   ];
-  
+
+  const [activeTab, setActiveTab] = useState(0);
+
+  const handleTabChange = (index: number) => {
+    setActiveTab(index);
+  };
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedUser, setSelectedUser] = useState({ name: '', phone: '' ,heading:''});
+
+  const handleEdit = (editStatus: boolean, name: string, phone: string,heading:string) => {
+    setIsEditing(editStatus);
+    setSelectedUser({ name, phone ,heading});
+  };
   return (
     <div className="w-[85%] mx-auto mb-14">
       <NewHeader />
@@ -56,22 +70,28 @@ const MyAccount = () => {
         ))}
 
         <div className="border hidden border-[#454545] rounded-[10px] lg:flex justify-center items-center h-[168px] px-4">
-         <Image src={"/assets/common/menutwo.svg"} height={29} width={29} alt='vv'/>
+          <Image
+            src={'/assets/common/menutwo.svg'}
+            height={29}
+            width={29}
+            alt="vv"
+          />
         </div>
       </div>
-      <div className='my-10 overflow-x-scroll no-scrollbar'>
-      <AccountManagement/>
+      <div className="my-10 overflow-x-scroll no-scrollbar">
+        <AccountManagement onTabChange={handleTabChange} />
       </div>
-      <div className='mb-6'>
-      <P2PPaymentMethods/>
+
+      {(activeTab === 1 || activeTab === 2) && <P2PTable />}
+      <div className="mb-6">
+        <P2PPaymentMethods isEditing={isEditing} selectedUser={selectedUser} />
       </div>
-      
+
       {users.map((user, index) => (
-        <div key={index} className='my-4'>
-        <UserCard {...user} />
+        <div key={index} className="my-4">
+          <UserCard {...user} onEdit={handleEdit}  />
         </div>
       ))}
-     
     </div>
   );
 };
