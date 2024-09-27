@@ -90,7 +90,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         })
       );
       const txHash = await sendTransaction(transaction, connection);
-      await markPaidMutation({ saleId: sale.id });
+      await markPaidMutation({ saleId: sale?.id });
     } catch (err) {
     } finally {
     }
@@ -116,7 +116,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         })
       );
       const txHash = await sendTransaction(transaction, connection);
-      await markFinished({ saleId: sale.id });
+      await markFinished({ saleId: sale?.id });
     } catch (err) {
     } finally {
     }
@@ -136,7 +136,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             <div className="flex justify-between">
               <span className="text-[#A6A6A6] text-[18px]">Fiat Amount</span>
               <span className="text-[#0ECB81] text-[18px] font-bold">
-                {sale.amount * sale.unitPrice}
+                {sale?.amount * sale?.unitPrice}
               </span>
             </div>
             <div className="flex justify-between mt-2">
@@ -144,7 +144,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 Price
               </span>
               <span className="text-[#FFFFFF] text-[18px] font-[600]">
-                ${sale.unitPrice}
+                ${sale?.unitPrice}
               </span>
             </div>
             <div className="flex justify-between mt-2">
@@ -152,7 +152,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 Receive Quantity
               </span>
               <span className="text-[#FFFFFF] text-[18px] font-[600]">
-                {sale.amount}
+                {sale?.amount}
               </span>
             </div>
           </div>
