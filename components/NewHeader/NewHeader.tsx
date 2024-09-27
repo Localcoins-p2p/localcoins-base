@@ -1,6 +1,7 @@
 // components/Header.js
 import Image from 'next/image';
 import Link from 'next/link';
+import Login from '../Login';
 
 const NewHeader = () => {
   return (
@@ -32,6 +33,7 @@ const NewHeader = () => {
               height={24}
             />
           </button>
+          <Login />
         </div>
       </div>
     </header>
