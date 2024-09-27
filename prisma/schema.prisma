@@ -8,23 +8,62 @@ datasource db {
 }
 
 model User {
-  // id for relational database
-  // id   String    @id @default(cuid())
-  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  name                String?   @default("")
-  email               String?   @default("") @unique
-  phone               String?   @default("") @unique
-  address             String?   @default("")
-  state               String?   @default("")
-  country             String?   @default("")
-  dob                 String?   @default("")
-  isEmailVerified     Boolean   @default(false)
-  isPhoneVerified     Boolean   @default(false) 
-  pwHash              String?   @default("")
+  name            String? @default("")
+  email           String? @default("")
+  phone           String? @default("")
+  address         String? @default("")
+  state           String? @default("")
+  country         String? @default("")
+  dob             String? @default("")
+  isEmailVerified Boolean @default(false)
+  isPhoneVerified Boolean @default(false)
+  pwHash          String? @default("")
 
-  phoneOtp            String?   @default("")
-  phoneOtpDoC         DateTime?
+  acceptedPaymentMethods  String[]
+  publicKey               String  @unique
+  nonce                   String?
 
-  isAdmin             Boolean   @default(false)
+  phoneOtp                String?   @default("")
+  phoneOtpDoC             DateTime?
+
+  isAdmin                 Boolean @default(false)
+  SaleBuyer               Sale[] @relation("SellerRelation")
+  SaleSeller              Sale[] @relation("BuyerRelation")
+}
+
+model Screenshot {
+  id                String                @id @default(auto())   @map("_id") @db.ObjectId
+  saleId            String                @db.ObjectId
+  imageUrl          String
+  method            String
+  paidById          String                @db.ObjectId
+  sale              Sale                  @relation(fields: [saleId], references: [id])
+}
+
+model Sale {
+  id                String @id @default(auto())   @map("_id") @db.ObjectId
+  sellerId          String                        @db.ObjectId
+  seller            User                          @relation("SellerRelation", fields: [sellerId], references: [id])
+
+  buyerId           String?                       @db.ObjectId
+  buyer             User?                         @relation("BuyerRelation", fields: [buyerId], references: [id])
+
+  amount            Float
+  token             String?
+  unitPrice         Float
+
+  tx                String?
+  onChainSaleId     Int?
+
+  screenshots       Screenshot[]
+  screenshotMethods String[]
+  screenshotAt      DateTime?
+
+  paidAt            DateTime?
+  finishedAt        DateTime?
+  canceledAt        DateTime?
+
+  createdAt         DateTime                      @default(now())
 }

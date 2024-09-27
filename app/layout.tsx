@@ -5,9 +5,19 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { Provider } from 'urql';
 import { SessionProvider } from 'next-auth/react';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Toaster } from 'react-hot-toast';
+import Header from '@/components/Header/Header';
+import {
+  ConnectionProvider,
+  WalletProvider,
+} from '@solana/wallet-adapter-react';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { AppContext, IUser } from '@/utils/context';
+import SetContext from '@/components/Elements/SetContext';
+require('@solana/wallet-adapter-react-ui/styles.css');
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,6 +26,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [context, setContext] = useState({});
+  const setUser = (user: IUser) => {
+    setContext({ ...context, user });
+  };
+
+  const endpoint = 'https://api.devnet.solana.com';
+  const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
+
   useEffect(() => {
     const token = Cookies.get('token');
     if (!token) {
@@ -31,10 +49,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Toaster />
-        <SessionProvider>
-          {<Provider value={client}>{children}</Provider>}
-        </SessionProvider>
+        <ConnectionProvider endpoint={endpoint}>
+          <WalletProvider wallets={wallets} autoConnect>
+            <WalletModalProvider>
+              <Toaster />
+              <SessionProvider>
+                <AppContext.Provider value={{ context, setUser }}>
+                  {
+                    <Provider value={client}>
+                      <SetContext />
+                      {children}
+                    </Provider>
+                  }
+                </AppContext.Provider>
+              </SessionProvider>
+            </WalletModalProvider>
+          </WalletProvider>
+        </ConnectionProvider>
       </body>
     </html>
   );

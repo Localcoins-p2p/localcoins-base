@@ -1,63 +1,85 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import '../../styles/login.css';
-import Button from '../Elements/Button';
-import Header from '../Header/Header';
-import Input from '../Elements/Input';
-import Menu from '../Elements/Menu';
-import { signIn, signOut } from 'next-auth/react';
-import SocialLogin from './Social';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
+import { useEffect, useState } from 'react';
+import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
+import { gql, useMutation } from 'urql';
+import { createSale } from '@/utils/escrowClient';
+import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
+
+export const GENERATE_NONCE = gql`
+  mutation GenerateNonce($publicKey: String!) {
+    generateNonce(publicKey: $publicKey) {
+      nonce
+      error
+    }
+  }
+`;
+
+export const LOGIN = gql`
+  mutation Login(
+    $publicKey: String!
+    $nonce: String!
+    $signedMessage: String!
+  ) {
+    login(publicKey: $publicKey, nonce: $nonce, signedMessage: $signedMessage) {
+      token
+      user {
+        email
+        id
+      }
+      error
+    }
+  }
+`;
 
 const Login = () => {
-  const [loginMenuIndex, setLoginMenuIndex] = useState(0);
+  const { publicKey, connect, disconnect, connected, signMessage, select } =
+    useWallet();
+  const [{ fetching, data }, login] = useMutation(LOGIN);
+  const [{ fetching: generatingNonce }, generateNonce] =
+    useMutation(GENERATE_NONCE);
 
-  const isEmail = React.useMemo(() => {
-    return loginMenuIndex == 0;
-  }, [loginMenuIndex]);
+  const handleLogin = async () => {
+    await select(PhantomWalletName);
+    connect();
+
+    if (!publicKey) return;
+
+    const nonceResponse = await generateNonce({
+      publicKey: publicKey.toString(),
+    });
+    const nonce = nonceResponse.data?.generateNonce?.nonce;
+
+    const encodedMessage = new TextEncoder().encode(nonce);
+    const signedMessage = await signMessage?.(encodedMessage);
+
+    const response = await login({
+      publicKey: publicKey.toString(),
+      signedMessage: JSON.stringify(signedMessage),
+      nonce,
+    });
+    if (response.data?.login?.token) {
+      Cookies.set('token', response.data?.login?.token as string);
+      toast.success('Login Successful');
+    } else {
+      toast.error('Invalid signature');
+    }
+  };
 
   return (
-    <>
-      <form action="">
-        <div className="login">
-          <div className="header">
-            <Header />
-          </div>
-          <div className="login-content">
-            <div className="hello">
-              <Menu
-                menuItems={['Email', 'Phone']}
-                selected={loginMenuIndex}
-                setSelected={setLoginMenuIndex}
-              />
-            </div>
-            <Input
-              placeholder={`Enter your ${
-                ['Email', 'Phone Number'][loginMenuIndex]
-              }`}
-              type="text"
-            />
-            {isEmail && (
-              <Input placeholder="Enter your password" type="password" />
-            )}
-            <div className="tou-check">
-              <input type="checkbox" className="checkbox" />
-              <p className="checkbox-text">Keep me signed in</p>
-            </div>
-            <Button text="Login" type="submit" />
-            <p className="forgot-password">Forgot Password?</p>
-            <p className="account-info">
-              Don&apos;t have an account?{' '}
-              <span className="login-btn">Sign Up</span>
-            </p>
-          </div>
-        </div>
-        <div className="help">
-          <a href="#">Help!</a>
-        </div>
-      </form>
-      <SocialLogin />
-    </>
+    <div className="text-white">
+      <>
+        <p>Connected with: {publicKey?.toString()}</p>
+        <button onClick={handleLogin}>Login</button>
+        <button onClick={disconnect}>Disconnect</button>
+        <button onClick={() => createSale({ amount: 1000 })}>
+          Create Sale
+        </button>
+      </>
+    </div>
   );
 };
 
