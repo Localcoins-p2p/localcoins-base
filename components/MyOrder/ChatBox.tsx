@@ -6,20 +6,19 @@ const ChatBox = ({ sale }: { sale: any }) => {
   const [message, setMessage] = useState('');
 
   return (
-    <div className=" h-[80%] bg-gray-50 rounded-[15px] flex flex-col justify-between shadow-lg">
-      {/* Header */}
+    <div className=" h-[90%] bg-[#FFFFFF] rounded-[15px] flex flex-col justify-between shadow-lg">
       <div className="">
-        <div className="flex items-center justify-between  rounded-tl-[15px] rounded-tr-[15px] p-4 border-b border-gray-300 bg-white">
+        <div className="flex items-center justify-between  rounded-tl-[15px] rounded-tr-[15px] p-4 border-b border-gray-300 bg-[#FFFFFF]">
           <div className="flex items-center">
             <Image
-              src="/assets/common/c-t.svg" // Replace with the correct image path
+              src="/assets/common/c-t.svg" 
               alt="User Avatar"
               width={40}
               height={40}
               className="rounded-full"
             />
             <div className="ml-3">
-              <h4 className="text-sm font-semibold">{sale.seller?.name}</h4>
+              <h4 className="text-sm font-semibold">{sale?.seller?.name}</h4>
               <div className="flex space-x-2 text-xs text-yellow-500">
                 <span>Trades</span>
                 <span>|</span>
@@ -51,23 +50,42 @@ const ChatBox = ({ sale }: { sale: any }) => {
         */}
       </div>
 
-      {/* Input Field */}
-      <div className="flex items-center p-4 border-t rounded-bl-[15px] rounded-br-[15px] border-gray-300 bg-white">
-        <button className="mr-2 text-gray-500 hover:text-black">
-          {/* Icon for attachment or other buttons */}
-          &#43;
-        </button>
+   
+      <div className="flex  flex-col p-4 border-t gap-y-4 rounded-bl-[15px] rounded-br-[15px] border-gray-300 bg-white">
+       <div className='flex  gap-3'>
+       <Image
+              src="/assets/common/add_circle.svg" 
+              alt="User Avatar"
+              width={24}
+              height={24}
+              className=""
+            />
+               <Image
+              src="/assets/common/file.svg" 
+              alt="User Avatar"
+              width={16}
+              height={20}
+              className=""
+            />
+       </div>
+       <div className='w-full  flex'>
         <input
           type="text"
           placeholder="Enter Message Here"
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-full focus:outline-none"
+          className="flex-1 px-3 py-2 w-full bg-[#F6F6F6] rounded-[10px] focus:outline-none"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button className="ml-2 text-gray-500 hover:text-black">
-          {/* Icon for send message */}
-          &#9654;
+        <button className="ml-3">
+        <Image
+              src="/assets/common/send.svg" 
+              alt="User Avatar"
+              width={40}
+              height={40}
+              className=""
+            />
         </button>
+        </div>
       </div>
     </div>
   );

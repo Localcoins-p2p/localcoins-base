@@ -76,9 +76,9 @@ const MyOrder = () => {
     isBuyer && !sale?.paidAt && !sale?.isCanceled;
   const showClaimPaymentButton = isBuyer && sale?.paidAt && !sale.isFinished;
 
-  if (!sale) {
-    return 'Loading...';
-  }
+  // if (!sale) {
+  //   return <div className='text-white'>Loading...</div>;
+  // }
 
   return (
     <div className="w-[85%] mx-auto ">
