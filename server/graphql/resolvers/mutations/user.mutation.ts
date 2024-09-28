@@ -21,10 +21,11 @@ import {
   sendVerificationEmail as sendVerification,
 } from '@/server/services/email';
 import { getPayload } from '@/server/services/token';
-import { adminOnly } from '../../wrappers';
+import { adminOnly, isLoggedIn } from '../../wrappers';
 import { getRandomNumber } from '@/utils/generator';
 import { PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl'; // For signature verification
+import { IGqlContext } from '@/types';
 
 type RegisterUserInput = Prisma.User & { password: string };
 export const registerUser = async (_: unknown, args: RegisterUserInput) => {
@@ -106,3 +107,12 @@ export const generateNonce = async (
 export const deleteUser = adminOnly(async (_: unknown, { id }) => {
   return prisma.user.delete({ where: { id } });
 });
+
+export const updateProfile = isLoggedIn(
+  (_: unknown, { name, email }: Prisma.User, { user }: IGqlContext) => {
+    return prisma.user.update({
+      where: { id: user?.id },
+      data: { name, email },
+    });
+  }
+);

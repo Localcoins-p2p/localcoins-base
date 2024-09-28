@@ -105,6 +105,7 @@ const typeDefs = gql`
       imageUrl: String!
       method: String!
     ): Screenshot
+    updateProfile(name: String, email: String): User
   }
 
   ${projectTypedefs}
