@@ -1,5 +1,6 @@
 'use client';
 import { AppContext } from '@/utils/context';
+import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
 import { gql, useMutation } from 'urql';
 
@@ -20,13 +21,16 @@ const Profile = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [{ fetching }, updateUser] = useMutation(UPDATE_USER);
+  const router = useRouter();
 
   const {
     context: { user },
   } = useContext(AppContext);
 
   const handleSubmit = () => {
-    updateUser({ name, email });
+    updateUser({ name, email }).then(() => {
+      router.push('/');
+    });
   };
 
   return (
