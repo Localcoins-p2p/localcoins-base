@@ -73,6 +73,7 @@ const typeDefs = gql`
       country: String
       password: String!
     ): User
+    updateUser(name: String, email: String): User
     login(
       publicKey: String!
       nonce: String!

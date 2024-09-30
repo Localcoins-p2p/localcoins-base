@@ -1,13 +1,32 @@
 'use client';
-import { useState } from 'react';
+import { AppContext } from '@/utils/context';
+import { useContext, useState } from 'react';
+import { gql, useMutation } from 'urql';
+
+const UPDATE_USER = gql`
+  mutation UpdateUser($name: String, $email: String) {
+    updateUser(name: $name, email: $email) {
+      id
+    }
+  }
+`;
+
+// todo: fix this page
+// add loading, <Loading /> component is already there
+// add. header footer
+// change button styles according to website
 
 const Profile = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [{ fetching }, updateUser] = useMutation(UPDATE_USER);
+
+  const {
+    context: { user },
+  } = useContext(AppContext);
 
   const handleSubmit = () => {
-    console.log('Name:', name);
-    console.log('Email:', email);
+    updateUser({ name, email });
   };
 
   return (
@@ -24,6 +43,7 @@ const Profile = () => {
             value={name}
             placeholder="Enter Name"
             onChange={(e) => setName(e.target.value)}
+            defaultValue={user?.name}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
@@ -36,6 +56,7 @@ const Profile = () => {
             type="email"
             value={email}
             placeholder="Enter Email"
+            defaultValue={user?.email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />

@@ -26,6 +26,7 @@ import { getRandomNumber } from '@/utils/generator';
 import { PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl'; // For signature verification
 import { IGqlContext } from '@/types';
+import saveImages from '@/utils/saveImages';
 
 type RegisterUserInput = Prisma.User & { password: string };
 export const registerUser = async (_: unknown, args: RegisterUserInput) => {
@@ -113,6 +114,36 @@ export const updateProfile = isLoggedIn(
     return prisma.user.update({
       where: { id: user?.id },
       data: { name, email },
+    });
+  }
+);
+
+export const updateUser = isLoggedIn(
+  async (
+    _: unknown,
+    {
+      email,
+      name,
+      image,
+      phone,
+    }: Prisma.User & {
+      image: string;
+    },
+    { user }: IGqlContext
+  ) => {
+    const data: any = { email, name, phone };
+
+    let profileImage;
+    if (image) {
+      [profileImage] = await saveImages([image]);
+    }
+    if (profileImage) {
+      data.profileImage = profileImage;
+    }
+
+    return prisma.user.update({
+      where: { id: user?.id },
+      data,
     });
   }
 );
