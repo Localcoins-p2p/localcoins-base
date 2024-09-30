@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const ChatBox = ({
   sale,
@@ -24,6 +24,13 @@ const ChatBox = ({
       setSelectedImage(imageUrl);
     }
   };
+
+  useEffect(() => {
+    console.log(sale);
+    if (sale?.screenshots?.[0]) {
+      setSelectedImage(sale.screenshots[0].imageUrl);
+    }
+  }, [sale]);
 
   return (
     <div className="h-[90%] bg-[#FFFFFF] rounded-[15px] flex flex-col justify-between shadow-lg">
