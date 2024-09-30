@@ -3,8 +3,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import AddPostModel from '../Elements/AddPostModel'
+import AddPostModel from '../Elements/AddPostModel';
 import ConnectWallet from '../Elements/ConnectWallet';
+import Login from '../Login';
 const NewHeader = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = () => {
@@ -46,39 +47,28 @@ const NewHeader = () => {
               height={24}
             />
           </Link>
-          <button
-            onClick={handleOpenModal}
-            className="bg-[#F3AA05] space-x-2  text-black sm:p-3 p-2 rounded-[10px] flex items-center "
-          >
-            <Image
-              src="/assets/common/Wallet.svg"
-              alt="Wallet Icon"
-              width={24}
-              height={24}
-            />
-            <span className="hidden md:block">Connect Wallet</span>
-          </button>
+          <Login />
 
           <AddPostModel
-          title="Filter Options"
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          header={<div>Modal Header</div>}
-        >
-          <div className="max-h-[90vh] overflow-auto no-scrollbar">
-            <div className="flex flex-col items-center">
-              <div className="text-white text-[32px] font-[600]">
-                You have posted successfully.
+            title="Filter Options"
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            header={<div>Modal Header</div>}
+          >
+            <div className="max-h-[90vh] overflow-auto no-scrollbar">
+              <div className="flex flex-col items-center">
+                <div className="text-white text-[32px] font-[600]">
+                  You have posted successfully.
+                </div>
+                <Image
+                  src={'/assets/common/success.svg'}
+                  height={138}
+                  width={138}
+                  alt="gj"
+                />
               </div>
-              <Image
-                src={'/assets/common/success.svg'}
-                height={138}
-                width={138}
-                alt="gj"
-              />
             </div>
-          </div>
-        </AddPostModel>
+          </AddPostModel>
 
           {/* <ConnectWallet
             title="Filter Options"
