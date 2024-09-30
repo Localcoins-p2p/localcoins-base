@@ -47,6 +47,7 @@ const MyOrder = () => {
   const searchParams = useSearchParams();
   const salesId = searchParams.get('sale');
   const [sale, setSale] = useState<any>();
+  const [image, setImage] = useState('');
   const [{ fetching, data }, fetchSale] = useQuery({
     query: GET_SALE,
     variables: { salesId },
@@ -101,10 +102,11 @@ const MyOrder = () => {
             showConfirmPaymentReceivedButton={showConfirmPaymentReceivedButton}
             showClaimPaymentButton={showClaimPaymentButton}
             loading={fetching}
+            image={image}
           />
         </div>
         <div className="col-span-5 mt-6 rounded-[15px] h-full">
-          <ChatBox sale={sale} />
+          <ChatBox sale={sale} setImage={setImage} />
         </div>
       </div>
     </div>

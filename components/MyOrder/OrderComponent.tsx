@@ -5,6 +5,7 @@ import { getMasterAddress, SALE_SEED } from '@/utils/program';
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { BN } from '@project-serum/anchor';
 import useSolana from '@/utils/useSolana';
+import Loading from '../Elements/Loading';
 
 interface OrderComponentProps {
   sale: any;
@@ -12,6 +13,7 @@ interface OrderComponentProps {
   showConfirmPaymentSentButton: boolean;
   showClaimPaymentButton: boolean;
   loading: boolean;
+  image: string;
 }
 
 const ADD_SCREENSHOT = gql`
@@ -52,6 +54,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   showConfirmPaymentSentButton,
   showClaimPaymentButton,
   loading,
+  image,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
@@ -62,7 +65,9 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   const handleAddScreenshot = async (imageUrl: string, method: string) => {
     try {
       await addScreenshotMutation({
-        variables: { saleId: sale.id, imageUrl, method },
+        saleId: sale.id,
+        imageUrl,
+        method,
       });
       toast.success('Screenshot added successfully');
     } catch (error) {
@@ -219,11 +224,17 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         {showConfirmPaymentSentButton && (
           <div className="flex justify-between ml-4">
             <button
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg"
-              onClick={() => handleAddScreenshot('.', '.')}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 pr-10 flex gap-2 rounded-lg"
+              onClick={() => handleAddScreenshot(image, '.')}
             >
-              {loading && '...'}
-              Transferred, Notify Seller
+              <div>
+                {loading ? (
+                  <Loading width="5" height="5" color="#333" />
+                ) : (
+                  <div className="w-5 h-5" />
+                )}
+              </div>
+              <span>Transfered, Notify Seller</span>
             </button>
             <button className="text-[#F3AA05] font-semibold ">Cancel</button>
           </div>
@@ -231,11 +242,17 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         {showConfirmPaymentReceivedButton && (
           <div className="flex justify-between ml-4">
             <button
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg"
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg flex gap-2"
               onClick={handlePaymentReceived}
             >
-              {loading && '...'}
-              Payment Received
+              <div>
+                {loading ? (
+                  <Loading width="5" height="5" color="#333" />
+                ) : (
+                  <div className="w-5 h-5" />
+                )}
+              </div>
+              <span>Payment Received</span>
             </button>
             <button className="text-[#F3AA05] font-semibold ">Cancel</button>
           </div>
@@ -243,11 +260,17 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         {showClaimPaymentButton && (
           <div className="flex justify-between ml-4">
             <button
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg"
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 flex gap-2 rounded-lg"
               onClick={handleClaimPayment}
             >
-              {loading && '...'}
-              Claim Payment
+              <div>
+                {loading ? (
+                  <Loading width="5" height="5" color="#333" />
+                ) : (
+                  <div className="w-5 h-5" />
+                )}
+              </div>
+              <span>Claim Payment</span>
             </button>
             <button className="text-[#F3AA05] font-semibold ">Cancel</button>
           </div>
