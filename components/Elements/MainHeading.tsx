@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
-
+import { inputFont } from '../font/Font'
 const MainHeading = ({
   title,
   para,
@@ -16,7 +16,7 @@ const MainHeading = ({
 }) => {
   return (
     <div className="border-l-[5px] border-[#d79502] flex flex-col h-full w-full gap-y-4 pl-3 ">
-      <div className="uppercase leading-none md:text-[55px] text-[35px] text-[#FFFFFF]">
+      <div className={"uppercase leading-none md:text-[55px] text-[35px] text-[#FFFFFF] "  + inputFont.className} >
         {title}
       </div>
       <div className="flex justify-between w-full gap-x-3">

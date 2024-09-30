@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Image from 'next/image';
+import { AppContext } from '@/utils/context';
+import useSolana from '@/utils/useSolana';
 const ProfileHeader = () => {
+  const {
+    context: { user },
+  } = useContext(AppContext);
+  const {publicKey}= useSolana()
   return (
   
       <div className="md:flex  space-y-5 items-center justify-between">

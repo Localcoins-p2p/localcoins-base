@@ -1,5 +1,5 @@
 import localFont from '@next/font/local';
-require("../../public/assets/font/Aquire.ttf")
+
 
 export const inputFont = localFont({
   src: [

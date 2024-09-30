@@ -1,9 +1,10 @@
 import React from 'react'
+import { inputFont } from '../font/Font'
 
 const LocaCoins = () => {
   return (
     <div className='mt-10 '>
-    <h1 className="text-[32px] text-[#FFFFFF]  font-bold mb-4 uppercase">
+    <h1 className={"text-[32px] text-[#FFFFFF]  font-bold mb-4 uppercase " + inputFont.className}>
       LocalCoins Disclaimer{' '}
     </h1>
     <div className='text-[#FFFFFF] '>

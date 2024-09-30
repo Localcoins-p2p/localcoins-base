@@ -1,5 +1,6 @@
 import React from 'react';
 import { spacing } from 'react-select/dist/declarations/src/theme';
+import { inputFont } from '../font/Font'
 
 interface SectionInfoProps {
   title: string;
@@ -16,8 +17,8 @@ const SectionInfo: React.FC<SectionInfoProps> = ({
 }) => {
   return (
     <div className=" text-[#FFFFFF]">
-      <h2 className="text-[24px] font-bold mb-2">{title}</h2>
-      <p className="mb-6 text-[18px] font-[400] text-[#EBEBEB]">
+      <h2 className={"text-[24px] font-bold mb-2 " + inputFont.className }>{title}</h2>
+      <p className={"mb-6 text-[18px] font-[400] text-[#EBEBEB] "  }>
         {disc} {email && <div className="text-[#F3AA05]">{email}</div>}
       </p>
       {items && items.length > 0 && (
@@ -27,7 +28,7 @@ const SectionInfo: React.FC<SectionInfoProps> = ({
               <div className="flex items-start">
                 <span className="text-[#F3AA05] mr-2">•</span>
                 <span>
-                  <span className="font-bold min-w-max mr-2">
+                  <span className={"font-bold min-w-max mr-2" }>
                     {item.heading}
                   </span>
                   <span>{item.description}</span>
