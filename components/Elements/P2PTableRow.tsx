@@ -29,12 +29,16 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
       <td className=" md:py-4 flex flex-col space-x-2">
         <div className="flex items-center gap-x-2">
           <div className="w-[35px] h-[35px] bg-[#FFFFFF] rounded-full flex justify-center items-center">
-            <Image
+            {/* <Image
               alt="j"
               src={'/assets/common/j.svg'}
               height={25}
               width={13}
-            />
+            /> */}
+            <div className="text-[20px] font-bold">
+              {' '}
+              {advertiser?.name ? advertiser.name.charAt(0).toUpperCase() : 'N'}
+            </div>
           </div>
           <div className="">
             <div className="font-[700] text-[#FFFFFF] text-[20px]">
