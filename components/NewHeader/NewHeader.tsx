@@ -2,6 +2,8 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
+import Login from '../Login';
+
 import { useState } from 'react';
 import AddPostModel from '../Elements/AddPostModel';
 import ConnectWallet from '../Elements/ConnectWallet';

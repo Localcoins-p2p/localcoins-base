@@ -42,6 +42,14 @@ model Screenshot {
   sale              Sale                  @relation(fields: [saleId], references: [id])
 }
 
+model PaymentMethod {
+  id                String                @id @default(auto())   @map("_id") @db.ObjectId
+  name              String
+  accountNumer      String
+  
+  createdAt         DateTime              @default(now())
+}
+
 model Sale {
   id                String @id @default(auto())   @map("_id") @db.ObjectId
   sellerId          String                        @db.ObjectId

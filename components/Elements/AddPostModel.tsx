@@ -17,7 +17,6 @@ const customStyles = {
     transition: 'all 0.3s',
     overflow: 'visible',
     // paddingBottom: "40px"
-    
   },
   overlay: { zIndex: 1000 },
 };
@@ -44,10 +43,10 @@ function AddPostModel({
       contentLabel={typeof title === 'string' ? title : ''}
       style={customStyles}
     >
-      <div className='flex justify-between pb-2 items-center'>
-        <div className='text-[35px] font-[700] text-[#222222]'></div>
+      <div className="flex justify-between pb-2 items-center">
+        <div className="text-[35px] font-[700] text-[#222222]"></div>
         <div onClick={onClose}>
-          <IoIosClose className='h-[24px] text-white w-[24px]'/>
+          <IoIosClose className="h-[24px] text-white w-[24px]" />
         </div>
       </div>
 

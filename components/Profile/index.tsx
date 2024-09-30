@@ -6,7 +6,6 @@ const Profile = () => {
   const [email, setEmail] = useState('');
 
   const handleSubmit = () => {
-   
     console.log('Name:', name);
     console.log('Email:', email);
   };
@@ -17,7 +16,9 @@ const Profile = () => {
         <h2 className="text-2xl font-semibold mb-6">Profile</h2>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Name</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Name
+          </label>
           <input
             type="text"
             value={name}
@@ -28,7 +29,9 @@ const Profile = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
           <input
             type="email"
             value={email}

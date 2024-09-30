@@ -1,4 +1,4 @@
-import '../../Styles/elements.css';
+import '../../styles/elements.css';
 
 interface Props {
   label?: string;

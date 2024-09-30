@@ -35,11 +35,20 @@ const MyAccount = () => {
     setActiveTab(index);
   };
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedUser, setSelectedUser] = useState({ name: '', phone: '' ,heading:''});
+  const [selectedUser, setSelectedUser] = useState({
+    name: '',
+    phone: '',
+    heading: '',
+  });
 
-  const handleEdit = (editStatus: boolean, name: string, phone: string,heading:string) => {
+  const handleEdit = (
+    editStatus: boolean,
+    name: string,
+    phone: string,
+    heading: string
+  ) => {
     setIsEditing(editStatus);
-    setSelectedUser({ name, phone ,heading});
+    setSelectedUser({ name, phone, heading });
   };
   return (
     <div className="w-[85%] mx-auto mb-14">
@@ -89,7 +98,7 @@ const MyAccount = () => {
 
       {users.map((user, index) => (
         <div key={index} className="my-4">
-          <UserCard {...user} onEdit={handleEdit}  />
+          <UserCard {...user} onEdit={handleEdit} />
         </div>
       ))}
     </div>

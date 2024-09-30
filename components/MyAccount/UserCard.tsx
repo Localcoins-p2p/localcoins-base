@@ -4,15 +4,25 @@ interface UserCardProps {
   heading: string;
   name: string;
   phone: string;
-  onEdit: (editStatus: boolean, name: string, phone: string,heading:string) => void;
+  onEdit: (
+    editStatus: boolean,
+    name: string,
+    phone: string,
+    heading: string
+  ) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ heading, name, phone, onEdit }) => {
-  const [editStatus, setEditStatus] = useState(false); 
+const UserCard: React.FC<UserCardProps> = ({
+  heading,
+  name,
+  phone,
+  onEdit,
+}) => {
+  const [editStatus, setEditStatus] = useState(false);
 
   const handleEdit = () => {
-    setEditStatus((prevStatus) => !prevStatus); 
-    onEdit(!editStatus, name, phone ,heading); 
+    setEditStatus((prevStatus) => !prevStatus);
+    onEdit(!editStatus, name, phone, heading);
   };
 
   return (

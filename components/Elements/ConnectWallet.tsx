@@ -17,7 +17,6 @@ const customStyles = {
     transition: 'all 0.3s',
     overflow: 'visible',
     // paddingBottom: "40px"
-    
   },
   overlay: { zIndex: 1000 },
 };
@@ -44,11 +43,11 @@ function ModalComponent({
       contentLabel={typeof title === 'string' ? title : ''}
       style={customStyles}
     >
-      <div className='flex   justify-between pb-2 items-center'>
+      <div className="flex   justify-between pb-2 items-center">
         <div></div>
-        <div className='text-[16px] font-[500] text-white'>Connect Wallet</div>
+        <div className="text-[16px] font-[500] text-white">Connect Wallet</div>
         <div onClick={onClose}>
-          <IoIosClose className='h-[24px] text-white w-[24px]'/>
+          <IoIosClose className="h-[24px] text-white w-[24px]" />
         </div>
       </div>
 

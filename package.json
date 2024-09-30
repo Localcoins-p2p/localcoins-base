@@ -13,7 +13,8 @@
     "schema:generate-file-mac": "cat ./prisma/common.schema.prisma > ./prisma/schema.prisma && tail -n +21 ./prisma/project.schema.prisma >> ./prisma/schema.prisma",
     "schema:generate-file": "npm-run-all schema:generate-file-*",
     "schema:generate-win": "npm run schema:generate-file-windows && npx prisma generate",
-    "schema:generate": "npm run schema:generate-file-mac && npx prisma generate"
+    "schema:generate": "npm run schema:generate-file-mac && npx prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@apollo/server": "^4.9.3",

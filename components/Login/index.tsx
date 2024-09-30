@@ -2,12 +2,15 @@
 
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 import { gql, useMutation } from 'urql';
 import { createSale } from '@/utils/escrowClient';
 import Cookies from 'js-cookie';
+import Image from 'next/image';
 import toast from 'react-hot-toast';
+import { AppContext } from '@/utils/context';
+import Loading from '../Elements/Loading';
 
 export const GENERATE_NONCE = gql`
   mutation GenerateNonce($publicKey: String!) {
@@ -41,6 +44,9 @@ const Login = () => {
   const [{ fetching, data }, login] = useMutation(LOGIN);
   const [{ fetching: generatingNonce }, generateNonce] =
     useMutation(GENERATE_NONCE);
+  const {
+    context: { user },
+  } = useContext(AppContext);
 
   const handleLogin = async () => {
     await select(PhantomWalletName);
@@ -64,21 +70,61 @@ const Login = () => {
     if (response.data?.login?.token) {
       Cookies.set('token', response.data?.login?.token as string);
       toast.success('Login Successful');
+      window.location.reload();
     } else {
       toast.error('Invalid signature');
     }
   };
 
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout')) {
+      Cookies.remove('token');
+      disconnect();
+      window.location.reload();
+    }
+  };
+
   return (
-    <div className="text-white">
-      <>
-        <p>Connected with: {publicKey?.toString()}</p>
-        <button onClick={handleLogin}>Login</button>
-        <button onClick={disconnect}>Disconnect</button>
-        <button onClick={() => createSale({ amount: 1000 })}>
-          Create Sale
+    <div className="">
+      {connected && user ? (
+        <>
+          <button
+            className="bg-[#F3AA05] space-x-2  text-black sm:p-4 p-2 rounded-[10px] flex items-center "
+            onClick={handleLogout}
+          >
+            <Image
+              src="/assets/common/Wallet.svg"
+              alt="Wallet Icon"
+              width={24}
+              height={24}
+            />
+            <span className="hidden md:block">
+              {publicKey?.toString().substring(0, 5) +
+                '...' +
+                publicKey
+                  ?.toString()
+                  .substring(publicKey?.toString().length - 3)}
+            </span>
+          </button>
+        </>
+      ) : (
+        <button
+          className="bg-[#F3AA05] space-x-2  text-black sm:p-4 p-2 rounded-[10px] flex items-center"
+          onClick={handleLogin}
+        >
+          {fetching ? (
+            <Loading width="6" height="6" />
+          ) : (
+            <Image
+              src="/assets/common/Wallet.svg"
+              alt="Wallet Icon"
+              width={24}
+              height={24}
+            />
+          )}
+          <span className="hidden md:block">Connect Wallet</span>
         </button>
-      </>
+      )}
     </div>
   );
 };
