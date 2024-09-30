@@ -164,12 +164,12 @@ export const addScreenshot = isLoggedIn(
         'Screenshot cannot be added as the sale is paid already or has been canceled'
       );
     }
-
+    await prisma.screenshot.deleteMany({});
     return prisma.screenshot.create({
       data: {
         saleId,
         imageUrl: image,
-        method,
+        methodId: method,
         paidById: user.id as string,
       },
     });

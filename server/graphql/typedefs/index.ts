@@ -15,11 +15,26 @@ const typeDefs = gql`
     publicKey: String
   }
 
+  type PaymentMethod {
+    id: ID!
+    name: String
+    accountNumber: String
+    accountName: String
+  }
+
+  type ScreenShot {
+    id: ID!
+    saleId: String
+    imageUrl: String
+    method: PaymentMethod
+  }
+
   type Sale {
     id: ID!
     amount: Float
     unitPrice: Float
     screenshotMehtods: [String]
+    screenshots: [ScreenShot]
     seller: User
     buyer: User
     tx: String

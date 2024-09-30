@@ -67,7 +67,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
       await addScreenshotMutation({
         saleId: sale.id,
         imageUrl,
-        method,
+        method: '66fb0f0fc2a69f59952e04ed',
       });
       toast.success('Screenshot added successfully');
     } catch (error) {

@@ -21,6 +21,12 @@ const GET_SALE = gql`
         }
         id
         tx
+        screenshots {
+          imageUrl
+          method {
+            name
+          }
+        }
         seller {
           name
           publicKey
