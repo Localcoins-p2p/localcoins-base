@@ -13,6 +13,9 @@ module.exports = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
           'border-gradient': 'linear-gradient(180deg, #C98B00 0%, #F3AA05 36.5%)',
       },
+      fontFamily: {
+        sans: ['var(--font-heading)']
+      }
     },
   },
   plugins: [],

@@ -7,6 +7,7 @@ import Login from '../Login';
 import { useState } from 'react';
 import AddPostModel from '../Elements/AddPostModel';
 import ConnectWallet from '../Elements/ConnectWallet';
+import Login from '../Login';
 const NewHeader = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = () => {
@@ -48,18 +49,7 @@ const NewHeader = () => {
               height={24}
             />
           </Link>
-          <button
-            onClick={handleOpenModal}
-            className="bg-[#F3AA05] space-x-2  text-black sm:p-3 p-2 rounded-[10px] flex items-center "
-          >
-            <Image
-              src="/assets/common/Wallet.svg"
-              alt="Wallet Icon"
-              width={24}
-              height={24}
-            />
-            <span className="hidden md:block">Connect Wallet</span>
-          </button>
+          <Login />
 
           <AddPostModel
             title="Filter Options"
