@@ -2,6 +2,7 @@
 import { AppContext } from '@/utils/context';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
+import toast from 'react-hot-toast';
 import { gql, useMutation } from 'urql';
 
 const UPDATE_USER = gql`
@@ -29,6 +30,7 @@ const Profile = () => {
 
   const handleSubmit = () => {
     updateUser({ name, email }).then(() => {
+      toast.success('Account updated successfully');
       router.push('/');
     });
   };
