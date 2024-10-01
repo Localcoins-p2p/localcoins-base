@@ -10,13 +10,13 @@ const Footer = () => {
 
           <div className="flex items-center space-x-2">
             <Image
-              src="/localcoins-logo.png" 
+              src="/assets/common/logooo.svg" 
               alt="Local Coins Logo"
-              width={30}
-              height={30}
+              width={233}
+              height={40}
               className="inline-block"
             />
-            <span className="text-white text-sm">LOCALCOINS</span>
+            
           </div>
 
     

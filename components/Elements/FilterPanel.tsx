@@ -209,6 +209,10 @@ const FilterPanel = () => {
     }
     setCurrentStep(currentStep + 1);
   };
+  const handleBack = async () => {
+    
+    setCurrentStep(currentStep - 1);
+  };
 
   return (
     <div className=" text-white flex justify-center sm:justify-between items-center  space-x-4">
@@ -290,6 +294,7 @@ const FilterPanel = () => {
           {currentStep === 2 && (
             <SellToSetAmountPayMeth
               onNext={handleNext}
+             onBack={handleBack} 
               data={data}
               setData={setData}
             />
@@ -298,6 +303,7 @@ const FilterPanel = () => {
             <RemarksAndAutoRes
               onNext={handleNext}
               data={data}
+              onBack={handleBack} 
               setData={setData}
             />
           )}

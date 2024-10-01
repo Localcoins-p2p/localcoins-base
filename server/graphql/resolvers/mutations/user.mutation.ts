@@ -1,6 +1,5 @@
 import prisma from '@/prisma/prisma';
 import type * as Prisma from '@prisma/client';
-import bcrypt from 'bcrypt';
 import {
   isEmail,
   isNameValid,
@@ -30,7 +29,6 @@ import { IGqlContext } from '@/types';
 type RegisterUserInput = Prisma.User & { password: string };
 export const registerUser = async (_: unknown, args: RegisterUserInput) => {
   const password = args.password;
-  const pwHash = await bcrypt.hash(password, 10);
 
   if (args.email) isEmail(args.email);
   isPasswordValid(args.password);
@@ -41,7 +39,6 @@ export const registerUser = async (_: unknown, args: RegisterUserInput) => {
   return prisma.user.create({
     data: {
       ...data,
-      pwHash,
     },
   });
 };
