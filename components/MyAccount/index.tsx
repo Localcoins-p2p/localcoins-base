@@ -41,6 +41,7 @@ const MyAccount = () => {
     query: GET_PAYMENT_METHODS,
   });
   const [selectedUser, setSelectedUser] = useState<{
+    id?: string;
     name?: string;
     phone?: string;
     heading?: string;
@@ -52,12 +53,13 @@ const MyAccount = () => {
 
   const handleEdit = (
     editStatus: boolean,
+    id: string,
     name: string,
     phone: string,
     heading: string
   ) => {
     setIsEditing(editStatus);
-    setSelectedUser({ name, phone, heading });
+    setSelectedUser({ id, name, phone, heading });
   };
   return (
     <div className="w-[85%] mx-auto mb-14">

@@ -9,6 +9,7 @@ interface UserCardProps {
   };
   onEdit: (
     editStatus: boolean,
+    id: string,
     name: string,
     phone: string,
     heading: string
@@ -21,7 +22,7 @@ const UserCard: React.FC<UserCardProps> = ({ paymmentMethod, onEdit }) => {
 
   const handleEdit = () => {
     setEditStatus((prevStatus) => !prevStatus);
-    onEdit(!editStatus, accountName, accountNumber, name);
+    onEdit(!editStatus, id, accountName, accountNumber, name);
   };
 
   return (

@@ -26,13 +26,13 @@ const ADD_PAYMENT_METHOD = gql`
 
 const UPDATE_PAYMENT_METHOD = gql`
   mutation UpdatePaymentMethod(
-    $updatePaymentMethodId: String!
+    $id: String!
     $name: String
     $accountNumber: String
     $accountName: String
   ) {
     updatePaymentMethod(
-      id: $updatePaymentMethodId
+      id: $id
       name: $name
       accountNumber: $accountNumber
       accountName: $accountName
