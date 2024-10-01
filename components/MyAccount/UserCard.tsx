@@ -1,4 +1,13 @@
 import React, { useState } from 'react';
+import { gql, useMutation } from 'urql';
+
+const DELETE_PAYMENT_METHOD = gql`
+  mutation Mutation($deletePaymentMethodId: String!) {
+    deletePaymentMethod(id: $deletePaymentMethodId) {
+      id
+    }
+  }
+`;
 
 interface UserCardProps {
   paymmentMethod: {
@@ -19,10 +28,22 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = ({ paymmentMethod, onEdit }) => {
   const [editStatus, setEditStatus] = useState(false);
   const { name, accountNumber, accountName, id } = paymmentMethod;
+  const [{ fetching: deleting }, deletePaymentMethod] = useMutation(
+    DELETE_PAYMENT_METHOD
+  );
 
   const handleEdit = () => {
     setEditStatus((prevStatus) => !prevStatus);
     onEdit(!editStatus, id, accountName, accountNumber, name);
+  };
+
+  const handleDelete = () => {
+    if (deleting) {
+      return;
+    }
+    if (window.confirm('Are you sure you want to delete this payment method')) {
+      deletePaymentMethod({ deletePaymentMethodId: id });
+    }
   };
 
   return (
@@ -36,7 +57,9 @@ const UserCard: React.FC<UserCardProps> = ({ paymmentMethod, onEdit }) => {
           <button className="text-[#F3AA05]" onClick={handleEdit}>
             Edit
           </button>
-          <button className="text-[#F3AA05]">Delete</button>
+          <button onClick={handleDelete} className="text-[#F3AA05]">
+            {deleting ? 'Deleting ...' : 'Delete'}
+          </button>
         </div>
       </div>
 
