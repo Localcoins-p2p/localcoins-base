@@ -29,8 +29,71 @@ const GET_SALES = gql`
   }
 `;
 
-const P2PTable: React.FC = () => {
-  const [{ data, fetching }] = useQuery({ query: GET_SALES });
+export const GET_BUYER_SALES = gql`
+  query BuyerSales {
+    buyerSales {
+      amount
+      buyer {
+        id
+        name
+        publicKey
+      }
+      canceledAt
+      createdAt
+      finishedAt
+      id
+      onChainSaleId
+      paidAt
+      screenshotMehtods
+      seller {
+        id
+        name
+        publicKey
+      }
+      unitPrice
+    }
+  }
+`;
+
+export const GET_SELLER_SALES = gql`
+  query SellerSales {
+    sellerSales {
+      amount
+      buyer {
+        id
+        name
+        publicKey
+      }
+      canceledAt
+      createdAt
+      finishedAt
+      id
+      onChainSaleId
+      paidAt
+      screenshotMehtods
+      seller {
+        id
+        name
+        publicKey
+      }
+      unitPrice
+    }
+  }
+`;
+
+interface P2PTableProps {
+  type?: 'ALL' | 'BUYER' | 'SELLER';
+}
+
+const queries = {
+  ALL: GET_SALES,
+  BUYER: GET_BUYER_SALES,
+  SELLER: GET_SELLER_SALES,
+};
+
+const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
+  const query = type ? queries[type] : GET_SALES;
+  const [{ data, fetching }] = useQuery({ query });
   const sales = data?.sales?.sales || [];
 
   if (data) {

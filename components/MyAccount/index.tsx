@@ -13,24 +13,6 @@ import { useQuery } from 'urql';
 import Loading from '../Elements/Loading';
 
 const MyAccount = () => {
-  const tradesData = [
-    { heading: '30d Trades', timer: '0 Time(s)' },
-    { heading: '60d Trades', timer: '2 Time(s)' },
-    { heading: '90d Trades', timer: '5 Time(s)' },
-    { heading: '120d Trades', timer: '10 Time(s)' },
-    {
-      heading: '150d Trades',
-      timer: '20 Time(s)',
-      p: 'Positvvive (17) ',
-      n: ' Negative (0)',
-    },
-  ];
-  const users = [
-    { heading: 'Gouth', name: 'umar', phone: '5465465465' },
-    { heading: 'John', name: 'doe', phone: '1234567890' },
-    { heading: 'Jane', name: 'smith', phone: '9876543210' },
-  ];
-
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index: number) => {
