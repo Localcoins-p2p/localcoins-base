@@ -42,7 +42,7 @@ const UserCard: React.FC<UserCardProps> = ({ paymmentMethod, onEdit }) => {
       <div className="flex flex-container gap-y-3 justify-between p-4">
         <div>
           <p className="text-[13px] text-[#A6A6A6]">Name</p>
-          <p className="font-[500] text-[18px] text-[#FFFFFF]">{name}</p>
+          <p className="font-[500] text-[18px] text-[#FFFFFF]">{accountName}</p>
         </div>
         <div>
           <p className="text-[13px] text-[#A6A6A6]">Account Number</p>

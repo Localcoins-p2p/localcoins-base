@@ -79,7 +79,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
   const handleSubmit = async () => {
     //onSubmit(paymentMethod, accountNumber, accountName);
-    if (id) {
+    if (!id) {
       await addPaymentMethod({
         name: paymentMethod,
         accountName,
