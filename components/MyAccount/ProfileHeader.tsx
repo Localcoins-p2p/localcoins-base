@@ -31,7 +31,6 @@ const ProfileHeader = () => {
           <div className="text-[#FFFFFF] lg:text-[28px] text-[23px] md:text-[18px] font-[600]">
             0.00000002BTC <span className='text-[#777777]'>≈ ₱0.00</span>
           </div>
-          
         </div>
         <div>
           <button className="bg-[#F3AA05] text-black px-6 py-2 rounded-[10px]">

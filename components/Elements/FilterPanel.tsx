@@ -16,6 +16,8 @@ import { getMasterAddress, getProgram, SALE_SEED } from '@/utils/program';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { gql, useMutation } from 'urql';
 import { useRouter } from 'next/navigation';
+import customStyles from '../../components/Elements/reactSelectStyles';
+
 
 const paymentOptions = [
   { value: 'All Payments', label: 'All Payments' },
@@ -54,46 +56,6 @@ const currencyOptions = [
     ),
   },
 ];
-
-const customStyles = {
-  control: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: 'transparent',
-    border: 'none',
-    display: 'flex',
-    justifyContent: 'space-between',
-
-    boxShadow: state.isFocused ? '' : '',
-    '&:hover': {
-      borderColor: '#4D4D4D',
-    },
-  }),
-  singleValue: (provided: any) => ({
-    ...provided,
-    color: 'white',
-  }),
-  indicatorSeparator: () => ({
-    display: 'none',
-  }),
-  dropdownIndicator: (provided: any) => ({
-    ...provided,
-    color: 'white',
-  }),
-  menu: (provided: any) => ({
-    ...provided,
-    backgroundColor: '#000',
-    color: 'white',
-  }),
-  option: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: state.isFocused ? '#4D4D4D' : '#000',
-    color: state.isFocused ? 'white' : 'gray',
-    '&:hover': {
-      backgroundColor: '#4D4D4D',
-      color: 'white',
-    },
-  }),
-};
 
 export const CREATE_SALE = gql`
   mutation Mutation(
