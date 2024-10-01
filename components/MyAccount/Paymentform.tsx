@@ -1,23 +1,63 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { gql, useMutation } from 'urql';
+import Loading from '../Elements/Loading';
 
 interface PaymentFormProps {
-  onSubmit: (
-    paymentMethod: string,
-    paymentNumber: string,
-    accountName: string
-  ) => void;
+  onSubmit: () => void;
   selectedUser: any;
 }
+
+const ADD_PAYMENT_METHOD = gql`
+  mutation AddPaymentMethod(
+    $name: String!
+    $accountNumber: String!
+    $accountName: String!
+  ) {
+    addPaymentMethod(
+      name: $name
+      accountNumber: $accountNumber
+      accountName: $accountName
+    ) {
+      id
+    }
+  }
+`;
+
+const UPDATE_PAYMENT_METHOD = gql`
+  mutation UpdatePaymentMethod(
+    $updatePaymentMethodId: String!
+    $name: String
+    $accountNumber: String
+    $accountName: String
+  ) {
+    updatePaymentMethod(
+      id: $updatePaymentMethodId
+      name: $name
+      accountNumber: $accountNumber
+      accountName: $accountName
+    ) {
+      id
+    }
+  }
+`;
 
 const PaymentForm: React.FC<PaymentFormProps> = ({
   onSubmit,
   selectedUser,
 }) => {
+  const [{ fetching: adding }, addPaymentMethod] =
+    useMutation(ADD_PAYMENT_METHOD);
+  const [{ fetching: updating }, updatePaymentMethod] = useMutation(
+    UPDATE_PAYMENT_METHOD
+  );
+
   const [paymentMethod, setPaymentMethod] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [accountName, setAccountName] = useState('');
 
-  const { name, phone, heading } = selectedUser || {};
+  const { id, name, phone, heading } = selectedUser || {};
+  const loading = adding || updating;
 
   useEffect(() => {
     if (phone) {
@@ -37,11 +77,27 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     }
   }, [phone]);
 
-  const handleSubmit = () => {
-    onSubmit(paymentMethod, accountNumber, accountName);
+  const handleSubmit = async () => {
+    //onSubmit(paymentMethod, accountNumber, accountName);
+    if (id) {
+      await addPaymentMethod({
+        name: paymentMethod,
+        accountName,
+        accountNumber,
+      });
+    } else {
+      await updatePaymentMethod({
+        id,
+        name: paymentMethod,
+        accountName,
+        accountNumber,
+      });
+    }
+    toast.success('Payment info updated successfully');
+    onSubmit();
   };
 
-  const isEdit = !!selectedUser;
+  const isEdit = !!id;
 
   return (
     <div className="p-4">
@@ -88,7 +144,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         onClick={handleSubmit}
         className="w-full px-4 py-2 bg-[#f3aa05] text-white text-sm font-medium rounded hover:bg-blue-600"
       >
-        {isEdit ? 'Update Payment Method' : 'Add Payment Method'}
+        {loading ? (
+          <Loading width="5" height="5" />
+        ) : isEdit ? (
+          'Update Payment Method'
+        ) : (
+          'Add Payment Method'
+        )}
       </button>
     </div>
   );

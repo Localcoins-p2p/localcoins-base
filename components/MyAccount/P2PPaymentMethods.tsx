@@ -68,7 +68,7 @@ const P2PPaymentMethods = ({
         >
           <div className="max-h-[90vh] overflow-auto no-scrollbar">
             <PaymentForm
-              onSubmit={handleFormSubmit}
+              onSubmit={handleCloseModal}
               selectedUser={selectedUser}
             />
           </div>
