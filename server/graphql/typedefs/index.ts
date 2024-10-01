@@ -78,7 +78,11 @@ const typeDefs = gql`
   type Query {
     user: User
     sales(id: String): SaleResponse
+    paymentMethods: [PaymentMethod]
+    sellerSales: [Sale]
+    buyerSales: [Sale]
   }
+
   type Mutation {
     registerUser(
       name: String!

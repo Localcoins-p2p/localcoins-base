@@ -4,6 +4,18 @@ import PaymentModal from '../Elements/PaymentModal';
 import PaymentForm from './Paymentform';
 import AddPostModel from '../Elements/AddPostModel';
 import Image from 'next/image';
+import { gql, useQuery } from 'urql';
+
+export const GET_PAYMENT_METHODS = gql`
+  query PaymentMethods {
+    paymentMethods {
+      accountName
+      accountNumber
+      id
+      name
+    }
+  }
+`;
 
 const P2PPaymentMethods = ({
   selectedUser,
