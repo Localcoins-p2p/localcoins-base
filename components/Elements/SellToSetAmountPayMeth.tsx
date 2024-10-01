@@ -1,61 +1,65 @@
 'use client';
 import React, { useState } from 'react';
-import { TiArrowSortedDown } from 'react-icons/ti';
-import Select from 'react-select';
+// import { TiArrowSortedDown } from 'react-icons/ti';
+// import Select from 'react-select';
+// import PaymentModal from '../Elements/PaymentModal';
+// import AddPaymentMethod from './AddPaymentMethod';
 
-const Time = [
-  { value: '1mint', label: '1mint' },
-  { value: '2mint', label: '2mint' },
-];
+// const Time = [
+//   { value: '1mint', label: '1mint' },
+//   { value: '2mint', label: '2mint' },
+// ];
 
-const customStyles = {
-  control: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: 'transparent',
-    border: 'none',
-    display: 'flex',
-    justifyContent: 'space-between',
-    boxShadow: state.isFocused ? '' : '',
-    '&:hover': {
-      borderColor: '#4D4D4D',
-    },
-  }),
-  singleValue: (provided: any) => ({
-    ...provided,
-    color: 'black',
-  }),
-  indicatorSeparator: () => ({
-    display: 'none',
-  }),
-  dropdownIndicator: (provided: any) => ({
-    ...provided,
-    color: 'white',
-  }),
-  menu: (provided: any) => ({
-    ...provided,
-    backgroundColor: '#000',
-    color: 'white',
-  }),
-  option: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: state.isFocused ? '#4D4D4D' : '#000',
-    color: state.isFocused ? 'white' : 'gray',
-    '&:hover': {
-      backgroundColor: '#4D4D4D',
-      color: 'white',
-    },
-  }),
-};
+// const customStyles = {
+//   control: (provided: any, state: any) => ({
+//     ...provided,
+//     backgroundColor: 'transparent',
+//     border: 'none',
+//     display: 'flex',
+//     justifyContent: 'space-between',
+//     boxShadow: state.isFocused ? '' : '',
+//     '&:hover': {
+//       borderColor: '#4D4D4D',
+//     },
+//   }),
+//   singleValue: (provided: any) => ({
+//     ...provided,
+//     color: 'black',
+//   }),
+//   indicatorSeparator: () => ({
+//     display: 'none',
+//   }),
+//   dropdownIndicator: (provided: any) => ({
+//     ...provided,
+//     color: 'white',
+//   }),
+//   menu: (provided: any) => ({
+//     ...provided,
+//     backgroundColor: '#000',
+//     color: 'white',
+//   }),
+//   option: (provided: any, state: any) => ({
+//     ...provided,
+//     backgroundColor: state.isFocused ? '#4D4D4D' : '#000',
+//     color: state.isFocused ? 'white' : 'gray',
+//     '&:hover': {
+//       backgroundColor: '#4D4D4D',
+//       color: 'white',
+//     },
+//   }),
+// };
 
-const SellToSetAmountPayMeth = ({ onNext, setData, data }: any) => {
+const SellToSetAmountPayMeth = ({ onNext, setData, data ,onBack}: any) => {
   const [tab, setTab] = useState('buy');
-  const [paymentMethod, setPaymentMethod] = useState<any>(null);
-  const [timeLimit, setTimeLimit] = useState('15 min');
-  const [selecteTime, setSelecteTime] = useState<any>(Time[0]);
-
   const [totalAmount, setTotalAmount] = useState(100);
-  const [orderLimitMin, setOrderLimitMin] = useState('500');
-  const [orderLimitMax, setOrderLimitMax] = useState('2200.99');
+  const [orderLimitMin, setOrderLimitMin] = useState('100');
+
+  // const [paymentMethod, setPaymentMethod] = useState<any>(null);
+  // const [timeLimit, setTimeLimit] = useState('15 min');
+  // const [selecteTime, setSelecteTime] = useState<any>(Time[0]);
+  // const [orderLimitMax, setOrderLimitMax] = useState('2200.99');
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  
 
   const handleTotalAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTotalAmount(parseFloat(e.target.value));
@@ -69,13 +73,44 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data }: any) => {
     console.log('Order Limit Min:', e.target.value);
   };
 
-  const handleOrderLimitMaxChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setOrderLimitMax(e.target.value);
-    console.log('Order Limit Max:', e.target.value);
-  };
+  // const handleOrderLimitMaxChange = (
+  //   e: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   setOrderLimitMax(e.target.value);
+  //   console.log('Order Limit Max:', e.target.value);
+  // };
 
+  // const handleOpenModal = () => {
+  //   setIsModalOpen(true);
+  // };
+
+  // const handleCloseModal = () => {
+  //   setIsModalOpen(false);
+  // };
+
+  // const handleSavePaymentMethods = (methods: any) => {
+  //   console.log('Payment Methods:', methods);
+
+  // };
+
+  // const paymentOptions = [
+  //   { value: 'credit_card', label: 'Credit Card' },
+  //   { value: 'paypal', label: 'PayPal' },
+  //   { value: 'bank_transfer', label: 'Bank Transfer' },
+  // ];
+  // const [selectedMethod, setSelectedMethod] = useState(null);
+
+  // const handleChange = (selectedOption: any) => {
+  //   setSelectedMethod(selectedOption);
+  // };
+
+  // const handleAddPaymentMethod = () => {
+  //   if (selectedMethod) {
+  //     console.log(`Adding payment method: ${selectedMethod}`);
+  //   } else {
+  //     alert('Please select a payment method.');
+  //   }
+  // };
   return (
     <>
       <div className="mx-auto border border-[#DDDDDD] rounded-lg mt-3">
@@ -116,12 +151,12 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data }: any) => {
                 onChange={handleTotalAmountChange}
               />
               <span className="absolute inset-y-0 right-4 flex items-center text-[14px] font-[500] text-[#222222]">
-                USDT
+                USDC
               </span>
             </div>
             <div className="text-sm text-[#A7A7A7] mt-2">
               ≈ 0 PHP <br />
-              Available: <span className="text-black">2200.99 USDT</span>{' '}
+              Available: <span className="text-black">2200.99 USDC</span>{' '}
               <a href="#" className="text-[#F3AA05]">
                 All
               </a>{' '}
@@ -139,17 +174,18 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data }: any) => {
               <div className="relative w-1/2">
                 <input
                   type="text"
-                  className="border border-gray-300 rounded-md w-full p-2"
+                  className="border bg-gray-100  focus:outline-none border-gray-300 rounded-md w-full p-2"
                   value={orderLimitMin}
                   onChange={handleOrderLimitMinChange}
+                  readOnly
                 />
                 <span className="absolute top-[11px] right-4 flex items-center text-[14px] font-[500] text-[#222222]">
                   PHP
                 </span>
-                <div className="text-sm text-gray-500 mt-1">≈ 8.89 USDT </div>
+                <div className="text-sm text-gray-500 mt-1">≈ 8.89 USDC </div>
               </div>
 
-              <div className="text-gray-500 h-[50px]">~</div>
+              {/* <div className="text-gray-500 h-[50px]">~</div>
               <div className="relative w-1/2">
                 <input
                   type="text"
@@ -161,26 +197,49 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data }: any) => {
                   PHP
                 </span>
                 <div className="text-sm text-gray-500 mt-1">≈ 39.10 USDT</div>
-              </div>
+              </div> */}
             </div>
           </div>
 
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label className="block text-sm font-[400] text-[#222222] mb-1">
               Payment Method
             </label>
-            <button
-              className="bg-[#F3AA05] text-black px-14 py-2 text-[14px] font-[600] rounded-[5px]"
-              onClick={() => setPaymentMethod('Selected Method')}
+            <div className="flex flex-col items-start">
+              <Select
+                value={selectedMethod}
+                onChange={handleChange}
+                options={paymentOptions}
+                className="mb-4 w-full"
+                placeholder="Select a payment method"
+              />
+              <button
+                onClick={handleAddPaymentMethod}
+                className="bg-[#F3AA05] text-black px-14 py-2 text-[14px] font-[600] rounded-[5px]"
+              >
+                Add Payment Method
+              </button>
+            </div>
+
+            <PaymentModal
+              title="Filter Options"
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              header={<div>Modal Header</div>}
             >
-              + Add
-            </button>
+              <div>
+                <AddPaymentMethod
+                  onSave={handleSavePaymentMethods}
+                  onClose={handleCloseModal}
+                />
+              </div>
+            </PaymentModal>
             <div className="text-sm text-[#777777] mt-1">
               Select up to 5 methods
             </div>
-          </div>
+          </div> */}
 
-          <div className="border w-[60%] border-[#DDDDDD] rounded-[5px] px-2 py-1">
+          {/* <div className="border w-[60%] border-[#DDDDDD] rounded-[5px] px-2 py-1">
             <Select
               value={selecteTime}
               onChange={setSelecteTime}
@@ -193,11 +252,17 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data }: any) => {
               styles={customStyles}
               isSearchable={false}
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
-      <div className="flex justify-end text-center mt-3 mb-8">
+      <div className="flex gap-3 justify-end text-center mt-3 mb-8">
+      <button
+          onClick={onBack}
+          className="bg-[#F3AA05] px-12 text-[16px] font-[600] rounded-[8px] py-2"
+        >
+          Back
+        </button>
         <button
           onClick={onNext}
           className="bg-[#F3AA05] px-12 text-[16px] font-[600] rounded-[8px] py-2"

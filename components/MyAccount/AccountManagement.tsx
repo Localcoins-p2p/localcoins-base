@@ -1,39 +1,42 @@
 'use client';
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 const AccountManagement = ({ onTabChange }: { onTabChange: any }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page");
+
   const links = [
-    { href: '', label: 'P2P Payment Methods' },
-    { href: '', label: 'Sale Order' },
-    { href: '', label: 'Purchase Order' },
-    // { href: '#', label: 'Feedback (17)' },
-    // { href: '#', label: 'Blocked Users' },
-    // { href: '#', label: 'Follows' },
-    // { href: '#', label: 'Restriction Removal Center' },
-    // { href: '#', label: 'Notification Settings' },
+    { href: 'p2p-payment-methods', id: "p2p-payment-methods", label: 'P2P Payment Methods' },
+    { href: 'sale-order', id: 'sale-order', label: 'Sale Order' },
+    { href: 'purchase-order', id: 'purchase-order', label: 'Purchase Order' },
+    // Add more links here as needed
   ];
 
+
   useEffect(() => {
-    onTabChange(activeIndex);
-  }, [activeIndex, onTabChange]);
+    if (page) {
+      const activeLinkIndex = links.findIndex(link => link.href === page);
+      onTabChange(activeLinkIndex);
+    }
+  }, [page, links, onTabChange]);
 
   return (
-    <div className=" flex gap-3 items-center">
+    <div className="flex gap-3 items-center">
       {links.map((link, index) => (
-        <Link
+        <div
           key={index}
-          href={link.href}
-          className={`px-4 min-w-max py-2 ${
-            activeIndex === index
+          id={link.id}
+          className={`px-4 min-w-max py-2 cursor-pointer ${
+            link.href === page
               ? 'rounded-[5px] bg-[#F3AA05] text-black'
               : 'text-white'
           }`}
-          onClick={() => setActiveIndex(index)}
+          onClick={() => router.push("/my-account?page=" + link.href)}
         >
           {link.label}
-        </Link>
+        </div>
       ))}
     </div>
   );

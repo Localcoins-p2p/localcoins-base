@@ -72,11 +72,10 @@ const MyAccount = () => {
         />
       </div>
       <div className="mt-16">
-        {' '}
         <ProfileHeader />
       </div>
 
-      <div className="flex lg:flex-row flex-container1 flex-container  gap-3 my-10">
+      {/* <div className="flex lg:flex-row flex-container1 flex-container  gap-3 my-10">
         {tradesData.map((trade, index) => (
           <Trades
             key={index}
@@ -95,7 +94,7 @@ const MyAccount = () => {
             alt="vv"
           />
         </div>
-      </div>
+      </div> */}
       <div className="my-10 overflow-x-scroll no-scrollbar">
         <AccountManagement onTabChange={handleTabChange} />
       </div>
