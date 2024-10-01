@@ -17,7 +17,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const [accountNumber, setAccountNumber] = useState('');
   const [accountName, setAccountName] = useState('');
 
-  const { name, phone, heading } = selectedUser;
+  const { name, phone, heading } = selectedUser || {};
 
   useEffect(() => {
     if (phone) {
@@ -40,6 +40,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const handleSubmit = () => {
     onSubmit(paymentMethod, accountNumber, accountName);
   };
+
+  const isEdit = !!selectedUser;
 
   return (
     <div className="p-4">
@@ -86,7 +88,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         onClick={handleSubmit}
         className="w-full px-4 py-2 bg-[#f3aa05] text-white text-sm font-medium rounded hover:bg-blue-600"
       >
-        Add Payment Method
+        {isEdit ? 'Update Payment Method' : 'Add Payment Method'}
       </button>
     </div>
   );

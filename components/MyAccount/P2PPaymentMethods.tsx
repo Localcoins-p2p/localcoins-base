@@ -8,8 +8,10 @@ import Image from 'next/image';
 const P2PPaymentMethods = ({
   selectedUser,
   isEditing,
+  setSelectedUser,
 }: {
   selectedUser: any;
+  setSelectedUser: (x: any) => void;
   isEditing: boolean;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +26,7 @@ const P2PPaymentMethods = ({
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setSelectedUser(undefined);
   };
   const handleFormSubmit = (
     paymentMethod: string,

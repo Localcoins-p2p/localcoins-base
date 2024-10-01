@@ -35,11 +35,11 @@ const MyAccount = () => {
     setActiveTab(index);
   };
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedUser, setSelectedUser] = useState({
-    name: '',
-    phone: '',
-    heading: '',
-  });
+  const [selectedUser, setSelectedUser] = useState<{
+    name?: string;
+    phone?: string;
+    heading?: string;
+  }>();
 
   const handleEdit = (
     editStatus: boolean,
@@ -93,7 +93,11 @@ const MyAccount = () => {
 
       {(activeTab === 1 || activeTab === 2) && <P2PTable />}
       <div className="mb-6">
-        <P2PPaymentMethods isEditing={isEditing} selectedUser={selectedUser} />
+        <P2PPaymentMethods
+          isEditing={isEditing}
+          setSelectedUser={setSelectedUser}
+          selectedUser={selectedUser}
+        />
       </div>
 
       {users.map((user, index) => (
