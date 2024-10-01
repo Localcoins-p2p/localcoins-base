@@ -122,6 +122,18 @@ const typeDefs = gql`
       method: String!
     ): Screenshot
     updateProfile(name: String, email: String): User
+    addPaymentMethod(
+      name: String!
+      accountNumber: String!
+      accountName: String!
+    ): PaymentMethod
+    updatePaymentMethod(
+      id: String!
+      name: String
+      accountNumber: String
+      accountName: String
+    ): PaymentMethod
+    deletePaymentMethod(id: String!): PaymentMethod
   }
 
   ${projectTypedefs}

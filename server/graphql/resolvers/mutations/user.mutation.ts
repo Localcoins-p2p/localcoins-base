@@ -147,3 +147,39 @@ export const updateUser = isLoggedIn(
     });
   }
 );
+
+export const addPaymentMethod = isLoggedIn(
+  async (
+    _: unknown,
+    { name, accountNumber, accountName }: Prisma.PaymentMethod,
+    { user }: IGqlContext
+  ) => {
+    return prisma.paymentMethod.create({
+      data: {
+        name,
+        accountNumber,
+        accountName,
+        userId: user?.id as string,
+      },
+    });
+  }
+);
+
+export const updatePaymentMethod = isLoggedIn(
+  async (
+    _: unknown,
+    { id, name, accountNumber, accountName }: Prisma.PaymentMethod,
+    { user }: IGqlContext
+  ) => {
+    return prisma.paymentMethod.update({
+      where: { id, userId: user?.id },
+      data: { name, accountNumber, accountName },
+    });
+  }
+);
+
+export const deletePaymentMethod = isLoggedIn(
+  async (_: unknown, { id }: Prisma.PaymentMethod, { user }: IGqlContext) => {
+    return prisma.paymentMethod.delete({ where: { id, userId: user?.id } });
+  }
+);

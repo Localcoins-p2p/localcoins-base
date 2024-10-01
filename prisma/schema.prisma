@@ -28,9 +28,10 @@ model User {
   phoneOtp                String?   @default("")
   phoneOtpDoC             DateTime?
 
-  isAdmin                 Boolean @default(false)
-  SaleBuyer               Sale[] @relation("SellerRelation")
-  SaleSeller              Sale[] @relation("BuyerRelation")
+  isAdmin                 Boolean               @default(false)
+  SaleBuyer               Sale[]                @relation("SellerRelation")
+  SaleSeller              Sale[]                @relation("BuyerRelation")
+  paymentMethods          PaymentMethod[]
 }
 
 model Screenshot {
@@ -46,8 +47,11 @@ model Screenshot {
 model PaymentMethod {
   id                String                @id @default(auto())   @map("_id") @db.ObjectId
   name              String
-  accountNumer      String
+  accountNumber     String
   accountName       String
+
+  userId            String                @db.ObjectId
+  user              User @relation(fields: [userId], references: [id])
   
   createdAt         DateTime              @default(now())
   screenshots       Screenshot[]        
