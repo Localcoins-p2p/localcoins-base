@@ -15,11 +15,26 @@ const typeDefs = gql`
     publicKey: String
   }
 
+  type PaymentMethod {
+    id: ID!
+    name: String
+    accountNumber: String
+    accountName: String
+  }
+
+  type ScreenShot {
+    id: ID!
+    saleId: String
+    imageUrl: String
+    method: PaymentMethod
+  }
+
   type Sale {
     id: ID!
     amount: Float
     unitPrice: Float
     screenshotMehtods: [String]
+    screenshots: [ScreenShot]
     seller: User
     buyer: User
     tx: String
@@ -73,6 +88,7 @@ const typeDefs = gql`
       country: String
       password: String!
     ): User
+    updateUser(name: String, email: String): User
     login(
       publicKey: String!
       nonce: String!
@@ -106,6 +122,18 @@ const typeDefs = gql`
       method: String!
     ): Screenshot
     updateProfile(name: String, email: String): User
+    addPaymentMethod(
+      name: String!
+      accountNumber: String!
+      accountName: String!
+    ): PaymentMethod
+    updatePaymentMethod(
+      id: String!
+      name: String
+      accountNumber: String
+      accountName: String
+    ): PaymentMethod
+    deletePaymentMethod(id: String!): PaymentMethod
   }
 
   ${projectTypedefs}

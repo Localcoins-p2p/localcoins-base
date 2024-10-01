@@ -2,6 +2,7 @@ import prisma from '@/prisma/prisma';
 import { isLoggedIn } from '../../wrappers';
 import * as Prisma from '@prisma/client';
 import { IGqlContext } from '@/types';
+import saveImages from '@/server/utils/saveImages';
 
 export const createSale = isLoggedIn(
   async (
@@ -141,6 +142,8 @@ export const addScreenshot = isLoggedIn(
     }: { saleId: string; imageUrl: string; method: string },
     { user }: IGqlContext
   ) => {
+    const [image] = await saveImages([imageUrl]);
+    console.log('Image', image);
     const currentSale = await prisma.sale.findUnique({
       where: { id: saleId },
       include: {
@@ -156,17 +159,17 @@ export const addScreenshot = isLoggedIn(
       throw new Error('Unauthorized to add screenshot for this sale');
     }
 
-    if (!currentSale.paidAt || currentSale.canceledAt) {
+    if (currentSale.paidAt || currentSale.canceledAt) {
       throw new Error(
-        'Screenshot cannot be added as the sale has not been paid or has been canceled'
+        'Screenshot cannot be added as the sale is paid already or has been canceled'
       );
     }
-
+    await prisma.screenshot.deleteMany({});
     return prisma.screenshot.create({
       data: {
         saleId,
-        imageUrl,
-        method,
+        imageUrl: image,
+        methodId: method,
         paidById: user.id as string,
       },
     });

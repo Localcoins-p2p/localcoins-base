@@ -25,6 +25,7 @@ import { getRandomNumber } from '@/utils/generator';
 import { PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl'; // For signature verification
 import { IGqlContext } from '@/types';
+import saveImages from '@/utils/saveImages';
 
 type RegisterUserInput = Prisma.User & { password: string };
 export const registerUser = async (_: unknown, args: RegisterUserInput) => {
@@ -111,5 +112,71 @@ export const updateProfile = isLoggedIn(
       where: { id: user?.id },
       data: { name, email },
     });
+  }
+);
+
+export const updateUser = isLoggedIn(
+  async (
+    _: unknown,
+    {
+      email,
+      name,
+      image,
+      phone,
+    }: Prisma.User & {
+      image: string;
+    },
+    { user }: IGqlContext
+  ) => {
+    const data: any = { email, name, phone };
+
+    let profileImage;
+    if (image) {
+      [profileImage] = await saveImages([image]);
+    }
+    if (profileImage) {
+      data.profileImage = profileImage;
+    }
+
+    return prisma.user.update({
+      where: { id: user?.id },
+      data,
+    });
+  }
+);
+
+export const addPaymentMethod = isLoggedIn(
+  async (
+    _: unknown,
+    { name, accountNumber, accountName }: Prisma.PaymentMethod,
+    { user }: IGqlContext
+  ) => {
+    return prisma.paymentMethod.create({
+      data: {
+        name,
+        accountNumber,
+        accountName,
+        userId: user?.id as string,
+      },
+    });
+  }
+);
+
+export const updatePaymentMethod = isLoggedIn(
+  async (
+    _: unknown,
+    { id, name, accountNumber, accountName }: Prisma.PaymentMethod,
+    { user }: IGqlContext
+  ) => {
+    return prisma.paymentMethod.update({
+      where: { id, userId: user?.id },
+      data: { name, accountNumber, accountName },
+    });
+  }
+);
+
+export const deletePaymentMethod = isLoggedIn(
+  async (_: unknown, { id }: Prisma.PaymentMethod, { user }: IGqlContext) => {
+    return prisma.paymentMethod.delete({ where: { id, userId: user?.id } });
   }
 );

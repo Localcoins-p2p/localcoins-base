@@ -7,7 +7,6 @@ import Login from '../Login';
 import { useState } from 'react';
 import AddPostModel from '../Elements/AddPostModel';
 import ConnectWallet from '../Elements/ConnectWallet';
-
 const NewHeader = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = () => {

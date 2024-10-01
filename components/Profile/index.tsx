@@ -1,17 +1,53 @@
 'use client';
-import { useState } from 'react';
+import { AppContext } from '@/utils/context';
+import { useRouter } from 'next/navigation';
+import { useContext, useState } from 'react';
+import toast from 'react-hot-toast';
+import { gql, useMutation } from 'urql';
+import Footer from '../Footer/Footer';
+import NewHeader from '../NewHeader/NewHeader';
+import Loading from '../Elements/Loading';
+
+const UPDATE_USER = gql`
+  mutation UpdateUser($name: String, $email: String) {
+    updateUser(name: $name, email: $email) {
+      id
+    }
+  }
+`;
+
+// todo: fix this page
+// add loading, <Loading /> component is already there
+// add. header footer
+// change button styles according to website
 
 const Profile = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [{ fetching }, updateUser] = useMutation(UPDATE_USER);
+  const router = useRouter();
+
+  const {
+    context: { user },
+  } = useContext(AppContext);
 
   const handleSubmit = () => {
-    console.log('Name:', name);
-    console.log('Email:', email);
+    updateUser({ name, email }).then(() => {
+      toast.success('Account updated successfully');
+      router.push('/');
+    });
   };
 
+  if (fetching) {
+    return <Loading height='50' width='50' />;
+  }
+
   return (
-    <div className="container mt-20 mx-auto px-4 py-8">
+    <div >
+      <div className='px-10'>
+       <NewHeader />
+       </div>
+    <div className=" mt-20 mx-auto px-4 py-8">
       <div className="max-w-md mx-auto bg-white p-8 rounded shadow-md">
         <h2 className="text-2xl font-semibold mb-6">Profile</h2>
 
@@ -24,6 +60,7 @@ const Profile = () => {
             value={name}
             placeholder="Enter Name"
             onChange={(e) => setName(e.target.value)}
+            defaultValue={user?.name}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
@@ -36,6 +73,7 @@ const Profile = () => {
             type="email"
             value={email}
             placeholder="Enter Email"
+            defaultValue={user?.email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
@@ -43,11 +81,14 @@ const Profile = () => {
 
         <button
           onClick={handleSubmit}
-          className="w-full px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600"
+          className="w-full px-4 py-2 bg-[#f3aa05] text-white text-sm font-medium rounded hover:bg-[#c99b38]"
         >
           Submit
         </button>
       </div>
+    </div>
+    <Footer />
+    
     </div>
   );
 };
