@@ -19,23 +19,24 @@ const NewHeader = () => {
   return (
     <header className="py-4 ">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Image
-            className="hidden sm:block"
-            src="/assets/common/logooo.svg"
-            alt="LocalCoins Logo"
-            width={224}
-            height={56}
-          />
-          <Image
-            className="sm:hidden"
-            src="/assets/common/logoresp.svg"
-            alt="LocalCoins Logo"
-            width={67}
-            height={62}
-          />
-          {/* <span className="text-white font-bold text-lg">LOCALCOINS</span> */}
-        </div>
+        <Link href="/">
+          <div className="flex items-center space-x-2">
+            <Image
+              className="hidden sm:block"
+              src="/assets/common/logooo.svg"
+              alt="LocalCoins Logo"
+              width={224}
+              height={56}
+            />
+            <Image
+              className="sm:hidden"
+              src="/assets/common/logoresp.svg"
+              alt="LocalCoins Logo"
+              width={67}
+              height={62}
+            />
+          </div>
+        </Link>
         <div className="flex items-center space-x-4">
           <Link
             href={'/profile'}
