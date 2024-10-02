@@ -108,67 +108,44 @@ const ChatBox = ({
             </div>
           </div>
         ) : (
-          <div className='flex justify-center items-center h-[400px]'>
-          {isBuyer && (
-            <>
-              <label htmlFor="imageUpload">
-                <Image
-                  src="/assets/common/add_circle.svg"
-                  alt="Add Circle Icon"
-                  width={50}
-                  height={50}
-                  className="cursor-pointer"
+          <div className="flex justify-center flex-col gap-4 items-center h-[400px]">
+            {isBuyer && (
+              <>
+                <label htmlFor="imageUpload">
+                  <Image
+                    src="/assets/common/add_circle.svg"
+                    alt="Add Circle Icon"
+                    width={50}
+                    height={50}
+                    className="cursor-pointer"
+                  />
+                </label>
+
+                <p>Upload payment screenshot</p>
+                <input
+                  id="imageUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
                 />
-              </label>
-              <input
-                id="imageUpload"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </>
-           
-          )}
-           </div>
+              </>
+            )}
+          </div>
         )}
       </div>
 
       <div className="flex flex-col p-4 border-t gap-y-4 rounded-bl-[15px] rounded-br-[15px] border-gray-300 bg-white">
-        <div className="flex gap-3">
-
-
-          {/* <Image
-            src="/assets/common/file.svg"
-            alt="File Icon"
-            width={16}
-            height={20}
-          /> */}
-        </div>
-
-        <div className="w-full flex items-center">
-          <div className="   border-[#4D4D4D] rounded-[5px] px-2  w-[350px] ">
-            <Select
-              value={selectedPayment}
-              onChange={setSelectedPayment}
-              options={paymentOptions}
-              components={{
-                DropdownIndicator: () => (
-                  <TiArrowSortedDown className="text-white" />
-                ),
-              }}
-              isSearchable={false}
-               menuPlacement="top"
-            />
-          </div>
-          <button className="ml-3">
-            <Image
-              src="/assets/common/send.svg"
-              alt="Send Icon"
-              width={40}
-              height={40}
-            />
-          </button>
+        <div className="w-full">
+          <p className="font-semibold mt-0 text-center text-opacity-65">
+            {(sale?.screenshots?.[0] as any)?.imageUrl
+              ? isBuyer
+                ? 'Screenshot has been uploaded'
+                : 'The buyer has sent you payment. This is the screenshot.'
+              : isBuyer
+              ? 'Upload the image and notify the seller'
+              : 'Buyer will upload a screenshot'}
+          </p>
         </div>
       </div>
     </div>

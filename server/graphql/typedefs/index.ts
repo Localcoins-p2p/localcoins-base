@@ -13,6 +13,7 @@ const typeDefs = gql`
     country: String
     isAdmin: Boolean
     publicKey: String
+    paymentMethods: [PaymentMethod]
   }
 
   type PaymentMethod {

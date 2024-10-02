@@ -50,6 +50,12 @@ export const GET_BUYER_SALES = gql`
         id
         name
         publicKey
+        paymentMethods {
+          id
+          name
+          accountNumber
+          accountName
+        }
       }
       unitPrice
     }
@@ -76,6 +82,12 @@ export const GET_SELLER_SALES = gql`
         id
         name
         publicKey
+        paymentMethods {
+          id
+          name
+          accountNumber
+          accountName
+        }
       }
       unitPrice
     }

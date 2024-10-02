@@ -1,12 +1,6 @@
 import prisma from '@/prisma/prisma';
 
 export const sales = async (_: unknown, { id }: { id?: string }) => {
-  console.log({
-    id,
-    ...(!id && {
-      buyer: { is: null },
-    }),
-  });
   const sales: any = await prisma.sale.findMany({
     where: {
       id,

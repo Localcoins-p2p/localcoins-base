@@ -32,6 +32,12 @@ const GET_SALE = gql`
           name
           publicKey
           id
+          paymentMethods {
+            id
+            name
+            accountNumber
+            accountName
+          }
         }
         buyer {
           name

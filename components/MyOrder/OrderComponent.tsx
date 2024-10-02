@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { gql, useMutation } from 'urql';
 import { getMasterAddress, SALE_SEED } from '@/utils/program';
@@ -58,9 +58,13 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
+  const [selectedPaymentMethodIndex, setSelectedPaymentMethodIndex] =
+    useState(0);
   const [{}, markFinished] = useMutation(MARK_FINISHED);
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
+
+  const paymentMethods = sale?.seller?.paymentMethods || [];
 
   const handleAddScreenshot = async (imageUrl: string, method: string) => {
     try {
@@ -169,7 +173,8 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               2
             </div>
             <h2 className="ml-4 text-xl font-semibold">
-              Open {`{Gcash}`} to transfer 550.10
+              Open {paymentMethods[selectedPaymentMethodIndex]?.name} to
+              transfer {sale?.amount * sale?.unitPrice} PHP
             </h2>
           </div>
           <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
@@ -179,7 +184,9 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center gap-1">
                 <div className="h-2  w-2 rounded-full bg-[#00B2FF]"></div>
-                <span className="text-[#FFFFFF] font-bold">Gcash</span>
+                <span className="text-[#FFFFFF] font-bold">
+                  {paymentMethods[selectedPaymentMethodIndex]?.name}
+                </span>
               </div>
 
               <button className="text-yellow-400">Change</button>
@@ -189,7 +196,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 Recipient
               </span>
               <p className="text-[#FFFFFF] text-[18px] font-[600]">
-                Pedro Stallone
+                {paymentMethods[selectedPaymentMethodIndex]?.accountName}
               </p>
             </div>
             <div className="mb-2 flex justify-between">
@@ -197,7 +204,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 Mobile Number
               </span>
               <p className="text-[#FFFFFF] text-[18px] font-[600]">
-                09987654321
+                {paymentMethods[selectedPaymentMethodIndex]?.accountNumber}
               </p>
             </div>
             <div>
