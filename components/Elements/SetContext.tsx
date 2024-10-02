@@ -19,9 +19,13 @@ function SetContext() {
     query: GET_USER,
     pause: !Cookies.get('token'),
   });
-  const { setUser } = useContext(AppContext);
+  const { setUser, setFetching } = useContext(AppContext);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    setFetching?.(fetchingCurrentUser);
+  }, [fetchingCurrentUser]);
 
   useEffect(() => {
     if (!fetchingCurrentUser && userData?.user) {

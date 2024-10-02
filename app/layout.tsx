@@ -15,8 +15,9 @@ import {
 } from '@solana/wallet-adapter-react';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { AppContext, IUser } from '@/utils/context';
+import { AppContext, IAppContext, IUser } from '@/utils/context';
 import SetContext from '@/components/Elements/SetContext';
+import AppLoading from '@/components/Elements/AppLoading';
 require('@solana/wallet-adapter-react-ui/styles.css');
 
 const inter = Inter({ subsets: ['latin'] });
@@ -26,7 +27,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [context, setContext] = useState({});
+  const [context, setContext] = useState<any>({ fetching: true });
+
+  const setFetching = (fetching: boolean) => {
+    (context as any).fetching = fetching;
+    setContext({ ...context });
+  };
+
   const setUser = (user: IUser) => {
     setContext({ ...context, user });
   };
@@ -54,11 +61,12 @@ export default function RootLayout({
             <WalletModalProvider>
               <Toaster />
               <SessionProvider>
-                <AppContext.Provider value={{ context, setUser }}>
+                <AppContext.Provider value={{ context, setUser, setFetching }}>
                   {
                     <Provider value={client}>
                       <SetContext />
                       {children}
+                      {(context as any).fetching && <AppLoading />}
                     </Provider>
                   }
                 </AppContext.Provider>
