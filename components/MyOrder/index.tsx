@@ -9,9 +9,6 @@ import { gql, useQuery } from 'urql';
 import { useSearchParams } from 'next/navigation';
 import { AppContext } from '@/utils/context';
 
-
-
-
 import useSolana from '@/utils/useSolana';
 
 const GET_SALE = gql`
@@ -53,13 +50,12 @@ const GET_SALE = gql`
   }
 `;
 
-
 const MyOrder = () => {
   const searchParams = useSearchParams();
   const salesId = searchParams.get('sale');
   const [sale, setSale] = useState<any>();
   const [image, setImage] = useState('');
-  
+
   const [{ fetching, data }, fetchSale] = useQuery({
     query: GET_SALE,
     variables: { salesId },
@@ -92,43 +88,41 @@ const MyOrder = () => {
   // if (!sale) {
   //   return <div className='text-white'>Loading...</div>;
   // }
-console.log("sel",isSeller)
+
   return (
     <>
-    {isBuyer && (
-    <div className="w-[85%] mx-auto ">
-      <NewHeader />
+      <div className="w-[85%] mx-auto ">
+        <NewHeader />
 
-      <div className="mt-10 ">
-        <MainHeading
-          title="MY ORDER"
-          para=" Order Created, Pay the Seller within"
-          t1="P2P Help Center"
-          time=" 15:00"
-          t2="Orders"
-        />
-      </div>
-
-     
-
-      <div className="grid grid-cols-12 mt-4">
-        <div className="col-span-7 w-full">
-          <OrderComponent
-            sale={sale}
-            showConfirmPaymentSentButton={showConfirmPaymentSentButton}
-            showConfirmPaymentReceivedButton={showConfirmPaymentReceivedButton}
-            showClaimPaymentButton={showClaimPaymentButton}
-            loading={fetching}
-            image={image}
+        <div className="mt-10 ">
+          <MainHeading
+            title="MY ORDER"
+            para=" Order Created, Pay the Seller within"
+            t1="P2P Help Center"
+            time=" 15:00"
+            t2="Orders"
           />
         </div>
-        <div className="col-span-5 mt-6 rounded-[15px] h-full">
-          <ChatBox sale={sale} setImage={setImage} isBuyer={isBuyer}/>
+
+        <div className="grid grid-cols-12 mt-4">
+          <div className="col-span-7 w-full">
+            <OrderComponent
+              sale={sale}
+              showConfirmPaymentSentButton={showConfirmPaymentSentButton}
+              showConfirmPaymentReceivedButton={
+                showConfirmPaymentReceivedButton
+              }
+              showClaimPaymentButton={showClaimPaymentButton}
+              loading={fetching}
+              image={image}
+            />
+          </div>
+          <div className="col-span-5 mt-6 rounded-[15px] h-full">
+            <ChatBox sale={sale} setImage={setImage} isBuyer={isBuyer} />
+          </div>
         </div>
       </div>
-    </div>
-  )}
-</>
+    </>
   );
 };
 
