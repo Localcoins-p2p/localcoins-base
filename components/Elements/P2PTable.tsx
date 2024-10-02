@@ -3,6 +3,7 @@
 import React from 'react';
 import P2PTableRow from './P2PTableRow';
 import { gql, useQuery } from 'urql';
+import Loading from './Loading';
 
 const GET_SALES = gql`
   query Sales {
@@ -94,7 +95,23 @@ const queries = {
 const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
   const query = type ? queries[type] : GET_SALES;
   const [{ data, fetching }] = useQuery({ query });
-  const sales = data?.sales?.sales || [];
+  const sales = data?.sales?.sales || data?.sellerSales || data?.buyerSales || [];
+
+  if (fetching) {
+    return (
+    <div className="h-44 flex justify-center items-center">
+      <Loading height="[24px]" width="[24px]" color="#333333" />
+    </div>
+    )
+  }
+
+  if (sales.length === 0) {
+    return (
+      <div className="text-white text-opacity-70 text-center flex justify-center items-center h-44 ">
+        You don't have any sales
+      </div>
+    );
+  }
 
   if (data) {
     return (

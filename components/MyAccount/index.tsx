@@ -13,6 +13,7 @@ import { useQuery } from 'urql';
 import Loading from '../Elements/Loading';
 
 const MyAccount = () => {
+
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (index: number) => {
@@ -82,8 +83,11 @@ const MyAccount = () => {
       <div className="my-10 overflow-x-scroll no-scrollbar">
         <AccountManagement onTabChange={handleTabChange} />
       </div>
-
-      {(activeTab === 1 || activeTab === 2) && <P2PTable />}
+      {
+        activeTab === 1 ? <P2PTable type="SELLER" /> :
+        activeTab === 2 ? <P2PTable type="BUYER" /> :
+        null
+      }
       <div className="mb-6">
         <P2PPaymentMethods
           isEditing={isEditing}
