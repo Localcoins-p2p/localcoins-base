@@ -4,6 +4,7 @@ import Select from 'react-select';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { CiGlobe } from 'react-icons/ci';
 import Image from 'next/image';
+import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
 
 const customStyles = {
   control: (provided: any, state: any) => ({
@@ -44,9 +45,10 @@ const customStyles = {
     },
   }),
 };
-
-const USDTDATA = [{ value: 'USDC', label: 'USDC' }];
-const PHPDATA = [{ value: 'PHP', label: 'PHP' }];
+const toCurrency = getToCurrency();
+const fromCurrency = getFromCurrency();
+const USDTDATA = [{ value: toCurrency.name, label: toCurrency.name }];
+const PHPDATA = [{ value: fromCurrency.name, label: fromCurrency.name }];
 
 const SellToSetPrice = ({ onNext }: any) => {
   const [tab, setTab] = useState('buy');
@@ -57,16 +59,15 @@ const SellToSetPrice = ({ onNext }: any) => {
 
   const handleIncrement = () => {
     if (fixedPrice < 67.48) {
-      setFixedPrice(prevPrice => Math.min(prevPrice + 1, 67.48));
-    }
-  };
-  
-  const handleDecrement = () => {
-    if (fixedPrice > 45.00) {
-      setFixedPrice(prevPrice => Math.max(prevPrice - 1, 45.00));
+      setFixedPrice((prevPrice) => Math.min(prevPrice + 1, 67.48));
     }
   };
 
+  const handleDecrement = () => {
+    if (fixedPrice > 45.0) {
+      setFixedPrice((prevPrice) => Math.max(prevPrice - 1, 45.0));
+    }
+  };
 
   return (
     <>
@@ -186,11 +187,11 @@ const SellToSetPrice = ({ onNext }: any) => {
                 </button>
                 <input
                   type="number"
-                   step="0.01"
+                  step="0.01"
                   value={fixedPrice}
                   onChange={(e) => {
-                    const value = parseFloat(e.target.value); 
-                      setFixedPrice(value);  
+                    const value = parseFloat(e.target.value);
+                    setFixedPrice(value);
                   }}
                   className="text-[18px] font-[500] text-[#222222] text-center"
                 />

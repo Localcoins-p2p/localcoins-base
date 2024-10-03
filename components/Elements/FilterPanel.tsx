@@ -17,41 +17,17 @@ import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { gql, useMutation } from 'urql';
 import { useRouter } from 'next/navigation';
 import customStyles from '../../components/Elements/reactSelectStyles';
+import { getToCurrency, getFromCurrency } from '@/utils/getCurrency';
 
-
-const paymentOptions = [
-  { value: 'All Payments', label: 'All Payments' },
-  { value: 'Credit Card', label: 'Credit Card' },
-  { value: 'Bank Transfer', label: 'Bank Transfer' },
-];
-const regionOptions = [
-  { value: 'All Regions', label: 'All Regions' },
-  { value: 'Europe', label: 'Europe' },
-  { value: 'Asia', label: 'Asia' },
-];
+const paymentOptions = [{ value: 'All Payments', label: 'All Payments' }];
+const regionOptions = [{ value: 'All Regions', label: 'All Regions' }];
 
 const currencyOptions = [
   {
     value: 'USD',
     label: (
       <span>
-        <span className="text-[#F3AA05] mr-2">$</span>USD
-      </span>
-    ),
-  },
-  {
-    value: 'EUR',
-    label: (
-      <span>
-        <span className="text-[#F3AA05] mr-2">$</span>PKR
-      </span>
-    ),
-  },
-  {
-    value: 'GBP',
-    label: (
-      <span>
-        <span className="text-[#F3AA05] mr-2">$</span>GBP
+        <span className="text-[#F3AA05] mr-2">$</span>PHP
       </span>
     ),
   },
@@ -172,75 +148,74 @@ const FilterPanel = () => {
     setCurrentStep(currentStep + 1);
   };
   const handleBack = async () => {
-    
     setCurrentStep(currentStep - 1);
   };
 
   return (
-    <div className=" text-white flex justify-center sm:justify-between items-center  space-x-4">
-      <div className="flex items-center border  justify-center border-[#4D4D4D] rounded-[5px] sm:w-[350px] w-[310px] px-4 py-1">
-        <input
-          type="text"
-          className="text-[#DCDCDC] text-[16px] placeholder-[#DCDCDC] font-[500] bg-transparent border-none outline-none"
-          placeholder="Transaction amount"
-        />
-        <Select
-          className="w-[100px] border-l border-[#393939]"
-          value={selectedCurrency}
-          onChange={setSelectedCurrency}
-          options={currencyOptions}
-          styles={customStyles}
-          isSearchable={false}
-          components={{
-            DropdownIndicator: () => (
-              <TiArrowSortedDown className="text-white" />
-            ),
-          }}
-        />
+    <div className=" text-white flex justify-center sm:justify-between items-center overflow-x-auto">
+      <div className="grid-cols-3 gap-2 hidden md:grid">
+        <div className="flex items-center border justify-center border-[#4D4D4D] rounded-[5px] px-4 py-1">
+          <input
+            type="text"
+            className="text-[#DCDCDC] text-[16px] placeholder-[#DCDCDC] font-[500] bg-transparent border-none outline-none"
+            placeholder="Transaction amount"
+          />
+          <Select
+            className="w-[100px] border-l border-[#393939]"
+            value={selectedCurrency}
+            onChange={setSelectedCurrency}
+            options={currencyOptions}
+            styles={customStyles}
+            isSearchable={false}
+            components={{
+              DropdownIndicator: () => (
+                <TiArrowSortedDown className="text-white" />
+              ),
+            }}
+          />
+        </div>
+
+        <div className=" hidden md:block border  border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[350px] ">
+          <Select
+            value={selectedPayment}
+            onChange={setSelectedPayment}
+            options={paymentOptions}
+            components={{
+              DropdownIndicator: () => (
+                <TiArrowSortedDown className="text-white" />
+              ),
+            }}
+            styles={customStyles}
+            isSearchable={false}
+          />
+        </div>
+
+        <div className=" border hidden md:flex border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[350px] items-center ">
+          <CiGlobe className="h-[24px] w-[26px] font-bold text-[#fff]" />
+          <Select
+            className="w-full"
+            value={selectedRegion}
+            onChange={setSelectedRegion}
+            options={regionOptions}
+            components={{
+              DropdownIndicator: () => (
+                <TiArrowSortedDown className="text-white" />
+              ),
+            }}
+            styles={customStyles}
+            isSearchable={false}
+          />
+        </div>
+      </div>
+      <div>
+        <button
+          onClick={handleOpenModal}
+          className="flex items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700"
+        >
+          Sale {getToCurrency().name}
+        </button>
       </div>
 
-      <div className=" hidden md:block border  border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[350px] ">
-        <Select
-          value={selectedPayment}
-          onChange={setSelectedPayment}
-          options={paymentOptions}
-          components={{
-            DropdownIndicator: () => (
-              <TiArrowSortedDown className="text-white" />
-            ),
-          }}
-          styles={customStyles}
-          isSearchable={false}
-        />
-      </div>
-
-      <div className=" border hidden md:flex border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[350px] items-center ">
-        <CiGlobe className="h-[24px] w-[26px] font-bold text-[#fff]" />
-        <Select
-          className="w-full"
-          value={selectedRegion}
-          onChange={setSelectedRegion}
-          options={regionOptions}
-          components={{
-            DropdownIndicator: () => (
-              <TiArrowSortedDown className="text-white" />
-            ),
-          }}
-          styles={customStyles}
-          isSearchable={false}
-        />
-      </div>
-      <button
-        onClick={handleOpenModal}
-        className="sm:flex hidden  items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700"
-      >
-        <Image
-          src={'/assets/common/filterIcon.svg'}
-          height={17}
-          width={17}
-          alt="s"
-        />
-      </button>
       <ModalComponent
         title="Filter Options"
         isOpen={isModalOpen}
@@ -256,7 +231,7 @@ const FilterPanel = () => {
           {currentStep === 2 && (
             <SellToSetAmountPayMeth
               onNext={handleNext}
-             onBack={handleBack} 
+              onBack={handleBack}
               data={data}
               setData={setData}
             />
@@ -265,7 +240,7 @@ const FilterPanel = () => {
             <RemarksAndAutoRes
               onNext={handleNext}
               data={data}
-              onBack={handleBack} 
+              onBack={handleBack}
               setData={setData}
             />
           )}
