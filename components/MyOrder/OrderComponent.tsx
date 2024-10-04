@@ -148,7 +148,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   const handleChangePaymentMethod = (selectedOption: any) => {
     const selectedIndex = paymentMethods.findIndex((method:any) => method.name === selectedOption.value);
     setSelectedPaymentMethodIndex(selectedIndex);
-    setDropdownVisible(false);
+    // setDropdownVisible(false);
   };
   
   return (
