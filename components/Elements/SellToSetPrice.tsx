@@ -74,7 +74,7 @@ const SellToSetPrice = ({ onNext }: any) => {
       <div className=" mx-auto border border-[#DDDDDD] rounded-lg mt-3">
         <div className="flex justify-between w-full">
           <button
-            className={`w-[50%] py-3 text-[18px] font-[600] ${
+            className={`sm:w-[50%] w-[100%] py-3 text-[18px] font-[600] ${
               tab === 'buy'
                 ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD]'
                 : ''
@@ -96,7 +96,7 @@ const SellToSetPrice = ({ onNext }: any) => {
         </div>
 
         <div className="px-6">
-          <div className="grid grid-cols-3 gap-4 my-4">
+          <div className="grid sm:grid-cols-3 grid-cols-2  gap-4 my-4">
             <div>
               <span className="text-[14px] text-[#222222]">Asset</span>
               <div className="border  flex border-[##DDDDDD] bg-[#F2F2F2]  rounded-[5px] px-2 items-center ">
@@ -178,7 +178,7 @@ const SellToSetPrice = ({ onNext }: any) => {
           {priceType === 'fixed' && (
             <div className="my-4">
               <label className="text-sm font-[400] text-[#222222]">Fixed</label>
-              <div className="flex items-center justify-between mt-2 p-2 w-[357px] rounded-[5px] border border-[#DDDDDD]">
+              <div className="flex items-center justify-between mt-2 p-2 sm:w-[357px] w-[250px] rounded-[5px] border border-[#DDDDDD]">
                 <button
                   className="px-3 py-1 bg-gray-200 rounded"
                   onClick={handleDecrement}
@@ -193,7 +193,7 @@ const SellToSetPrice = ({ onNext }: any) => {
                     const value = parseFloat(e.target.value);
                     setFixedPrice(value);
                   }}
-                  className="text-[18px] font-[500] text-[#222222] text-center"
+                  className="text-[18px] w-[100%] font-[500] text-[#222222] text-center"
                 />
                 <button
                   className="px-3 py-1 bg-gray-200 rounded"
