@@ -164,7 +164,7 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
                 price={row.unitPrice}
                 available={row.amount}
                 limit={row.amount}
-                payments={row.payments || []}
+                paymentMethods={row.seller?.paymentMethods || []}
                 type={type}
               />
             ))}

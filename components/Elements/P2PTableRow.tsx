@@ -14,7 +14,7 @@ interface P2PRowProps {
   price: number;
   available: number;
   limit: number;
-  payments: Array<{ name: string; color: string }>;
+  paymentMethods: Array<{ name: string; color: string }>;
   sale: any;
   type?: 'ALL' | 'BUYER' | 'SELLER';
 }
@@ -24,7 +24,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
   price,
   available,
   limit,
-  payments,
+  paymentMethods,
   sale,
   type,
 }) => {
@@ -78,7 +78,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
       <td className="md:py-4 py-2">
         <div className="flex  justify-between">
           <div className="flex flex-col">
-            {payments.map((payment, index) => (
+            {paymentMethods.map((payment, index) => (
               <div key={index} className="flex gap-2">
                 <div
                   className={`w-[10px] h-[10px] rounded-full`}
