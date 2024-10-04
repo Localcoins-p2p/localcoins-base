@@ -128,12 +128,13 @@ export const updateUser = isLoggedIn(
       image,
       phone,
       termsAccepted,
+      country,
     }: Prisma.User & {
       image: string;
     },
     { user }: IGqlContext
   ) => {
-    const data: any = { email, name, phone, termsAccepted };
+    const data: any = { email, name, phone, termsAccepted, country };
 
     let profileImage;
     if (image) {

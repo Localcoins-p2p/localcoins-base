@@ -94,7 +94,12 @@ const typeDefs = gql`
       country: String
       password: String!
     ): User
-    updateUser(name: String, email: String, termsAccepted: Boolean): User
+    updateUser(
+      name: String
+      email: String
+      termsAccepted: Boolean
+      country: String
+    ): User
     login(
       publicKey: String!
       nonce: String!

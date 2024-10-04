@@ -11,6 +11,7 @@ export const GET_USER = gql`
       name
       publicKey
       termsAccepted
+      country
     }
   }
 `;
@@ -31,7 +32,10 @@ function SetContext() {
   useEffect(() => {
     if (!fetchingCurrentUser && userData?.user) {
       setUser?.(userData.user);
-      if (!userData?.user?.name && pathname !== '/profile') {
+      if (
+        (!userData?.user?.name || !userData?.user?.country) &&
+        pathname !== '/profile'
+      ) {
         router.push('/profile');
       } else if (!userData?.user?.termsAccepted) {
         router.push('/disclaimer');

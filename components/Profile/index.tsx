@@ -10,17 +10,22 @@ import Loading from '../Elements/Loading';
 import Select from 'react-select';
 
 export const UPDATE_USER = gql`
-  mutation UpdateUser($name: String, $email: String, $termsAccepted: Boolean) {
-    updateUser(name: $name, email: $email, termsAccepted: $termsAccepted) {
+  mutation UpdateUser(
+    $name: String
+    $email: String
+    $termsAccepted: Boolean
+    $country: String
+  ) {
+    updateUser(
+      name: $name
+      email: $email
+      termsAccepted: $termsAccepted
+      country: $country
+    ) {
       id
     }
   }
 `;
-
-// todo: fix this page
-// add loading, <Loading /> component is already there
-// add. header footer
-// change button styles according to website
 
 const Profile = () => {
   const [name, setName] = useState('');
@@ -34,7 +39,7 @@ const Profile = () => {
   } = useContext(AppContext);
 
   const handleSubmit = () => {
-    updateUser({ name, email }).then(() => {
+    updateUser({ name, email, country: country?.value }).then(() => {
       toast.success('Account updated successfully');
       router.push('/');
     });
@@ -64,7 +69,7 @@ const Profile = () => {
     { label: 'Bangladesh', value: 'BANGLADESH' },
     { label: 'Sri Lanka', value: 'SRILANKA' },
   ];
-  console.log(country);
+
   return (
     <div>
       <div className="px-10">
