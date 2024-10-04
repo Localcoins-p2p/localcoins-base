@@ -17,8 +17,8 @@ const AppLoading = () => {
         alignItems: 'center',
       }}
     >
-      <span className="animate-spin duration-300">
-        <Image src={appLoading} alt="" width={320} height={320} />
+      <span className="animate-spin">
+        <Image src={appLoading} alt="" width={80} height={80} />
       </span>
     </div>
   );

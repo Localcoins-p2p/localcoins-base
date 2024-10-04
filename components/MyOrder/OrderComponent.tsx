@@ -17,6 +17,8 @@ interface OrderComponentProps {
   showClaimPaymentButton: boolean;
   loading: boolean;
   image: string;
+  isSeller?: boolean;
+  isBuyer?: boolean;
 }
 
 const ADD_SCREENSHOT = gql`
@@ -58,12 +60,14 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   showClaimPaymentButton,
   loading,
   image,
+  isSeller,
+  isBuyer,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
   const [selectedPaymentMethodIndex, setSelectedPaymentMethodIndex] =
     useState(0);
-    const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [{}, markFinished] = useMutation(MARK_FINISHED);
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
@@ -134,11 +138,10 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     } finally {
     }
   };
-  
 
-  const options = paymentMethods.map((method:any) => ({
-    value: method.name, 
-    label: method.name 
+  const options = paymentMethods.map((method: any) => ({
+    value: method.name,
+    label: method.name,
   }));
 
   const handleChangeClick = () => {
@@ -146,11 +149,13 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   };
 
   const handleChangePaymentMethod = (selectedOption: any) => {
-    const selectedIndex = paymentMethods.findIndex((method:any) => method.name === selectedOption.value);
+    const selectedIndex = paymentMethods.findIndex(
+      (method: any) => method.name === selectedOption.value
+    );
     setSelectedPaymentMethodIndex(selectedIndex);
     // setDropdownVisible(false);
   };
-  
+
   return (
     <div className="p-6 text-white max-w-[612px] w-full">
       <div className="border-l-2 border-white relative pl-4">
@@ -210,25 +215,25 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               </div>
 
               {isDropdownVisible ? (
-        <div className='flex items-center border justify-center border-[#4D4D4D] rounded-[5px] px-1 '>
-          <Select
-            className="w-[100px] border-l border-[#393939]"
-            options={options}
-            styles={customStyles}
-            isSearchable={false}
-            components={{
-              DropdownIndicator: () => (
-                <TiArrowSortedDown className="text-white" />
-              ),
-            }}
-            onChange={handleChangePaymentMethod}
-          />
-        </div>
-      ) : (
-        <button className="text-yellow-400" onClick={handleChangeClick}>
-          Change
-        </button>
-      )}
+                <div className="flex items-center border justify-center border-[#4D4D4D] rounded-[5px] px-1 ">
+                  <Select
+                    className="w-[100px] border-l border-[#393939]"
+                    options={options}
+                    styles={customStyles}
+                    isSearchable={false}
+                    components={{
+                      DropdownIndicator: () => (
+                        <TiArrowSortedDown className="text-white" />
+                      ),
+                    }}
+                    onChange={handleChangePaymentMethod}
+                  />
+                </div>
+              ) : (
+                <button className="text-yellow-400" onClick={handleChangeClick}>
+                  Change
+                </button>
+              )}
             </div>
             <div className="mb-2 flex justify-between">
               <span className="text-[#A6A6A6] text-[18px] font-[500]">

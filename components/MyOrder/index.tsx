@@ -121,6 +121,8 @@ const MyOrder = () => {
               showClaimPaymentButton={showClaimPaymentButton}
               loading={fetching}
               image={image}
+              isSeller={isSeller}
+              isBuyer={isBuyer}
             />
           </div>
           <div className="col-span-5 mt-6 rounded-[15px] h-full">
