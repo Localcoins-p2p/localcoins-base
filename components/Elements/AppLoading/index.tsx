@@ -18,7 +18,7 @@ const AppLoading = () => {
       }}
     >
       <span className="animate-spin">
-        <Image src={appLoading} alt="" width={80} height={80} />
+        <Image src={appLoading} alt="" width={320} height={320} />
       </span>
     </div>
   );
