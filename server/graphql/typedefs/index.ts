@@ -13,6 +13,7 @@ const typeDefs = gql`
     country: String
     isAdmin: Boolean
     publicKey: String
+    termsAccepted: Boolean
     paymentMethods: [PaymentMethod]
   }
 
@@ -93,7 +94,7 @@ const typeDefs = gql`
       country: String
       password: String!
     ): User
-    updateUser(name: String, email: String): User
+    updateUser(name: String, email: String, termsAccepted: Boolean): User
     login(
       publicKey: String!
       nonce: String!
@@ -126,7 +127,7 @@ const typeDefs = gql`
       imageUrl: String!
       method: String!
     ): Screenshot
-    updateProfile(name: String, email: String): User
+    updateProfile(name: String, email: String, termsAccepted: Boolean): User
     addPaymentMethod(
       name: String!
       accountNumber: String!

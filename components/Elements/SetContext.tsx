@@ -10,6 +10,7 @@ export const GET_USER = gql`
       id
       name
       publicKey
+      termsAccepted
     }
   }
 `;
@@ -32,6 +33,8 @@ function SetContext() {
       setUser?.(userData.user);
       if (!userData?.user?.name && pathname !== '/profile') {
         router.push('/profile');
+      } else if (!userData?.user?.termsAccepted) {
+        router.push('/disclaimer');
       }
     }
   }, [fetchingCurrentUser, userData]);

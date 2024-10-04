@@ -107,10 +107,14 @@ export const deleteUser = adminOnly(async (_: unknown, { id }) => {
 });
 
 export const updateProfile = isLoggedIn(
-  (_: unknown, { name, email }: Prisma.User, { user }: IGqlContext) => {
+  (
+    _: unknown,
+    { name, email, termsAccepted }: Prisma.User,
+    { user }: IGqlContext
+  ) => {
     return prisma.user.update({
       where: { id: user?.id },
-      data: { name, email },
+      data: { name, email, termsAccepted },
     });
   }
 );
@@ -123,12 +127,13 @@ export const updateUser = isLoggedIn(
       name,
       image,
       phone,
+      termsAccepted,
     }: Prisma.User & {
       image: string;
     },
     { user }: IGqlContext
   ) => {
-    const data: any = { email, name, phone };
+    const data: any = { email, name, phone, termsAccepted };
 
     let profileImage;
     if (image) {

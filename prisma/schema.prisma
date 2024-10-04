@@ -27,6 +27,7 @@ model User {
 
   phoneOtp                String?   @default("")
   phoneOtpDoC             DateTime?
+  termsAccepted           Boolean   @default(false)
 
   isAdmin                 Boolean               @default(false)
   SaleBuyer               Sale[]                @relation("SellerRelation")
