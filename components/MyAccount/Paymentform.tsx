@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { gql, useMutation } from 'urql';
 import Loading from '../Elements/Loading';
+import { AppContext } from '@/utils/context';
+import { paymentMethodsByCountry } from '@/data/paymentMethods';
+import ReactSelect from 'react-select';
+import customStyles from '../Elements/reactSelectStyles';
 
 interface PaymentFormProps {
   onSubmit: () => void;
@@ -51,6 +55,9 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const [{ fetching: updating }, updatePaymentMethod] = useMutation(
     UPDATE_PAYMENT_METHOD
   );
+  const {
+    context: { user },
+  } = useContext(AppContext);
 
   const [paymentMethod, setPaymentMethod] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
@@ -97,6 +104,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     onSubmit();
   };
 
+  const paymentMethods = useMemo(() => {
+    const methods = paymentMethodsByCountry();
+    return methods[user?.country as 'PAKISTAN'];
+  }, [user]);
+
   const isEdit = !!id;
 
   return (
@@ -105,12 +117,14 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         <label className="block text-sm font-medium text-gray-700">
           Payment Method
         </label>
-        <input
-          type="text"
-          placeholder="Enter Payment Method"
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        <ReactSelect
+          className="w-[100px] border-l border-[#393939]"
+          onChange={(option) => {
+            console.log(option);
+          }}
+          options={paymentMethods.map((p) => ({ value: p, label: p }))}
+          styles={customStyles}
+          isSearchable={false}
         />
       </div>
 
