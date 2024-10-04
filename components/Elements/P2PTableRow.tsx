@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React from 'react';
 import BuyButton from './BuyButton';
 import Link from 'next/link';
+import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
 
 interface P2PRowProps {
   advertiser: {
@@ -10,9 +11,9 @@ interface P2PRowProps {
     orders: number;
     completionRate: string;
   };
-  price: string;
-  available: string;
-  limit: string;
+  price: number;
+  available: number;
+  limit: number;
   payments: Array<{ name: string; color: string }>;
   sale: any;
   type?: 'ALL' | 'BUYER' | 'SELLER';
@@ -59,15 +60,19 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
       </td>
       <td className=" md:py-4 font-bold">
         <span className="text-xl text-[#FFFFFF]">{price}</span>
-        <span className="text-[13px] text-[#FFFFFF]"> USD</span>
+        <span className="text-[13px] text-[#FFFFFF]">
+          {' '}
+          {getFromCurrency().name}
+        </span>
       </td>
       <td className=" md:py-4">
         <div className="text-[13px] font-[600] text-[#FFFFFF]">
-          <span className="md:hidden">available: </span> {available} USDT
+          <span className="md:hidden">available: </span>{' '}
+          {(available / 1e9).toFixed(2)} {getToCurrency().name}
         </div>
         <div className="text-[13px] font-[600] text-[#FFFFFF]">
           <span className="md:hidden">Order Limit: </span>
-          {limit}
+          {(limit / 1e9).toFixed(2)} {getToCurrency().name}
         </div>
       </td>
       <td className="md:py-4 py-2">
@@ -86,7 +91,15 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
             ))}
           </div>
           <span className="md:hidden float-right">
-            <BuyButton saleId={sale.id} onChainSaleId={sale.onChainSaleId} />
+            {type === 'SELLER' || type === 'BUYER' ? (
+              <Link href={`/my-order?sale=${sale.id}`}>
+                <button className="bg-[#3AA53E] text-white text-[16px] font-[600] px-4 py-2 rounded-[5px]">
+                  Open
+                </button>
+              </Link>
+            ) : (
+              <BuyButton saleId={sale.id} onChainSaleId={sale.onChainSaleId} />
+            )}
           </span>
         </div>
       </td>
