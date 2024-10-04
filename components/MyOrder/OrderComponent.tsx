@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import { TiArrowSortedDown } from 'react-icons/ti';
+import customStyles from '../../components/Elements/reactSelectStyles';
 import { gql, useMutation } from 'urql';
 import { getMasterAddress, SALE_SEED } from '@/utils/program';
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { BN } from '@project-serum/anchor';
 import useSolana from '@/utils/useSolana';
 import Loading from '../Elements/Loading';
+import Select from 'react-select';
 
 interface OrderComponentProps {
   sale: any;
@@ -60,6 +63,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
   const [selectedPaymentMethodIndex, setSelectedPaymentMethodIndex] =
     useState(0);
+    const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [{}, markFinished] = useMutation(MARK_FINISHED);
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
@@ -130,7 +134,23 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     } finally {
     }
   };
+  
 
+  const options = paymentMethods.map((method:any) => ({
+    value: method.name, 
+    label: method.name 
+  }));
+
+  const handleChangeClick = () => {
+    setDropdownVisible(!isDropdownVisible);
+  };
+
+  const handleChangePaymentMethod = (selectedOption: any) => {
+    const selectedIndex = paymentMethods.findIndex((method:any) => method.name === selectedOption.value);
+    setSelectedPaymentMethodIndex(selectedIndex);
+    setDropdownVisible(false);
+  };
+  
   return (
     <div className="p-6 text-white max-w-[612px] w-full">
       <div className="border-l-2 border-white relative pl-4">
@@ -189,7 +209,26 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 </span>
               </div>
 
-              <button className="text-yellow-400">Change</button>
+              {isDropdownVisible ? (
+        <div className='flex items-center border justify-center border-[#4D4D4D] rounded-[5px] px-1 '>
+          <Select
+            className="w-[100px] border-l border-[#393939]"
+            options={options}
+            styles={customStyles}
+            isSearchable={false}
+            components={{
+              DropdownIndicator: () => (
+                <TiArrowSortedDown className="text-white" />
+              ),
+            }}
+            onChange={handleChangePaymentMethod}
+          />
+        </div>
+      ) : (
+        <button className="text-yellow-400" onClick={handleChangeClick}>
+          Change
+        </button>
+      )}
             </div>
             <div className="mb-2 flex justify-between">
               <span className="text-[#A6A6A6] text-[18px] font-[500]">
