@@ -44,7 +44,7 @@ function ModalComponent({
       contentLabel={typeof title === 'string' ? title : ''}
       style={customStyles}
     >
-      <div className='flex justify-between border-b pb-2 items-center'>
+      <div className='flex justify-between  border-b pb-2 items-center'>
         <div className='text-[35px] font-[700] text-[#222222]'>Post Normal Ad</div>
         <div onClick={onClose}>
           <IoIosClose className='h-[24px] w-[24px]'/>

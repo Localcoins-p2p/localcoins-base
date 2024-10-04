@@ -161,6 +161,7 @@ const FilterPanel = () => {
             placeholder="Transaction amount"
           />
           <Select
+             menuPosition='fixed'
             className="w-[100px] border-l border-[#393939]"
             value={selectedCurrency}
             onChange={setSelectedCurrency}
@@ -177,6 +178,7 @@ const FilterPanel = () => {
 
         <div className=" hidden md:block border  border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[350px] ">
           <Select
+            menuPosition='fixed'
             value={selectedPayment}
             onChange={setSelectedPayment}
             options={paymentOptions}
@@ -193,6 +195,7 @@ const FilterPanel = () => {
         <div className=" border hidden md:flex border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[350px] items-center ">
           <CiGlobe className="h-[24px] w-[26px] font-bold text-[#fff]" />
           <Select
+            menuPosition='fixed'
             className="w-full"
             value={selectedRegion}
             onChange={setSelectedRegion}

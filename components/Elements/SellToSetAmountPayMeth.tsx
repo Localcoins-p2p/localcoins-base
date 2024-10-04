@@ -72,6 +72,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data ,onBack}: any) => {
     setOrderLimitMin(e.target.value);
     console.log('Order Limit Min:', e.target.value);
   };
+  
 
   // const handleOrderLimitMaxChange = (
   //   e: React.ChangeEvent<HTMLInputElement>
@@ -116,7 +117,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data ,onBack}: any) => {
       <div className="mx-auto border border-[#DDDDDD] rounded-lg mt-3">
         <div className="flex justify-between w-full">
           <button
-            className={`w-[50%] py-3 text-[18px] font-[600] ${
+            className={`sm:w-[50%] w-[100%] py-3 text-[18px] font-[600] ${
               tab === 'buy'
                 ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD]'
                 : ''
@@ -137,7 +138,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data ,onBack}: any) => {
                     </button> */}
         </div>
 
-        <div className="px-6 py-4 w-[50%]">
+        <div className="px-6 py-4 sm:w-[50%] w-[90%]">
           <div className="mb-4">
             <label className="block text-sm font-[400] text-[#222222] mb-1">
               Total Amount

@@ -1,13 +1,35 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Image from 'next/image';
 import { AppContext } from '@/utils/context';
 import useSolana from '@/utils/useSolana';
-const ProfileHeader = () => {
+import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
+import ModalComponent from '../Elements/ModalComponent';
+import StepProgress from '../Elements/StepProgress';
+import SellToSetPrice from '../Elements/SellToSetPrice';
+import SellToSetAmountPayMeth from '../Elements/SellToSetAmountPayMeth';
+import RemarksAndAutoRes from '../Elements/RemarksAndAutoRes';
+const ProfileHeader = ({selectedUser}:any) => {
   const {
     context: { user },
   } = useContext(AppContext);
   const { publicKey } = useSolana();
+  const fromCurrency = getFromCurrency();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  const handleNext = async () => {
+    
+    setCurrentStep(currentStep + 1);
+  };
+  const handleBack = async () => {
+    setCurrentStep(currentStep - 1);
+  };
   return (
     <div className="md:flex  space-y-5 items-center justify-between">
       <div className="flex items-center space-x-4">
@@ -40,9 +62,42 @@ const ProfileHeader = () => {
         </div>
       </div>
       <div>
-        <button className="bg-[#F3AA05] text-black px-6 py-2 rounded-[10px]">
-          Become a Merchant
+        <button  onClick={handleOpenModal} className="bg-[#F3AA05] text-black px-6 py-2 rounded-[10px]">
+          Buy {fromCurrency?.name}
         </button>
+
+        <ModalComponent
+        title="Filter Options"
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        header={<div>Modal Header</div>}
+      >
+        <div className="max-h-[90vh] overflow-auto no-scrollbar">
+          <StepProgress currentStep={currentStep} />
+
+          {currentStep === 1 && (
+            <SellToSetPrice onNext={handleNext}
+            //  data={data} setData={setData} 
+             />
+          )}
+          {currentStep === 2 && (
+            <SellToSetAmountPayMeth
+              onNext={handleNext}
+              onBack={handleBack}
+              // data={data}
+              // setData={setData}
+            />
+          )}
+          {currentStep === 3 && (
+            <RemarksAndAutoRes
+              onNext={handleNext}
+              // data={data}
+              onBack={handleBack}
+              // setData={setData}
+            />
+          )}
+        </div>
+      </ModalComponent>
       </div>
     </div>
   );

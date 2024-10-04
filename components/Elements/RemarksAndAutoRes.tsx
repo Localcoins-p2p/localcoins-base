@@ -10,7 +10,7 @@ const RemarksAndAutoRes = ({ onNext, onBack }: any) => {
       <div className=" mx-auto border border-[#DDDDDD] rounded-lg mt-3">
         <div className="flex justify-between w-full">
           <button
-            className={`w-[50%] py-3 text-[18px] font-[600] ${
+            className={`sm:w-[50%] w-[100%] py-3 text-[18px] font-[600] ${
               tab === 'buy'
                 ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD]'
                 : ''
