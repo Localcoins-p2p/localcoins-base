@@ -14,6 +14,7 @@ const ProfileHeader = ({selectedUser}:any) => {
   } = useContext(AppContext);
   const { publicKey } = useSolana();
   const fromCurrency = getFromCurrency();
+  const   toCurrency =getToCurrency()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const handleOpenModal = () => {
@@ -63,7 +64,7 @@ const ProfileHeader = ({selectedUser}:any) => {
       </div>
       <div>
         <button  onClick={handleOpenModal} className="bg-[#F3AA05] text-black px-6 py-2 rounded-[10px]">
-          Buy {fromCurrency?.name}
+          Buy {toCurrency?.name}
         </button>
 
         <ModalComponent
