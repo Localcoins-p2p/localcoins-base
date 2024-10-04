@@ -161,6 +161,7 @@ const SellToSetPrice = ({ onNext }: any) => {
                   Fixed
                 </span>
               </label>
+              {/*
               <label className="flex items-center">
                 <input
                   type="radio"
@@ -172,6 +173,7 @@ const SellToSetPrice = ({ onNext }: any) => {
                   Floating
                 </span>
               </label>
+              */}
             </div>
           </div>
 

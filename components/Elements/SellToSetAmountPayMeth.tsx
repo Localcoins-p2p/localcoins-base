@@ -1,4 +1,5 @@
 'use client';
+import { getToCurrency } from '@/utils/getCurrency';
 import React, { useState } from 'react';
 // import { TiArrowSortedDown } from 'react-icons/ti';
 // import Select from 'react-select';
@@ -150,7 +151,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
                 onChange={handleTotalAmountChange}
               />
               <span className="absolute inset-y-0 right-4 flex items-center text-[14px] font-[500] text-[#222222]">
-                USDC
+                {getToCurrency().name}
               </span>
             </div>
             <div className="text-sm text-[#A7A7A7] mt-2">

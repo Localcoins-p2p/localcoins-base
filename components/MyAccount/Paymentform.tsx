@@ -145,7 +145,9 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         className="w-full px-4 py-2 bg-[#f3aa05] text-white text-sm font-medium rounded hover:bg-blue-600"
       >
         {loading ? (
-          <Loading width="5" height="5" />
+          <div className="flex justify-center items-center">
+            <Loading width="5" height="5" />
+          </div>
         ) : isEdit ? (
           'Update Payment Method'
         ) : (
