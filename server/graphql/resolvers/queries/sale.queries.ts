@@ -9,7 +9,11 @@ export const sales = async (_: unknown, { id }: { id?: string }) => {
       }),
     },
     include: {
-      seller: true,
+      seller: {
+        include: {
+          paymentMethods: true,
+        },
+      },
       buyer: true,
       screenshots: true,
     },

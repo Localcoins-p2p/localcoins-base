@@ -22,6 +22,12 @@ const GET_SALES = gql`
           name
           publicKey
           id
+          paymentMethods {
+            id
+            name
+            accountName
+            accountNumber
+          }
         }
         screenshotMehtods
         unitPrice
