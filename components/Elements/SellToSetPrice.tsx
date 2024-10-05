@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { CiGlobe } from 'react-icons/ci';
@@ -68,6 +68,25 @@ const SellToSetPrice = ({ onNext }: any) => {
       setFixedPrice((prevPrice) => Math.max(prevPrice - 1, 45.0));
     }
   };
+
+  const getSolPrice = async () => {
+    try {
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=php'
+      );
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setFixedPrice(data?.solana?.php);
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  };
+
+  useEffect(() => {
+    getSolPrice();
+  }, []);
 
   return (
     <>
@@ -205,7 +224,7 @@ const SellToSetPrice = ({ onNext }: any) => {
                 </button>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                The fixed price should be between 45.00 - 67.48
+                Enter your price here
               </p>
             </div>
           )}
