@@ -53,20 +53,16 @@ const PHPDATA = [{ value: fromCurrency.name, label: fromCurrency.name }];
 const SellToSetPrice = ({ onNext }: any) => {
   const [tab, setTab] = useState('buy');
   const [priceType, setPriceType] = useState('fixed');
-  const [fixedPrice, setFixedPrice] = useState(55.55);
+  const [fixedPrice, setFixedPrice] = useState(0);
   const [selectedusdt, setSelectedusdt] = useState<any>(USDTDATA[0]);
   const [selectedphp, setSelectedphp] = useState<any>(PHPDATA[0]);
 
   const handleIncrement = () => {
-    if (fixedPrice < 67.48) {
-      setFixedPrice((prevPrice) => Math.min(prevPrice + 1, 67.48));
-    }
+    setFixedPrice((prevPrice) => Math.min(prevPrice + 1, 67.48));
   };
 
   const handleDecrement = () => {
-    if (fixedPrice > 45.0) {
-      setFixedPrice((prevPrice) => Math.max(prevPrice - 1, 45.0));
-    }
+    setFixedPrice((prevPrice) => Math.max(prevPrice - 1, 45.0));
   };
 
   const getSolPrice = async () => {
