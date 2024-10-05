@@ -8,6 +8,7 @@ import StepProgress from '../Elements/StepProgress';
 import SellToSetPrice from '../Elements/SellToSetPrice';
 import SellToSetAmountPayMeth from '../Elements/SellToSetAmountPayMeth';
 import RemarksAndAutoRes from '../Elements/RemarksAndAutoRes';
+import WalletBalance from '../Elements/WalletBalance';
 const ProfileHeader = ({ selectedUser }: any) => {
   const {
     context: { user },
@@ -47,18 +48,19 @@ const ProfileHeader = ({ selectedUser }: any) => {
       <div className="lg:text-center">
         <div className="flex items-center space-x-2">
           <span className="text-[#FFFFFF] font-[600] text-[18px] md:text-[14px]">
-            P2P Estimated Value (BTC)
+            P2P Estimated Value (SOL)
           </span>
           <Image
             src="/assets/common/eyeHide.svg"
             height={24}
             width={24}
             alt="Toggle Visibility"
-            className="h-[24px] w-[24px] md:h-[18px] md:w-[18px]"
+            className="h-[24px] w-[24px] md:h-[18px] md:w-[18px] hidden"
           />
         </div>
         <div className="text-[#FFFFFF] lg:text-[28px] text-[23px] md:text-[18px] font-[600]">
-          0.00000002BTC <span className="text-[#777777]">≈ ₱0.00</span>
+          <WalletBalance />
+          <span className="text-[#777777] hidden">≈ ₱0.00</span>
         </div>
       </div>
       <div>
