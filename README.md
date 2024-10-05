@@ -1,6 +1,6 @@
 ## Introduction
 
-**LocalCoins** is a decentralized peer-to-peer (P2P) platform providing a transparent and secure way for users to on-ramp and off-ramp cryptocurrency. Unlike traditional exchanges, LocalCoins acts as an escrow between buyers and sellers, ensuring safe transactions without ever holding fiat currency. Users can exchange cryptocurrency for fiat directly with other users, benefiting from the platform’s decentralized infrastructure and built-in security measures.
+**LocalCoins** is a decentralized non-custodial peer-to-peer (P2P) platform providing a transparent and secure way for users to on-ramp and off-ramp cryptocurrency. Unlike traditional exchanges, LocalCoins acts as an escrow between buyers and sellers, ensuring safe transactions without ever holding fiat currency. Users can exchange cryptocurrency for fiat directly with other users, benefiting from the platform’s decentralized infrastructure and built-in security measures.
 
 With LocalCoins, we aim to simplify the process of entering and exiting the crypto ecosystem by offering:
 
