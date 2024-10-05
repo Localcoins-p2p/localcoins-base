@@ -47,6 +47,14 @@ const MARK_PAID = gql`
   }
 `;
 
+export const CANCEL_SALE = gql`
+  mutation CancelSale($cancelSaleId: String!) {
+    cancelSale(id: $cancelSaleId) {
+      id
+    }
+  }
+`;
+
 const MARK_FINISHED = gql`
   mutation MarkSaleFinished($markSaleFinishedId: String!) {
     markSaleFinished(id: $markSaleFinishedId) {
@@ -67,6 +75,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{ fetching }, removeBuyer] = useMutation(addRemoveBuyerMutation);
+  const [{ fetching: canceling }, cancelSale] = useMutation(CANCEL_SALE);
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
   const [selectedPaymentMethodIndex, setSelectedPaymentMethodIndex] =
     useState(0);
@@ -167,6 +176,36 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         command: 'REMOVE',
       });
       toast.success('Purchase canceled');
+    } catch (err) {
+    } finally {
+    }
+  };
+
+  const handleSellerCancel = async () => {
+    try {
+      const masterPda = await getMasterAddress();
+      const onChainSaleId = new BN(sale.onChainSaleId);
+      const [salePda, saleBump] = await PublicKey.findProgramAddress(
+        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+        programId
+      );
+      const authority = publicKey;
+      const transaction = new Transaction().add(
+        (program as any).instruction.cancelSale(onChainSaleId, {
+          accounts: {
+            sale: salePda,
+            master: masterPda,
+            authority: authority as PublicKey,
+            systemProgram: SystemProgram.programId,
+          },
+        })
+      );
+      const txHash = await sendTransaction(transaction, connection);
+      const response = await cancelSale({
+        cancelSaleId: sale.id,
+      });
+      console.log('Response', response);
+      toast.success('Sale canceled');
     } catch (err) {
     } finally {
     }
@@ -343,9 +382,14 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                   <div className="w-5 h-5" />
                 )}
               </div>
-              <span>Payment Received</span>
+              <span>Confirm Payment Received</span>
             </button>
-            <button className="text-[#F3AA05] font-semibold ">Cancel</button>
+            <button
+              className="text-[#F3AA05] font-semibold "
+              onClick={handleSellerCancel}
+            >
+              Cancel
+            </button>
           </div>
         )}
         {showClaimPaymentButton && (
