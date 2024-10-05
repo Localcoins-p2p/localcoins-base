@@ -18,7 +18,7 @@ const P2PTrading = () => {
           t1="My Account"
           t2="Orders"
           href="/my-account"
-          icon=""
+          icon="assets/common/userrIcon.svg"
         />
       </div>
       {/* <BuySellTabs/> */}

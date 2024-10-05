@@ -227,7 +227,7 @@ const FilterPanel = () => {
           onClick={handleOpenModal}
           className="flex items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700"
         >
-          Sale {getToCurrency().name}
+          Sell {getToCurrency().name}
         </button>
       </div>
 

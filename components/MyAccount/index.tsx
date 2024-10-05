@@ -51,8 +51,10 @@ const MyAccount = () => {
           title="MY Account"
           para=" View your profile, check your wallet balance, secure your account, and
           track your transaction history—all in one place."
-          t1="P2P Help Center"
+          t1="My Account"
           t2="Orders"
+          href="/my-account"
+          icon="assets/common/userrIcon.svg"
         />
       </div>
       <div className="mt-16">
@@ -82,18 +84,27 @@ const MyAccount = () => {
       <div className="my-10 overflow-x-scroll no-scrollbar">
         <AccountManagement onTabChange={handleTabChange} />
       </div>
-      {activeTab === 1 ? (
+
+      {activeTab === 0 ? (
+        <>
+          <div className="mb-6">
+            <P2PPaymentMethods
+              isEditing={isEditing}
+              setSelectedUser={setSelectedUser}
+              selectedUser={selectedUser}
+            />
+          </div>
+          {!fetching && paymentMethods.length === 0 && (
+            <div className="text-white text-opacity-70 text-center flex justify-center items-center h-44 ">
+              You have not added any payment method
+            </div>
+          )}
+        </>
+      ) : activeTab === 1 ? (
         <P2PTable type="SELLER" />
       ) : activeTab === 2 ? (
         <P2PTable type="BUYER" />
       ) : null}
-      <div className="mb-6">
-        <P2PPaymentMethods
-          isEditing={isEditing}
-          setSelectedUser={setSelectedUser}
-          selectedUser={selectedUser}
-        />
-      </div>
 
       {activeTab === 1 || activeTab === 2 ? null : fetching ? (
         <div className="h-44 w-full flex justify-center items-center">
@@ -105,12 +116,6 @@ const MyAccount = () => {
             <UserCard paymmentMethod={method as any} onEdit={handleEdit} />
           </div>
         ))
-      )}
-
-      {!fetching && paymentMethods.length === 0 && (
-        <div className="text-white text-opacity-70 text-center flex justify-center items-center h-44 ">
-          You have not added any payment method
-        </div>
       )}
     </div>
   );
