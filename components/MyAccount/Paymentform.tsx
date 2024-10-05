@@ -111,39 +111,30 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   }, [user]);
 
   const isEdit = !!id;
+  const currentPaymentMethod = useMemo(() => {
+    if (isEdit && selectedUser) {
+      setPaymentMethod(selectedUser.heading);
+      return { label: selectedUser.heading, value: selectedUser.heading };
+    }
+  }, [selectedUser]);
 
   return (
     <div className="p-4">
-      {/* <div className="mb-4">
+      <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">
           Payment Method
         </label>
-        <ReactSelect
-          className="w-[100px] border-l border-[#393939]"
+        <Select
           onChange={(option) => {
-            console.log(option);
+            setPaymentMethod(option?.value as string);
           }}
+          defaultValue={currentPaymentMethod}
           options={paymentMethods?.map((p) => ({ value: p, label: p }))}
-          styles={customStyles}
           isSearchable={false}
+          placeholder="Select a payment method"
+          className="mt-1"
         />
-      </div> */}
-
-      <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-            Payment Method
-            </label>
-            <Select
-            onChange={(option) => {
-              console.log(option);
-            }}
-            options={paymentMethods?.map((p) => ({ value: p, label: p }))}   
-            isSearchable={false}       
-             
-              placeholder="Select a payment method"
-              className="mt-1"
-            />
-          </div>
+      </div>
 
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">
