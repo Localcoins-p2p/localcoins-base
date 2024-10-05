@@ -1,3 +1,25 @@
+## Introduction
+
+**LocalCoins** is a decentralized peer-to-peer (P2P) platform providing a transparent and secure way for users to on-ramp and off-ramp cryptocurrency. Unlike traditional exchanges, LocalCoins acts as an escrow between buyers and sellers, ensuring safe transactions without ever holding fiat currency. Users can exchange cryptocurrency for fiat directly with other users, benefiting from the platform’s decentralized infrastructure and built-in security measures.
+
+With LocalCoins, we aim to simplify the process of entering and exiting the crypto ecosystem by offering:
+
+**Decentralized Escrow:** A trustless system that ensures both parties in a transaction are protected.
+**Transparent Transactions:** All transactions are visible on the blockchain for easy verification.
+**User Control:** Users handle fiat transfers themselves, meaning no intermediaries or hidden fees.
+**Safety and Accountability:** A built-in report system to identify and act against illicit activities.
+
+Whether you are a newcomer or a seasoned trader, LocalCoins makes cryptocurrency exchanges accessible and secure for everyone.
+
+## Socials
+
+Landing Page: https://www.localcoins.io/
+Dapp: https://dapp.localcoins.io/p2p-trading
+Twitter: https://x.com/Localcoinsp2p
+Facebook: https://www.facebook.com/localcoinsp2p
+Telegram Group: https://t.me/localcoinscommunity
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
