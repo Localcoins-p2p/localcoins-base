@@ -1,5 +1,6 @@
+'use client';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 import BuyButton from './BuyButton';
 import Link from 'next/link';
 import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
@@ -28,6 +29,11 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
   sale,
   type,
 }) => {
+  const [showAll, setShowAll] = useState(false);
+
+  const handleToggle = () => {
+    setShowAll(!showAll);
+  };
   return (
     <tr className="border-t py-4 md:py-0 border-gray-700 flex-boxx">
       <td className=" md:py-4 flex flex-col space-x-2">
@@ -77,19 +83,40 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
       </td>
       <td className="md:py-4 py-2">
         <div className="flex  justify-between">
-          <div className="flex flex-col">
-            {paymentMethods.map((payment, index) => (
-              <div key={index} className="flex gap-2">
-                <div
-                  className={`w-[10px] h-[10px] rounded-full`}
-                  style={{ backgroundColor: payment.color }}
-                ></div>
-                <div className="text-[13px] text-[#FFFFFF] font-[600]">
-                  {payment?.name}
+          <div className="flex flex-col items-center">
+            {(showAll ? paymentMethods : paymentMethods.slice(0, 2)).map(
+              (payment, index) => (
+                <div key={index} className="flex ">
+                  <div
+                    className={`w-[10px] h-[10px] rounded-full`}
+                    style={{ backgroundColor: payment.color }}
+                  ></div>
+                  <div className="text-[13px] text-[#FFFFFF] font-[600]">
+                    {payment?.name}
+                  </div>
                 </div>
+              )
+            )}
+
+            {paymentMethods.length > 2 && !showAll && (
+              <div
+                className="text-[13px] text-[#FFFFFF] font-[600] cursor-pointer"
+                onClick={handleToggle}
+              >
+                {paymentMethods.length - 2} more
               </div>
-            ))}
+            )}
+
+            {showAll && (
+              <div
+                className="text-[13px] text-[#FFFFFF] font-[600] cursor-pointer"
+                onClick={handleToggle}
+              >
+                Show less
+              </div>
+            )}
           </div>
+
           <span className="md:hidden float-right">
             {type === 'SELLER' || type === 'BUYER' ? (
               <Link href={`/my-order?sale=${sale.id}`}>
