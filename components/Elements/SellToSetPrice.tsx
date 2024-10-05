@@ -232,7 +232,7 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
           <div className="flex gap-x-20">
             <div>
               <p className="text-sm text-[#222222]">Your Price</p>
-              <p className="text-[28px] font-[500] mt-2">₱55.87</p>
+              <p className="text-[28px] font-[500] mt-2">₱ {fixedPrice}</p>
             </div>
             {/* <div>
               <p className="text-sm text-[#222222]">Highest Order Price</p>

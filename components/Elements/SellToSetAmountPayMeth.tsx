@@ -63,10 +63,8 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
   // const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleTotalAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTotalAmount(parseFloat(e.target.value));
-    setData({ ...data, amount: parseFloat(e.target.value) });
+    setData({ ...data, amount:e.target.value });
   };
-
   const handleOrderLimitMinChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -112,6 +110,9 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
   //     alert('Please select a payment method.');
   //   }
   // };
+
+
+  const formattedData = !isNaN(data.amount) ? data.amount : 0;
   return (
     <>
       <div className="mx-auto border border-[#DDDDDD] rounded-lg mt-3">
@@ -144,13 +145,15 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
               Total Amount
             </label>
             <div className="relative">
-              <input
+            <input
                 type="text"
                 className="border border-[#DDDDDD] placeholder-gray-300 rounded-md w-full p-2"
                 placeholder="Max 2200.99"
-                value={totalAmount}
+                value={formattedData} // Ensure 2 decimal places
+                step='0.01'
                 onChange={handleTotalAmountChange}
               />
+
               <span className="absolute inset-y-0 right-4 flex items-center text-[14px] font-[500] text-[#222222]">
                 {getToCurrency().name}
               </span>
