@@ -16,11 +16,15 @@ Whether you are a newcomer or a seasoned trader, LocalCoins makes cryptocurrency
 
 ## Socials
 
-Landing Page: https://www.localcoins.io/
-Dapp: https://dapp.localcoins.io/p2p-trading
-Twitter: https://x.com/Localcoinsp2p
-Facebook: https://www.facebook.com/localcoinsp2p
-Telegram Group: https://t.me/localcoinscommunity
+[**Landing Page:**](https://www.localcoins.io/)
+
+[**Dapp:**](https://dapp.localcoins.io/p2p-trading)
+
+[**Twitter:**](https://x.com/Localcoinsp2p)
+
+[**Facebook:**](https://www.facebook.com/localcoinsp2p)
+
+[**Telegram Group:**](https://t.me/localcoinscommunity)
 
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
