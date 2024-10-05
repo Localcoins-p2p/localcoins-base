@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
+import Loading from './Loading';
 
-const RemarksAndAutoRes = ({ onNext, onBack }: any) => {
+const RemarksAndAutoRes = ({ onNext, onBack, data }: any) => {
   const [tab, setTab] = useState('buy');
   const [status, setStatus] = useState('online');
 
@@ -110,7 +111,11 @@ const RemarksAndAutoRes = ({ onNext, onBack }: any) => {
           onClick={onNext}
           className="bg-[#F3AA05] px-12 text-[16px] font-[600] rounded-[8px] py-2 "
         >
-          Next
+          {data?.loading ? (
+            <Loading height={'[16px]'} width={'[16px]'} />
+          ) : (
+            'Next'
+          )}
         </button>
       </div>
     </>

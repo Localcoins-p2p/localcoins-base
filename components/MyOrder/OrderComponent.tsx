@@ -201,7 +201,8 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             </div>
             <h2 className="ml-4 text-xl font-semibold">
               Open {paymentMethods[selectedPaymentMethodIndex]?.name} to
-              transfer {sale?.amount * sale?.unitPrice} PHP
+              transfer {(sale?.amount * sale?.unitPrice) / getToCurrency().x}{' '}
+              PHP
             </h2>
           </div>
           <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
