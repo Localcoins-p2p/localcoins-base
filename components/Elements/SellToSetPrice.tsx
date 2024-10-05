@@ -50,7 +50,7 @@ const fromCurrency = getFromCurrency();
 const USDTDATA = [{ value: toCurrency.name, label: toCurrency.name }];
 const PHPDATA = [{ value: fromCurrency.name, label: fromCurrency.name }];
 
-const SellToSetPrice = ({ onNext }: any) => {
+const SellToSetPrice = ({ onNext, data, setData }: any) => {
   const [tab, setTab] = useState('buy');
   const [priceType, setPriceType] = useState('fixed');
   const [fixedPrice, setFixedPrice] = useState(0);
@@ -64,6 +64,10 @@ const SellToSetPrice = ({ onNext }: any) => {
   const handleDecrement = () => {
     setFixedPrice((prevPrice) => Math.max(prevPrice - 1, 45.0));
   };
+
+  useEffect(() => {
+    setData({ ...data, unitPrice: fixedPrice });
+  }, [fixedPrice]);
 
   const getSolPrice = async () => {
     try {

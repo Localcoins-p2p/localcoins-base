@@ -9,6 +9,7 @@ import { BN } from '@project-serum/anchor';
 import useSolana from '@/utils/useSolana';
 import Loading from '../Elements/Loading';
 import Select from 'react-select';
+import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
 
 interface OrderComponentProps {
   sale: any;
@@ -170,7 +171,8 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             <div className="flex justify-between">
               <span className="text-[#A6A6A6] text-[18px]">Fiat Amount</span>
               <span className="text-[#0ECB81] text-[18px] font-bold">
-                {sale?.amount * sale?.unitPrice}
+                {(sale?.amount * sale?.unitPrice) / getToCurrency().x}{' '}
+                {getFromCurrency().name}
               </span>
             </div>
             <div className="flex justify-between mt-2">
@@ -178,7 +180,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 Price
               </span>
               <span className="text-[#FFFFFF] text-[18px] font-[600]">
-                ${sale?.unitPrice}
+                {sale?.unitPrice} {getFromCurrency().name}
               </span>
             </div>
             <div className="flex justify-between mt-2">
@@ -186,7 +188,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 Receive Quantity
               </span>
               <span className="text-[#FFFFFF] text-[18px] font-[600]">
-                {sale?.amount}
+                {sale?.amount / getToCurrency().x} {getToCurrency().name}
               </span>
             </div>
           </div>

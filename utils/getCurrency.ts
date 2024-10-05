@@ -3,5 +3,5 @@ export const getFromCurrency = () => {
 };
 
 export const getToCurrency = () => {
-  return { name: 'SOL' };
+  return { name: 'SOL', x: 1e9 };
 };

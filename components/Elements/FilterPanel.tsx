@@ -18,6 +18,7 @@ import { gql, useMutation } from 'urql';
 import { useRouter } from 'next/navigation';
 import customStyles from '../../components/Elements/reactSelectStyles';
 import { getToCurrency, getFromCurrency } from '@/utils/getCurrency';
+import toast from 'react-hot-toast';
 
 const paymentOptions = [{ value: 'All Payments', label: 'All Payments' }];
 const regionOptions = [{ value: 'All Regions', label: 'All Regions' }];
@@ -131,17 +132,28 @@ const FilterPanel = () => {
   };
 
   const handleNext = async () => {
+    let response: any = {};
     if (currentStep == 3) {
-      const { txHash, onChainSaleId } =
-        (await handleCreateSale({ amount: data.amount * 1000000000 })) || {};
+      setData({ ...data, loading: true });
+      try {
+        response =
+          (await handleCreateSale({ amount: data.amount * 1000000000 })) || {};
+      } catch (err) {
+      } finally {
+        setData({ ...data, loading: false });
+      }
+      setData({ ...data, loading: true });
       createSaleMutation({
-        amount: data.amount * 1000000000,
-        tx: txHash,
-        onChainSaleId,
-        unitPrice: 1,
+        amount: data.amount * getToCurrency().x,
+        tx: response.txHash,
+        onChainSaleId: response.onChainSaleId,
+        unitPrice: data.unitPrice,
         screenshotMethods: [],
       }).then((data) => {
         router.push(`/my-order?sale=${data?.data?.createSale?.id}`);
+        setData({ ...data, loading: false });
+        setIsModalOpen(false);
+        toast.success('Sale created');
       });
       return;
     }

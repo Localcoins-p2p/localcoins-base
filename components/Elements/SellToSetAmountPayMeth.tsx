@@ -1,6 +1,7 @@
 'use client';
 import { getToCurrency } from '@/utils/getCurrency';
 import React, { useState } from 'react';
+import Loading from './Loading';
 // import { TiArrowSortedDown } from 'react-icons/ti';
 // import Select from 'react-select';
 // import PaymentModal from '../Elements/PaymentModal';
@@ -154,7 +155,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
                 {getToCurrency().name}
               </span>
             </div>
-            <div className="text-sm text-[#A7A7A7] mt-2">
+            <div className="text-sm text-[#A7A7A7] mt-2 hidden">
               ≈ 0 PHP <br />
               Available: <span className="text-black">2200.99 USDC</span>{' '}
               <a href="#" className="text-[#F3AA05]">
@@ -175,14 +176,16 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
                 <input
                   type="text"
                   className="border bg-gray-100  focus:outline-none border-gray-300 rounded-md w-full p-2"
-                  value={orderLimitMin}
+                  value={totalAmount}
                   onChange={handleOrderLimitMinChange}
                   readOnly
                 />
                 <span className="absolute top-[11px] right-4 flex items-center text-[14px] font-[500] text-[#222222]">
-                  PHP
+                  {getToCurrency().name}
                 </span>
-                <div className="text-sm text-gray-500 mt-1">≈ 8.89 USDC </div>
+                <div className="hidden text-sm text-gray-500 mt-1">
+                  ≈ 8.89 USDC{' '}
+                </div>
               </div>
 
               {/* <div className="text-gray-500 h-[50px]">~</div>
@@ -267,7 +270,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
           onClick={onNext}
           className="bg-[#F3AA05] px-12 text-[16px] font-[600] rounded-[8px] py-2"
         >
-          Next
+          {data?.loading ? <Loading height="[16px]" width="[16px]" /> : 'Next'}
         </button>
       </div>
     </>
