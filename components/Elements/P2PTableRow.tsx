@@ -100,7 +100,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
 
             {paymentMethods.length > 2 && !showAll && (
               <div
-                className="text-[13px] text-[#FFFFFF] font-[600] cursor-pointer"
+                className="text-[13px] underline text-[#FFFFFF] font-[600] cursor-pointer"
                 onClick={handleToggle}
               >
                 {paymentMethods.length - 2} more
@@ -109,7 +109,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
 
             {showAll && (
               <div
-                className="text-[13px] text-[#FFFFFF] font-[600] cursor-pointer"
+                className="text-[13px] underline text-[#FFFFFF] font-[600] cursor-pointer"
                 onClick={handleToggle}
               >
                 Show less

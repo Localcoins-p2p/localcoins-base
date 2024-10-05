@@ -104,10 +104,13 @@ const MyOrder = () => {
           <MainHeading
             title="MY ORDER"
             para=" Order Created, Pay the Seller within"
-            t1="P2P Help Center"
+            t1="My Account"
             time=" 15:00"
             t2="Orders"
+             href="/my-account"
+          icon="assets/common/userrIcon.svg"
           />
+          
         </div>
 
         <div className="grid grid-cols-12 mt-4">
