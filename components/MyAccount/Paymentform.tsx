@@ -6,6 +6,7 @@ import { AppContext } from '@/utils/context';
 import { paymentMethodsByCountry } from '@/data/paymentMethods';
 import ReactSelect from 'react-select';
 import customStyles from '../Elements/reactSelectStyles';
+import Select from 'react-select';
 
 interface PaymentFormProps {
   onSubmit: () => void;
@@ -113,7 +114,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
   return (
     <div className="p-4">
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">
           Payment Method
         </label>
@@ -122,11 +123,27 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           onChange={(option) => {
             console.log(option);
           }}
-          options={paymentMethods.map((p) => ({ value: p, label: p }))}
+          options={paymentMethods?.map((p) => ({ value: p, label: p }))}
           styles={customStyles}
           isSearchable={false}
         />
-      </div>
+      </div> */}
+
+      <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+            Payment Method
+            </label>
+            <Select
+            onChange={(option) => {
+              console.log(option);
+            }}
+            options={paymentMethods?.map((p) => ({ value: p, label: p }))}   
+            isSearchable={false}       
+             
+              placeholder="Select a payment method"
+              className="mt-1"
+            />
+          </div>
 
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">
