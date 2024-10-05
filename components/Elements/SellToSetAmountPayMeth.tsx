@@ -63,7 +63,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
   // const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleTotalAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, amount:e.target.value });
+    setData({ ...data, amount: e.target.value });
   };
   const handleOrderLimitMinChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -111,7 +111,6 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
   //   }
   // };
 
-
   const formattedData = !isNaN(data.amount) ? data.amount : 0;
   return (
     <>
@@ -145,12 +144,12 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
               Total Amount
             </label>
             <div className="relative">
-            <input
+              <input
                 type="text"
                 className="border border-[#DDDDDD] placeholder-gray-300 rounded-md w-full p-2"
-                placeholder="Max 2200.99"
+                placeholder=""
                 value={formattedData} // Ensure 2 decimal places
-                step='0.01'
+                step="0.01"
                 onChange={handleTotalAmountChange}
               />
 
@@ -179,7 +178,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
                 <input
                   type="text"
                   className="border bg-gray-100  focus:outline-none border-gray-300 rounded-md w-full p-2"
-                  value={totalAmount}
+                  value={data.amount}
                   onChange={handleOrderLimitMinChange}
                   readOnly
                 />
