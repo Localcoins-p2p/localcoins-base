@@ -190,6 +190,11 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         programId
       );
       const authority = publicKey;
+
+      if (sale.buyer) {
+        return toast.error('Buyer is already connected to this sale');
+      }
+
       const transaction = new Transaction().add(
         (program as any).instruction.cancelSale(onChainSaleId, {
           accounts: {
@@ -207,6 +212,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
       console.log('Response', response);
       toast.success('Sale canceled');
     } catch (err) {
+      console.log(err);
     } finally {
     }
   };
