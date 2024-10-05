@@ -16,12 +16,18 @@ export const paymentMethods = isLoggedIn(
 
 export const sellerSales = isLoggedIn(
   async (_1: unknown, _2: unknown, { user }: IGqlContext) => {
-    return prisma.sale.findMany({ where: { sellerId: user?.id as string } });
+    return prisma.sale.findMany({
+      where: { sellerId: user?.id as string },
+      orderBy: { canceledAt: 'desc' },
+    });
   }
 );
 
 export const buyerSales = isLoggedIn(
   async (_1: unknown, _2: unknown, { user }: IGqlContext) => {
-    return prisma.sale.findMany({ where: { buyerId: user?.id as string } });
+    return prisma.sale.findMany({
+      where: { buyerId: user?.id as string },
+      orderBy: { canceledAt: 'desc' },
+    });
   }
 );

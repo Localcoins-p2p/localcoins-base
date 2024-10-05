@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { AppContext } from '@/utils/context';
 
 import useSolana from '@/utils/useSolana';
+import AppLoading from '../Elements/AppLoading';
 
 const GET_SALE = gql`
   query Sales($salesId: String) {
@@ -82,6 +83,8 @@ const MyOrder = () => {
     }
   }, [_sale]);
 
+  const firstTimeLoading = !sale && fetching;
+
   const isSeller = user?.id === sale?.seller?.id;
   const isBuyer = user?.id === sale?.buyer?.id;
 
@@ -94,6 +97,14 @@ const MyOrder = () => {
   // if (!sale) {
   //   return <div className='text-white'>Loading...</div>;
   // }
+
+  if (firstTimeLoading) {
+    return (
+      <div className="w-screen h-screen flex justify-center items-center">
+        <AppLoading />
+      </div>
+    );
+  }
 
   return (
     <>
