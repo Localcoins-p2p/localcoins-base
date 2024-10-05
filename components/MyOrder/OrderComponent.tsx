@@ -10,6 +10,7 @@ import useSolana from '@/utils/useSolana';
 import Loading from '../Elements/Loading';
 import Select from 'react-select';
 import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
+import { addRemoveBuyerMutation } from '../Elements/BuyButton';
 
 interface OrderComponentProps {
   sale: any;
@@ -65,6 +66,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   isBuyer,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
+  const [{ fetching }, removeBuyer] = useMutation(addRemoveBuyerMutation);
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
   const [selectedPaymentMethodIndex, setSelectedPaymentMethodIndex] =
     useState(0);
@@ -135,6 +137,36 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
       );
       const txHash = await sendTransaction(transaction, connection);
       await markFinished({ saleId: sale?.id });
+    } catch (err) {
+    } finally {
+    }
+  };
+
+  const handleBuyerCancel = async () => {
+    try {
+      const masterPda = await getMasterAddress();
+      const onChainSaleId = new BN(sale.onChainSaleId);
+      const [salePda, saleBump] = await PublicKey.findProgramAddress(
+        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+        programId
+      );
+      const authority = publicKey;
+      const transaction = new Transaction().add(
+        (program as any).instruction.removeBuyer(onChainSaleId, {
+          accounts: {
+            sale: salePda,
+            master: masterPda,
+            authority: authority as PublicKey,
+            systemProgram: SystemProgram.programId,
+          },
+        })
+      );
+      const txHash = await sendTransaction(transaction, connection);
+      await removeBuyer({
+        id: sale.id,
+        command: 'REMOVE',
+      });
+      toast.success('Purchase canceled');
     } catch (err) {
     } finally {
     }
@@ -290,7 +322,12 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               </div>
               <span>Transfered, Notify Seller</span>
             </button>
-            <button className="text-[#F3AA05] font-semibold ">Cancel</button>
+            <button
+              className="text-[#F3AA05] font-semibold "
+              onClick={handleBuyerCancel}
+            >
+              Cancel
+            </button>
           </div>
         )}
         {showConfirmPaymentReceivedButton && (
@@ -326,7 +363,6 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               </div>
               <span>Claim Payment</span>
             </button>
-            <button className="text-[#F3AA05] font-semibold ">Cancel</button>
           </div>
         )}
       </div>

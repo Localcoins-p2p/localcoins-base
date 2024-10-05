@@ -11,7 +11,7 @@ interface IProps {
   onChainSaleId: number;
 }
 
-const addRemoveBuyerMutation = gql`
+export const addRemoveBuyerMutation = gql`
   mutation AddRemoveBuyer($id: String!, $command: String!) {
     addRemoveBuyer(id: $id, command: $command) {
       id
@@ -50,6 +50,7 @@ function BuyButton({ saleId, onChainSaleId: _onChainSaleId }: IProps) {
       await addBuyer({ id: saleId, command: 'ADD' });
       router.push(`/my-order?sale=${saleId}`);
     } catch (err) {
+      console.log(err);
     } finally {
       setLoading(false);
     }
