@@ -8,7 +8,8 @@ const MainHeading = ({
   t1,
   t2,
   time,
-  href
+  href,
+  icon
 }: {
   title: string;
   para: string;
@@ -16,6 +17,7 @@ const MainHeading = ({
   t2: string;
   time?: string;
   href?:string
+  icon?:any
 }) => {
   return (
     <div className="border-l-[5px] border-[#d79502] flex flex-col h-full w-full gap-y-4 pl-3 ">
