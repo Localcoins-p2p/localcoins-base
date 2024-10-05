@@ -15,8 +15,10 @@ const P2PTrading = () => {
         <MainHeading
           title="P2P"
           para=" Securely Buy and Sell Digital Assets with Flexible Payment Options"
-          t1="P2P Help Center"
+          t1="My Account"
           t2="Orders"
+          href="/my-account"
+          icon=""
         />
       </div>
       {/* <BuySellTabs/> */}

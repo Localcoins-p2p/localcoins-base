@@ -9,6 +9,7 @@ import SellToSetPrice from '../Elements/SellToSetPrice';
 import SellToSetAmountPayMeth from '../Elements/SellToSetAmountPayMeth';
 import RemarksAndAutoRes from '../Elements/RemarksAndAutoRes';
 import WalletBalance from '../Elements/WalletBalance';
+import Link from 'next/link';
 const ProfileHeader = ({ selectedUser }: any) => {
   const {
     context: { user },
@@ -64,12 +65,18 @@ const ProfileHeader = ({ selectedUser }: any) => {
         </div>
       </div>
       <div>
-        <button
+        {/* <button
           onClick={handleOpenModal}
           className="bg-[#F3AA05] text-black px-6 py-2 rounded-[10px]"
         >
           Buy {toCurrency?.name}
-        </button>
+        </button> */}
+        <Link
+          href={'/'}
+          className="bg-[#F3AA05] text-black px-6 py-2 rounded-[10px]"
+        >
+          home
+        </Link>
 
         <ModalComponent
           title="Filter Options"

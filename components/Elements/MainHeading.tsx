@@ -8,12 +8,16 @@ const MainHeading = ({
   t1,
   t2,
   time,
+  href,
+  icon,
 }: {
   title: string;
   para: string;
   t1: string;
   t2: string;
   time?: string;
+  href?: string;
+  icon?: any;
 }) => {
   return (
     <div className="border-l-[5px] border-[#d79502] flex flex-col h-full w-full gap-y-4 pl-3 ">
@@ -30,7 +34,7 @@ const MainHeading = ({
           {para} {time && <span className="text-[#F3AA05]">{time}</span>}
         </div>
         <div className="text-[#FFFFFF] hidden lg:flex justify-between text-[16px] font-[600] items-center gap-x-4">
-          <div className="flex">
+          <Link href={href || '#'} className="flex">
             <Image
               src="/assets/common/menu1.svg"
               height={15}
@@ -38,7 +42,7 @@ const MainHeading = ({
               alt="vcv"
             />
             <span className="ml-1 min-w-max">{t1}</span>
-          </div>
+          </Link>
           <Link href="/my-account?page=sale-order">
             <div className="flex ml-2">
               <Image
