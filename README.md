@@ -5,8 +5,11 @@
 With LocalCoins, we aim to simplify the process of entering and exiting the crypto ecosystem by offering:
 
 **Decentralized Escrow:** A trustless system that ensures both parties in a transaction are protected.
+
 **Transparent Transactions:** All transactions are visible on the blockchain for easy verification.
+
 **User Control:** Users handle fiat transfers themselves, meaning no intermediaries or hidden fees.
+
 **Safety and Accountability:** A built-in report system to identify and act against illicit activities.
 
 Whether you are a newcomer or a seasoned trader, LocalCoins makes cryptocurrency exchanges accessible and secure for everyone.
