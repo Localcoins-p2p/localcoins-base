@@ -24,7 +24,7 @@ export const sales = async (_: unknown, { id }: { id?: string }) => {
   });
   if (id && sales[0].screenshots[0]) {
     sales[0].screenshots[0].method = await prisma.paymentMethod.findFirst({
-      where: { id: sales[0].screenshots[0].methodId },
+      where: { userId: sales[0].sellerId },
     });
   }
 

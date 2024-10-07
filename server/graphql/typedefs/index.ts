@@ -71,9 +71,9 @@ const typeDefs = gql`
   }
   type Screenshot {
     id: String!
-    imageUrl: String!
-    method: String!
-    paidById: String!
+    imageUrl: String
+    method: String
+    paidById: String
     sale: Sale!
   }
 
