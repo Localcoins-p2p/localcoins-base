@@ -145,7 +145,8 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         })
       );
       const txHash = await sendTransaction(transaction, connection);
-      await markFinished({ saleId: sale?.id });
+      await markFinished({ markSaleFinishedId: sale?.id });
+      toast.success('Amount received');
     } catch (err) {
     } finally {
     }
