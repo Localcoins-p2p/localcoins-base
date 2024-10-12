@@ -41,21 +41,9 @@ export default function RootLayout({
   const endpoint = 'https://api.devnet.solana.com';
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
-  useEffect(() => {
-    const token = Cookies.get('token');
-    if (!token) {
-      fetch('/api/token').then((data) => {
-        data.json().then((d) => {
-          Cookies.set('token', d.token);
-          window.location.reload();
-        });
-      });
-    }
-  }, []);
-
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className + ' bg-white text-white'}>
         <ConnectionProvider endpoint={endpoint}>
           <WalletProvider wallets={wallets} autoConnect>
             <WalletModalProvider>
