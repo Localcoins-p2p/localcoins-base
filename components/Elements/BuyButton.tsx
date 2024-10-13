@@ -5,10 +5,12 @@ import { BN } from '@project-serum/anchor';
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { addBuyer as addEthBuyer } from '@/utils/base-calls';
 
 interface IProps {
   saleId: string;
   onChainSaleId: number;
+  sale: any;
 }
 
 export const addRemoveBuyerMutation = gql`
@@ -19,7 +21,7 @@ export const addRemoveBuyerMutation = gql`
   }
 `;
 
-function BuyButton({ saleId, onChainSaleId: _onChainSaleId }: IProps) {
+function BuyButton({ saleId, onChainSaleId: _onChainSaleId, sale }: IProps) {
   const [{ fetching }, addBuyer] = useMutation(addRemoveBuyerMutation);
   const router = useRouter();
   const { connection, program, programId, publicKey, sendTransaction } =
@@ -29,24 +31,28 @@ function BuyButton({ saleId, onChainSaleId: _onChainSaleId }: IProps) {
   const handleAddBuyer = async () => {
     try {
       setLoading(true);
-      const masterPda = await getMasterAddress();
-      const onChainSaleId = new BN(_onChainSaleId);
-      const [salePda, saleBump] = await PublicKey.findProgramAddress(
-        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
-        programId
-      );
-      const authority = publicKey;
-      const transaction = new Transaction().add(
-        (program as any).instruction.addBuyer(onChainSaleId, {
-          accounts: {
-            sale: salePda,
-            master: masterPda,
-            authority: authority as PublicKey,
-            systemProgram: SystemProgram.programId,
-          },
-        })
-      );
-      const txHash = await sendTransaction(transaction, connection);
+      if (sale.currency === 'ETH') {
+        await addEthBuyer(_onChainSaleId);
+      } else {
+        const masterPda = await getMasterAddress();
+        const onChainSaleId = new BN(_onChainSaleId);
+        const [salePda, saleBump] = await PublicKey.findProgramAddress(
+          [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+          programId
+        );
+        const authority = publicKey;
+        const transaction = new Transaction().add(
+          (program as any).instruction.addBuyer(onChainSaleId, {
+            accounts: {
+              sale: salePda,
+              master: masterPda,
+              authority: authority as PublicKey,
+              systemProgram: SystemProgram.programId,
+            },
+          })
+        );
+        const txHash = await sendTransaction(transaction, connection);
+      }
       await addBuyer({ id: saleId, command: 'ADD' });
       router.push(`/my-order?sale=${saleId}`);
     } catch (err) {

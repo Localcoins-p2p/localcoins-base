@@ -17,8 +17,13 @@ import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { gql, useMutation } from 'urql';
 import { useRouter } from 'next/navigation';
 import customStyles from '../../components/Elements/reactSelectStyles';
-import { getToCurrency, getFromCurrency } from '@/utils/getCurrency';
+import {
+  getToCurrency,
+  getFromCurrency,
+  getToCurrencyv2,
+} from '@/utils/getCurrency';
 import toast from 'react-hot-toast';
+import { createEscrow } from '@/utils/base-calls';
 
 const paymentOptions = [{ value: 'All Payments', label: 'All Payments' }];
 const regionOptions = [{ value: 'All Regions', label: 'All Regions' }];
@@ -41,6 +46,8 @@ export const CREATE_SALE = gql`
     $screenshotMethods: [String]
     $tx: String
     $onChainSaleId: Int
+    $blockchain: String!
+    $currency: String!
   ) {
     createSale(
       amount: $amount
@@ -48,6 +55,8 @@ export const CREATE_SALE = gql`
       screenshotMethods: $screenshotMethods
       tx: $tx
       onChainSaleId: $onChainSaleId
+      blockchain: $blockchain
+      currency: $currency
     ) {
       amount
       buyer {
@@ -60,6 +69,8 @@ export const CREATE_SALE = gql`
       screenshotMehtods
       tx
       unitPrice
+      currency
+      blockchain
     }
   }
 `;
@@ -97,7 +108,7 @@ const FilterPanel = () => {
   }, [connection, publicKey, sendTransaction]);
   const router = useRouter();
 
-  const handleCreateSale = async ({ amount }: { amount: number }) => {
+  const handleCreateSale_SOL = async ({ amount }: { amount: number }) => {
     const programId = new web3.PublicKey(
       process.env.NEXT_PUBLIC_PROGRAM_ID as string
     );
@@ -131,24 +142,40 @@ const FilterPanel = () => {
     return { txHash, onChainSaleId };
   };
 
+  const handleCreateSale = async ({ amount }: { amount: number }) => {
+    if (data.currency === 'ETH') {
+      return createEscrow(amount + '');
+    } else {
+      return handleCreateSale_SOL({ amount });
+    }
+  };
+
+  const toCurrency = useMemo(() => {
+    return getToCurrencyv2(data.currency);
+  }, [data]);
+
   const handleNext = async () => {
     let response: any = {};
     if (currentStep == 3) {
       setData({ ...data, loading: true });
       try {
         response =
-          (await handleCreateSale({ amount: data.amount * 1000000000 })) || {};
+          (await handleCreateSale({
+            amount: data.amount * (toCurrency?.x as number),
+          })) || {};
       } catch (err) {
       } finally {
         setData({ ...data, loading: false });
       }
       setData({ ...data, loading: true });
       createSaleMutation({
-        amount: data.amount * getToCurrency().x,
+        amount: data.amount * (toCurrency?.x as number),
         tx: response.txHash,
         onChainSaleId: response.onChainSaleId,
         unitPrice: data.unitPrice,
         screenshotMethods: [],
+        blockchain: data.blockchain,
+        currency: data.currency,
       }).then((data) => {
         router.push(`/my-order?sale=${data?.data?.createSale?.id}`);
         setData({ ...data, loading: false });
@@ -225,9 +252,9 @@ const FilterPanel = () => {
       <div>
         <button
           onClick={handleOpenModal}
-          className="flex items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700"
+          className="flex items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700 text-white"
         >
-          Sell {getToCurrency().name}
+          Sell Crypto
         </button>
       </div>
 

@@ -44,6 +44,8 @@ const typeDefs = gql`
     createdAt: Date
     finishedAt: Date
     paidAt: Date
+    blockchain: String
+    currency: String
     canceledAt: Date
   }
 
@@ -104,6 +106,7 @@ const typeDefs = gql`
       publicKey: String!
       nonce: String!
       signedMessage: String!
+      wallet: String
     ): LoginResponse!
     sendResetPasswordLink(email: String!): MessageResponse!
     resetPassword(password: String!, token: String!): StatusResponse!
@@ -122,6 +125,8 @@ const typeDefs = gql`
       screenshotMethods: [String]
       onChainSaleId: Int
       tx: String
+      blockchain: String!
+      currency: String!
     ): Sale
     addRemoveBuyer(id: String!, command: String!): Sale
     cancelSale(id: String!): Sale

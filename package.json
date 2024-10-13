@@ -9,11 +9,6 @@
     "lint": "next lint",
     "prepare": "husky install",
     "lint-staged": "lint-staged",
-    "schema:generate-file-windows": "cross-env OS=Windows && type ./prisma/common.schema.prisma ./prisma/project.schema.prisma > ./prisma/schema.prisma",
-    "schema:generate-file-mac": "cat ./prisma/common.schema.prisma > ./prisma/schema.prisma && tail -n +21 ./prisma/project.schema.prisma >> ./prisma/schema.prisma",
-    "schema:generate-file": "npm-run-all schema:generate-file-*",
-    "schema:generate-win": "npm run schema:generate-file-windows && npx prisma generate",
-    "schema:generate": "npm run schema:generate-file-mac && npx prisma generate",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -37,6 +32,7 @@
     "@types/react": "18.2.23",
     "@types/react-dom": "18.2.8",
     "@vercel/blob": "^0.24.0",
+    "@web3modal/wagmi": "^5.1.11",
     "autoprefixer": "10.4.16",
     "bcrypt": "^5.1.1",
     "cross-env": "^7.0.3",
@@ -44,6 +40,7 @@
     "eslint-config-next": "13.5.3",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "ethers": "^5.6.4",
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
     "husky": "^8.0.3",
@@ -67,7 +64,11 @@
     "twilio": "^4.18.1",
     "typescript": "5.2.2",
     "urql": "^4.0.5",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "viem": "^2.21.23",
+    "wagmi": "^2.12.17",
+    "web3": "^4.13.0",
+    "web3modal": "^1.9.12"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
