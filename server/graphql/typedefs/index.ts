@@ -122,6 +122,8 @@ const typeDefs = gql`
       screenshotMethods: [String]
       onChainSaleId: Int
       tx: String
+      blockchain: String!
+      currency: String!
     ): Sale
     addRemoveBuyer(id: String!, command: String!): Sale
     cancelSale(id: String!): Sale

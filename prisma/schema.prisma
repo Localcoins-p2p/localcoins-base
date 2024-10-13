@@ -81,5 +81,8 @@ model Sale {
   finishedAt        DateTime?
   canceledAt        DateTime?
 
+  currency          String?                       @default("SOL")
+  blockchain        String?
+
   createdAt         DateTime                      @default(now())
 }
