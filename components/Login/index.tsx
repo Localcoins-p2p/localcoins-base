@@ -48,6 +48,7 @@ export const LOGIN = gql`
 const Login = () => {
   const { publicKey, connect, disconnect, connected, signMessage, select } =
     useWallet();
+  const [metaKey, setMetakey] = useState('');
   const [{ fetching, data }, login] = useMutation(LOGIN);
   const [showOptions, setShowOptions] = useState(false);
   const [{ fetching: generatingNonce }, generateNonce] =
@@ -55,6 +56,23 @@ const Login = () => {
   const {
     context: { user },
   } = useContext(AppContext);
+
+  const handleMetakey = async () => {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = await window.ethereum.request({
+      method: 'eth_accounts',
+    });
+    const { provider } = await getConnection();
+    const signer = provider.getSigner();
+    const account = await signer.getAddress();
+
+    const publicKey = accounts[0];
+    setMetakey(publicKey);
+  };
+
+  useEffect(() => {
+    handleMetakey();
+  }, [user]);
 
   const handleLogin = async () => {
     await select(PhantomWalletName);
@@ -132,7 +150,7 @@ const Login = () => {
   return (
     <>
       <div className="">
-        {connected && user ? (
+        {(connected && user) || (metaKey && user) ? (
           <>
             <button
               className="bg-[#F3AA05] space-x-2  text-black sm:p-4 p-2 rounded-[10px] flex items-center "
@@ -145,11 +163,11 @@ const Login = () => {
                 height={24}
               />
               <span className="hidden md:block">
-                {publicKey?.toString().substring(0, 5) +
+                {(publicKey || metaKey)?.toString().substring(0, 5) +
                   '...' +
-                  publicKey
+                  (publicKey || metaKey)
                     ?.toString()
-                    .substring(publicKey?.toString().length - 3)}
+                    .substring((publicKey || metaKey)?.toString().length - 3)}
               </span>
             </button>
           </>

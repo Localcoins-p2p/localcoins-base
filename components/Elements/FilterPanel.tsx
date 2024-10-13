@@ -17,7 +17,11 @@ import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { gql, useMutation } from 'urql';
 import { useRouter } from 'next/navigation';
 import customStyles from '../../components/Elements/reactSelectStyles';
-import { getToCurrency, getFromCurrency } from '@/utils/getCurrency';
+import {
+  getToCurrency,
+  getFromCurrency,
+  getToCurrencyv2,
+} from '@/utils/getCurrency';
 import toast from 'react-hot-toast';
 import { createEscrow } from '@/utils/base-calls';
 
@@ -146,20 +150,26 @@ const FilterPanel = () => {
     }
   };
 
+  const toCurrency = useMemo(() => {
+    return getToCurrencyv2(data.currency);
+  }, [data]);
+
   const handleNext = async () => {
     let response: any = {};
     if (currentStep == 3) {
       setData({ ...data, loading: true });
       try {
         response =
-          (await handleCreateSale({ amount: data.amount * 1000000000 })) || {};
+          (await handleCreateSale({
+            amount: data.amount * (toCurrency?.x as number),
+          })) || {};
       } catch (err) {
       } finally {
         setData({ ...data, loading: false });
       }
       setData({ ...data, loading: true });
       createSaleMutation({
-        amount: data.amount * getToCurrency().x,
+        amount: data.amount * (toCurrency?.x as number),
         tx: response.txHash,
         onChainSaleId: response.onChainSaleId,
         unitPrice: data.unitPrice,
