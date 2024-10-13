@@ -44,6 +44,8 @@ const typeDefs = gql`
     createdAt: Date
     finishedAt: Date
     paidAt: Date
+    blockchain: String
+    currency: String
     canceledAt: Date
   }
 

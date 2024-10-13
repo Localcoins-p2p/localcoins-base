@@ -1,7 +1,8 @@
 'use client';
-import { getToCurrency } from '@/utils/getCurrency';
+import { getToCurrency, getToCurrencyv2 } from '@/utils/getCurrency';
 import React, { useState } from 'react';
 import Loading from './Loading';
+import toast from 'react-hot-toast';
 // import { TiArrowSortedDown } from 'react-icons/ti';
 // import Select from 'react-select';
 // import PaymentModal from '../Elements/PaymentModal';
@@ -154,7 +155,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
               />
 
               <span className="absolute inset-y-0 right-4 flex items-center text-[14px] font-[500] text-[#222222]">
-                {getToCurrency().name}
+                {getToCurrencyv2(data.currency)?.name}
               </span>
             </div>
             <div className="text-sm text-[#A7A7A7] mt-2 hidden">
@@ -183,7 +184,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
                   readOnly
                 />
                 <span className="absolute top-[11px] right-4 flex items-center text-[14px] font-[500] text-[#222222]">
-                  {getToCurrency().name}
+                  {getToCurrencyv2(data.currency)?.name}
                 </span>
                 <div className="hidden text-sm text-gray-500 mt-1">
                   ≈ 8.89 USDC{' '}
@@ -269,7 +270,12 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
           Back
         </button>
         <button
-          onClick={onNext}
+          onClick={() => {
+            if (!data.amount || parseFloat(data.amount) <= 0) {
+              return toast.error('Please enter a valid amount');
+            }
+            onNext();
+          }}
           className="bg-[#F3AA05] px-12 text-[16px] font-[600] rounded-[8px] py-2"
         >
           {data?.loading ? <Loading height="[16px]" width="[16px]" /> : 'Next'}
