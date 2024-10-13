@@ -96,3 +96,67 @@ export const addBuyer = async (escrowId: number) => {
     return { error: 'Failed to add buyer' };
   }
 };
+
+export const markPaid = async (escrowId: string) => {
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const escrows: any = await fetchAllEscrows();
+
+    if (escrows.error) {
+      return escrows;
+    }
+
+    const escrowAddress = escrows?.find(
+      (escrow: { id: string }) => escrow.id === escrowId
+    )?.address;
+
+    if (!escrowAddress) {
+      return { error: 'Invalid escrow ID' };
+      return;
+    }
+
+    const escrowContract = new ethers.Contract(
+      escrowAddress,
+      escrowABI,
+      signer
+    );
+    const tx = await escrowContract.markPaid();
+    await tx.wait();
+  } catch (err) {
+    console.error(err);
+    return { error: 'Failed to mark payment as paid' };
+  }
+};
+
+export const confirmPayment = async (escrowId: string) => {
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const escrows: any = await fetchAllEscrows();
+
+    if (escrows.error) {
+      return escrows;
+    }
+
+    const escrowAddress = escrows?.find(
+      (escrow: { id: string }) => escrow.id === escrowId
+    )?.address;
+
+    if (!escrowAddress) {
+      return { error: 'Invalid escrow ID' };
+      return;
+    }
+
+    const escrowContract = new ethers.Contract(
+      escrowAddress,
+      escrowABI,
+      signer
+    );
+    const tx = await escrowContract.confirmPayment();
+    const receipt = await tx.wait();
+  } catch (err) {
+    console.error(err);
+    return { error: 'Failed to confirm payment' };
+  }
+};

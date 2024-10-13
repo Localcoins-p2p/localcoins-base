@@ -11,6 +11,7 @@ import Loading from '../Elements/Loading';
 import Select from 'react-select';
 import { getFromCurrency, getToCurrencyv2 } from '@/utils/getCurrency';
 import { addRemoveBuyerMutation } from '../Elements/BuyButton';
+import { confirmPayment, markPaid } from '@/utils/base-calls';
 
 interface OrderComponentProps {
   sale: any;
@@ -86,19 +87,6 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 
   const paymentMethods = sale?.seller?.paymentMethods || [];
 
-  const handleAddScreenshot = async (imageUrl: string, method: string) => {
-    try {
-      await addScreenshotMutation({
-        saleId: sale.id,
-        imageUrl,
-        method: '66fb0f0fc2a69f59952e04ed',
-      });
-      toast.success('Screenshot added successfully');
-    } catch (error) {
-      toast.error('Failed to add screenshot');
-    }
-  };
-
   const toCurrency = useMemo(() => {
     if (sale && sale.currency) {
       return getToCurrencyv2(sale.currency) as { name: string; x: number };
@@ -111,27 +99,50 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     return { name: '', x: 1 };
   }, [sale]);
 
+  const handleAddScreenshot = async (imageUrl: string, method: string) => {
+    try {
+      if (toCurrency.name === 'ETH') {
+        await markPaid(sale.onChainSaleId);
+      }
+      if (imageUrl.indexOf('vercel') === -1) {
+        await addScreenshotMutation({
+          saleId: sale.id,
+          imageUrl,
+          method: '66fb0f0fc2a69f59952e04ed',
+        });
+      }
+      toast.success('Screenshot added successfully');
+    } catch (error) {
+      toast.error('Failed to add screenshot');
+    }
+  };
+
   const handlePaymentReceived = async () => {
     try {
-      const masterPda = await getMasterAddress();
-      const onChainSaleId = new BN(sale.onChainSaleId);
-      const [salePda, saleBump] = await PublicKey.findProgramAddress(
-        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
-        programId
-      );
-      const authority = publicKey;
-      const transaction = new Transaction().add(
-        (program as any).instruction.markPaid(onChainSaleId, {
-          accounts: {
-            sale: salePda,
-            master: masterPda,
-            authority: authority as PublicKey,
-            systemProgram: SystemProgram.programId,
-          },
-        })
-      );
-      const txHash = await sendTransaction(transaction, connection);
+      if (toCurrency.name === 'ETH') {
+        await confirmPayment(sale?.onChainSaleId);
+      } else {
+        const masterPda = await getMasterAddress();
+        const onChainSaleId = new BN(sale.onChainSaleId);
+        const [salePda, saleBump] = await PublicKey.findProgramAddress(
+          [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+          programId
+        );
+        const authority = publicKey;
+        const transaction = new Transaction().add(
+          (program as any).instruction.markPaid(onChainSaleId, {
+            accounts: {
+              sale: salePda,
+              master: masterPda,
+              authority: authority as PublicKey,
+              systemProgram: SystemProgram.programId,
+            },
+          })
+        );
+        const txHash = await sendTransaction(transaction, connection);
+      }
       await markPaidMutation({ saleId: sale?.id });
+      await markFinished({ saleId: sale?.id });
     } catch (err) {
     } finally {
     }
