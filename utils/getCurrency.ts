@@ -8,7 +8,7 @@ export const getToCurrency = () => {
 
 export const getCurrencies = async () => {
   return [
-    { name: 'SOL', fullname: 'Solana' },
-    { name: 'ETH', fullname: 'Ethereum' },
+    { name: 'SOL', fullname: 'Solana', blockchain: 'sol' },
+    { name: 'ETH', fullname: 'Ethereum', blockchain: 'base' },
   ];
 };

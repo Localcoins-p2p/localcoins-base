@@ -9,6 +9,7 @@ import {
   getFromCurrency,
   getToCurrency,
 } from '@/utils/getCurrency';
+import toast from 'react-hot-toast';
 
 const customStyles = {
   control: (provided: any, state: any) => ({
@@ -108,7 +109,11 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
 
   useEffect(() => {
     if (selectedCurrency) {
-      setData({ ...data, currency: selectedCurrency.value });
+      setData({
+        ...data,
+        currency: selectedCurrency.value,
+        blockchain: selectedCurrency.blockchain,
+      });
       getCryptoPrice(
         currencies
           ?.find((c) => c.value === selectedCurrency.value)
@@ -273,7 +278,18 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
 
       <div className="flex justify-end text-center mt-3 mb-8">
         <button
-          onClick={onNext}
+          onClick={() => {
+            if (!data.currency) {
+              return toast.error('Please choose a crypto currency');
+            }
+            if (!data.blockchain) {
+              return toast.error('Please choose a blockchain');
+            }
+            if (!data.unitPrice) {
+              return toast.error('Please add unit price');
+            }
+            onNext();
+          }}
           className="bg-[#F3AA05] px-12 text-[16px] font-[600] rounded-[8px] py-2 "
         >
           Next
