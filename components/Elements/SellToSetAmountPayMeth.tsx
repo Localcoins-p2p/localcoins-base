@@ -119,7 +119,7 @@ const SellToSetAmountPayMeth = ({ onNext, setData, data, onBack }: any) => {
           <button
             className={`sm:w-[50%] w-[100%] py-3 text-[18px] font-[600] ${
               tab === 'buy'
-                ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD]'
+                ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD] text-[#333]'
                 : ''
             }`}
             onClick={() => setTab('buy')}

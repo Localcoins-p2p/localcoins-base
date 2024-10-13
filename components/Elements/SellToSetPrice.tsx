@@ -1,10 +1,14 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { CiGlobe } from 'react-icons/ci';
 import Image from 'next/image';
-import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
+import {
+  getCurrencies,
+  getFromCurrency,
+  getToCurrency,
+} from '@/utils/getCurrency';
 
 const customStyles = {
   control: (provided: any, state: any) => ({
@@ -47,19 +51,31 @@ const customStyles = {
 };
 const toCurrency = getToCurrency();
 const fromCurrency = getFromCurrency();
-const USDTDATA = [{ value: toCurrency.name, label: toCurrency.name }];
 const PHPDATA = [{ value: fromCurrency.name, label: fromCurrency.name }];
 
 const SellToSetPrice = ({ onNext, data, setData }: any) => {
   const [tab, setTab] = useState('buy');
   const [priceType, setPriceType] = useState('fixed');
   const [fixedPrice, setFixedPrice] = useState(0);
-  const [selectedusdt, setSelectedusdt] = useState<any>(USDTDATA[0]);
+  const [selectedCurrency, setSelectedCurrency] = useState<any>();
   const [selectedphp, setSelectedphp] = useState<any>(PHPDATA[0]);
+  const [currencies, setCurrencies] = useState<any[]>();
 
   const handleIncrement = () => {
     setFixedPrice((prevPrice) => Math.min(prevPrice + 1, 67.48));
   };
+
+  useEffect(() => {
+    getCurrencies().then((currencies) => {
+      setCurrencies(
+        currencies.map((currency) => ({
+          value: currency.name,
+          label: currency.name,
+          ...currency,
+        }))
+      );
+    });
+  }, [getCurrencies]);
 
   const handleDecrement = () => {
     setFixedPrice((prevPrice) => Math.max(prevPrice - 1, 45.0));
@@ -69,24 +85,37 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
     setData({ ...data, unitPrice: fixedPrice });
   }, [fixedPrice]);
 
-  const getSolPrice = async () => {
+  const getCryptoPrice = async (currency: string) => {
     try {
       const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=php'
+        `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=php`
       );
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      setFixedPrice(data?.solana?.php);
+      setFixedPrice(
+        data?.[
+          currencies
+            ?.find((c) => c.value === selectedCurrency.value)
+            ?.fullname?.toLowerCase() as string
+        ]?.php
+      );
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
     }
   };
 
   useEffect(() => {
-    getSolPrice();
-  }, []);
+    if (selectedCurrency) {
+      setData({ ...data, currency: selectedCurrency.value });
+      getCryptoPrice(
+        currencies
+          ?.find((c) => c.value === selectedCurrency.value)
+          ?.fullname?.toLowerCase() as string
+      );
+    }
+  }, [selectedCurrency]);
 
   return (
     <>
@@ -95,7 +124,7 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
           <button
             className={`sm:w-[50%] w-[100%] py-3 text-[18px] font-[600] ${
               tab === 'buy'
-                ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD]'
+                ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD] text-[#333]'
                 : ''
             }`}
             onClick={() => setTab('buy')}
@@ -127,9 +156,9 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
                 />
                 <Select
                   className="w-full "
-                  value={selectedusdt}
-                  onChange={setSelectedusdt}
-                  options={USDTDATA}
+                  value={selectedCurrency}
+                  onChange={setSelectedCurrency}
+                  options={currencies}
                   components={{
                     DropdownIndicator: () => (
                       <TiArrowSortedDown className="text-[#CCCCCC]" />
