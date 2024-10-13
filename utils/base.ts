@@ -1,4 +1,4 @@
-export const contractAddress = '0x71978d0d05F84b38E87dF6DEE5B568aBD30Fa2D4';
+export const contractAddress = '0x843Cadc28e091204e3Cd4A3cC024Ed06E768e8F5';
 export const baseSepolia = {
   chainId: '0x14a34',
   chainName: 'Base Sepolia',

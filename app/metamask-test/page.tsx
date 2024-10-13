@@ -61,7 +61,7 @@ function App() {
     }
   };
   const createEscrow = async () => {
-    const amount = '0.0000001';
+    const amount = '0.001';
     // if (!amount || isNaN(amount) || Number(amount) <= 0) {
     //   setError('Please enter a valid amount');
     //   return;
@@ -114,7 +114,7 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
 
-      const escrowAddress = await escrows?.find((e: any) => e.id === 2)
+      const escrowAddress = await escrows?.find((e: any) => e.id === escrowId)
         ?.address;
 
       const escrowContract = new ethers.Contract(
@@ -123,7 +123,8 @@ function App() {
         signer
       );
       const tx = await escrowContract.addBuyer(buyerAddress);
-      await tx.wait();
+      const receipt = await tx.wait();
+      console.log(receipt);
 
       alert(`Buyer added: ${buyerAddress}`);
     } catch (err) {
@@ -132,13 +133,113 @@ function App() {
     }
   };
 
+  const markPaid = async () => {
+    setError('');
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const escrows = await fetchAllEscrows();
+
+      // Get the address of the escrow contract using the escrow ID
+      const escrowAddress = escrows?.find((escrow) => escrow.id === escrowId)
+        ?.address;
+
+      if (!escrowAddress) {
+        setError('Invalid escrow ID');
+        return;
+      }
+
+      const escrowContract = new ethers.Contract(
+        escrowAddress,
+        escrowABI,
+        signer
+      );
+      const tx = await escrowContract.markPaid();
+      await tx.wait();
+
+      alert('Payment marked as paid successfully.');
+      fetchEscrowDetails(escrowAddress); // Refresh the contract details after marking as paid
+    } catch (err) {
+      console.error(err);
+      setError('Failed to mark payment as paid');
+    }
+  };
+
+  const fetchEscrowDetails = async (escrowAddress: string) => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const escrowContract = new ethers.Contract(
+        escrowAddress,
+        escrowABI,
+        signer
+      );
+
+      const seller = await escrowContract.seller();
+      const buyer = await escrowContract.buyer();
+      const amount = ethers.utils.formatEther(await escrowContract.amount());
+      const currentState = await escrowContract.currentState();
+
+      console.log({
+        address: escrowAddress,
+        seller,
+        buyer,
+        amount,
+        currentState,
+      });
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch escrow details');
+    }
+  };
+
+  const confirmPayment = async () => {
+    setError('');
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const escrows = await fetchAllEscrows();
+
+      const escrowAddress = escrows?.find((escrow) => escrow.id === escrowId)
+        ?.address;
+
+      if (!escrowAddress) {
+        setError('Invalid escrow ID');
+        return;
+      }
+
+      const escrowContract = new ethers.Contract(
+        escrowAddress,
+        escrowABI,
+        signer
+      );
+      const tx = await escrowContract.confirmPayment();
+      const receipt = await tx.wait();
+      console.log('R', receipt);
+
+      alert('Payment confirmed and funds released to the seller.');
+
+      //const tx2 = await escrowContract.
+      fetchEscrowDetails(escrowAddress); // Refresh the contract details after confirming payment
+    } catch (err) {
+      console.error(err);
+      setError('Failed to confirm payment');
+    }
+  };
+
   return (
     <div style={{ color: 'white' }}>
-      Hello World
+      Hello World {error}
       <br />
       <span onClick={createEscrow}>Create</span>
       <br />
       <span onClick={addBuyer}>Add Buyer</span>
+      <br />
+      <span onClick={markPaid}>Mark Paid</span>
+      <br />
+      <span onClick={confirmPayment}>Confirm Payment</span>
     </div>
   );
 }
