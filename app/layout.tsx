@@ -43,7 +43,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className + ' bg-white text-white'}>
+      <body className={inter.className + ' '}>
         <ConnectionProvider endpoint={endpoint}>
           <WalletProvider wallets={wallets} autoConnect>
             <WalletModalProvider>

@@ -22,7 +22,17 @@ function App() {
       console.log(escrowAddresses);
     };
     init();
+    listAll();
   }, []);
+
+  async function listAll() {
+    console.log('Listing all');
+    //const all = await fetchAllEscrows();
+    const details = await fetchEscrowDetails(
+      '0x328eedc143E2ced84F0A67801fF64C751a6ac808'
+    );
+    console.log('Details', details);
+  }
 
   useEffect(() => {
     const getCurrentAccount = async () => {

@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { contractABI, contractAddress } from './base';
+import { contractABI, contractAddress, escrowABI } from './base';
 import Web3Modal from 'web3modal';
 
 const getConnection = async () => {
@@ -7,8 +7,8 @@ const getConnection = async () => {
   const connection = await web3Modal.connect();
   const provider = new ethers.providers.Web3Provider(connection);
   const signer = provider.getSigner();
-
-  return { signer, provider, connection, web3Modal };
+  const accounts = await provider.listAccounts();
+  return { signer, provider, connection, web3Modal, accounts };
 };
 
 export const fetchAllEscrows = async () => {
@@ -29,8 +29,8 @@ export const fetchAllEscrows = async () => {
     }
 
     return fetchedEscrows;
-  } catch (err) {
-    return { err };
+  } catch (error) {
+    return { error };
   }
 };
 
@@ -50,7 +50,6 @@ export const createEscrow = async (amount: string) => {
       contractABI,
       signer
     );
-    console.log(escrowFactoryContract);
 
     const tx = await escrowFactoryContract.createEscrow({
       value: ethers.utils.parseEther(amount),
@@ -65,5 +64,35 @@ export const createEscrow = async (amount: string) => {
     return { onChainSaleId: createdEscrowId, txHash: '' };
   } catch (err) {
     return { err };
+  }
+};
+
+export const addBuyer = async (escrowId: number) => {
+  const { signer, accounts } = await getConnection();
+  const buyerAddress = accounts[0];
+  if (!buyerAddress) {
+    return { error: 'Please enter a valid buyer address' };
+  }
+
+  try {
+    const escrows: any = await fetchAllEscrows();
+    if (escrows.error) {
+      return escrows;
+    }
+
+    const escrowAddress = await escrows?.find((e: any) => e.id === escrowId)
+      ?.address;
+
+    const escrowContract = new ethers.Contract(
+      escrowAddress,
+      escrowABI,
+      signer
+    );
+    const tx = await escrowContract.addBuyer(buyerAddress);
+    const receipt = await tx.wait();
+    return receipt;
+  } catch (err) {
+    console.error(err);
+    return { error: 'Failed to add buyer' };
   }
 };
