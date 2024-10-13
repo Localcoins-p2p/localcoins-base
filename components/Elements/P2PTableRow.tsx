@@ -95,7 +95,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
         </div>
         <div className="text-[13px] font-[600] text-[#FFFFFF]">
           <span className="md:hidden">Order Limit: </span>
-          {(limit / 1e9).toFixed(toCurrency.dp)} {toCurrency.name}
+          {(limit / toCurrency.x).toFixed(toCurrency.dp)} {toCurrency.name}
         </div>
       </td>
       <td className="md:py-4 py-2">
