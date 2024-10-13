@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { contractABI, contractAddress, escrowABI } from './base';
 import Web3Modal from 'web3modal';
 
-const getConnection = async () => {
+export const getConnection = async () => {
   const web3Modal = new Web3Modal();
   const connection = await web3Modal.connect();
   const provider = new ethers.providers.Web3Provider(connection);

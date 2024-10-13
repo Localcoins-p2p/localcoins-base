@@ -106,6 +106,7 @@ const typeDefs = gql`
       publicKey: String!
       nonce: String!
       signedMessage: String!
+      wallet: String
     ): LoginResponse!
     sendResetPasswordLink(email: String!): MessageResponse!
     resetPassword(password: String!, token: String!): StatusResponse!
