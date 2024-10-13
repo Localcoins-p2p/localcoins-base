@@ -18,6 +18,8 @@ const GET_SALES = gql`
         id
         tx
         onChainSaleId
+        blockchain
+        currency
         seller {
           name
           publicKey

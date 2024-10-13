@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import customStyles from '../../components/Elements/reactSelectStyles';
@@ -9,7 +9,7 @@ import { BN } from '@project-serum/anchor';
 import useSolana from '@/utils/useSolana';
 import Loading from '../Elements/Loading';
 import Select from 'react-select';
-import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
+import { getFromCurrency, getToCurrencyv2 } from '@/utils/getCurrency';
 import { addRemoveBuyerMutation } from '../Elements/BuyButton';
 
 interface OrderComponentProps {
@@ -98,6 +98,18 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
       toast.error('Failed to add screenshot');
     }
   };
+
+  const toCurrency = useMemo(() => {
+    if (sale && sale.currency) {
+      return getToCurrencyv2(sale.currency) as { name: string; x: number };
+    }
+
+    if (sale && !sale.currency) {
+      return getToCurrencyv2('SOL') as { name: string; x: number };
+    }
+
+    return { name: '', x: 1 };
+  }, [sale]);
 
   const handlePaymentReceived = async () => {
     try {
@@ -249,7 +261,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             <div className="flex justify-between">
               <span className="text-[#A6A6A6] text-[18px]">Fiat Amount</span>
               <span className="text-[#0ECB81] text-[18px] font-bold">
-                {(sale?.amount * sale?.unitPrice) / getToCurrency().x}{' '}
+                {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
                 {getFromCurrency().name}
               </span>
             </div>
@@ -266,7 +278,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 Receive Quantity
               </span>
               <span className="text-[#FFFFFF] text-[18px] font-[600]">
-                {sale?.amount / getToCurrency().x} {getToCurrency().name}
+                {sale?.amount / toCurrency?.x} {toCurrency?.name}
               </span>
             </div>
           </div>
@@ -279,8 +291,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             </div>
             <h2 className="ml-4 text-xl font-semibold">
               Open {paymentMethods[selectedPaymentMethodIndex]?.name} to
-              transfer {(sale?.amount * sale?.unitPrice) / getToCurrency().x}{' '}
-              PHP
+              transfer {(sale?.amount * sale?.unitPrice) / toCurrency?.x} PHP
             </h2>
           </div>
           <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
