@@ -55,7 +55,6 @@ contract Escrow {
         _;
     }
 
-    event Test (uint256 i);
     constructor(address _seller, uint256 _amount) payable {
         require(msg.value > 0, "Must deposit funds to create escrow");
         
