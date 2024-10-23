@@ -35,6 +35,8 @@ const typeDefs = gql`
     id: ID!
     amount: Float
     unitPrice: Float
+    isFloating: Boolean
+    profitPercentage: Float
     screenshotMehtods: [String]
     screenshots: [ScreenShot]
     seller: User
@@ -122,6 +124,8 @@ const typeDefs = gql`
     createSale(
       amount: Float
       unitPrice: Float
+      isFloating: Boolean
+      profitPercentage: Float
       screenshotMethods: [String]
       onChainSaleId: Int
       tx: String

@@ -43,6 +43,8 @@ export const CREATE_SALE = gql`
   mutation Mutation(
     $amount: Float
     $unitPrice: Float
+    $isFloating: Boolean
+    $profitPercentage: Float
     $screenshotMethods: [String]
     $tx: String
     $onChainSaleId: Int
@@ -52,6 +54,8 @@ export const CREATE_SALE = gql`
     createSale(
       amount: $amount
       unitPrice: $unitPrice
+      isFloating: $isFloating
+      profitPercentage: $profitPercentage
       screenshotMethods: $screenshotMethods
       tx: $tx
       onChainSaleId: $onChainSaleId
@@ -66,6 +70,8 @@ export const CREATE_SALE = gql`
       }
       createdAt
       id
+      isFloating
+      profitPercentage
       screenshotMehtods
       tx
       unitPrice
@@ -173,6 +179,8 @@ const FilterPanel = () => {
         tx: response.txHash,
         onChainSaleId: response.onChainSaleId,
         unitPrice: data.unitPrice,
+        isFloating: data.isFloating,
+        profitPercentage: data.profitPercentage,
         screenshotMethods: [],
         blockchain: data.blockchain,
         currency: data.currency,

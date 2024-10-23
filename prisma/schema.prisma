@@ -69,6 +69,8 @@ model Sale {
   amount            Float
   token             String?
   unitPrice         Float
+  isFloating        Boolean?                      @default(false)
+  profitPercentage  Float?                        
 
   tx                String?
   onChainSaleId     Int?

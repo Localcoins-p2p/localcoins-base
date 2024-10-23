@@ -58,6 +58,7 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
   const [tab, setTab] = useState('buy');
   const [priceType, setPriceType] = useState('fixed');
   const [fixedPrice, setFixedPrice] = useState(0);
+  const [profitPercentage, setProfitPercentage] = useState(0);
   const [selectedCurrency, setSelectedCurrency] = useState<any>();
   const [selectedphp, setSelectedphp] = useState<any>(PHPDATA[0]);
   const [currencies, setCurrencies] = useState<any[]>();
@@ -82,9 +83,26 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
     setFixedPrice((prevPrice) => Math.max(prevPrice - 1, 45.0));
   };
 
+  const handleIncrementPercentage = () => {
+    setProfitPercentage((prevPercentage) =>
+      Math.min(prevPercentage + 0.1, 100)
+    );
+  };
+
+  const handleDecrementPercentage = () => {
+    setProfitPercentage((prevPercentage) =>
+      Math.max(prevPercentage - 0.1, -100)
+    );
+  };
+
   useEffect(() => {
-    setData({ ...data, unitPrice: fixedPrice });
-  }, [fixedPrice]);
+    setData({
+      ...data,
+      unitPrice: fixedPrice,
+      isFloating: priceType !== 'fixed',
+      profitPercentage,
+    });
+  }, [fixedPrice, priceType, profitPercentage]);
 
   const getCryptoPrice = async (currency: string) => {
     try {
@@ -214,7 +232,7 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
                   Fixed
                 </span>
               </label>
-              {/*
+
               <label className="flex items-center">
                 <input
                   type="radio"
@@ -226,11 +244,10 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
                   Floating
                 </span>
               </label>
-              */}
             </div>
           </div>
 
-          {priceType === 'fixed' && (
+          {priceType === 'fixed' ? (
             <div className="my-4">
               <label className="text-sm font-[400] text-[#222222]">Fixed</label>
               <div className="flex items-center justify-between mt-2 p-2 sm:w-[357px] w-[250px] rounded-[5px] border border-[#DDDDDD]">
@@ -253,6 +270,39 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
                 <button
                   className="px-3 py-1 bg-gray-200 rounded"
                   onClick={handleIncrement}
+                >
+                  +
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Enter your price here
+              </p>
+            </div>
+          ) : (
+            <div className="my-4">
+              <label className="text-sm font-[400] text-[#222222]">
+                Profit Percentage
+              </label>
+              <div className="flex items-center justify-between mt-2 p-2 sm:w-[357px] w-[250px] rounded-[5px] border border-[#DDDDDD]">
+                <button
+                  className="px-3 py-1 bg-gray-200 rounded"
+                  onClick={handleDecrementPercentage}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={profitPercentage}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    setProfitPercentage(value);
+                  }}
+                  className="text-[18px] w-[100%] font-[500] text-[#222222] text-center"
+                />
+                <button
+                  className="px-3 py-1 bg-gray-200 rounded"
+                  onClick={handleIncrementPercentage}
                 >
                   +
                 </button>
