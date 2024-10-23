@@ -83,7 +83,10 @@ export const login = async (
     }
 
     if (isVerified) {
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string);
+      const token = jwt.sign(
+        { id: user.id, w: wallet || 'phantom' },
+        process.env.JWT_SECRET as string
+      );
       return {
         user,
         token,

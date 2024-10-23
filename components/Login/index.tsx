@@ -2,7 +2,7 @@
 
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 import { gql, useMutation } from 'urql';
 import { createSale } from '@/utils/escrowClient';
@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import { AppContext } from '@/utils/context';
 import Loading from '../Elements/Loading';
 import { getConnection } from '@/utils/base-calls';
+import { decodeJwt } from '@/utils/decode-jwt';
 
 export const GENERATE_NONCE = gql`
   mutation GenerateNonce($publicKey: String!) {
@@ -58,21 +59,30 @@ const Login = () => {
   } = useContext(AppContext);
 
   const handleMetakey = async () => {
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const accounts = await window.ethereum.request({
-      method: 'eth_accounts',
-    });
-    const { provider } = await getConnection();
-    const signer = provider.getSigner();
-    const account = await signer.getAddress();
+    if (typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask) {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const accounts = await window.ethereum.request({
+        method: 'eth_accounts',
+      });
+      const { provider } = await getConnection();
+      const signer = provider.getSigner();
+      const account = await signer.getAddress();
 
-    const publicKey = accounts[0];
-    setMetakey(publicKey);
+      const publicKey = accounts[0];
+      setMetakey(publicKey);
+    }
   };
 
+  const wallet = useMemo(() => {
+    const data = decodeJwt(Cookies.get('token') || '');
+    return data.w;
+  }, []);
+
   useEffect(() => {
-    handleMetakey();
-  }, [user]);
+    if (wallet === 'metamask') {
+      handleMetakey();
+    }
+  }, [user, wallet]);
 
   const handleLogin = async () => {
     await select(PhantomWalletName);
