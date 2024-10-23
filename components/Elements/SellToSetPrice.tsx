@@ -62,6 +62,7 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
   const [selectedCurrency, setSelectedCurrency] = useState<any>();
   const [selectedphp, setSelectedphp] = useState<any>(PHPDATA[0]);
   const [currencies, setCurrencies] = useState<any[]>();
+  const [originalPrice, setOriginalPrice] = useState(0);
 
   const handleIncrement = () => {
     setFixedPrice((prevPrice) => Math.min(prevPrice + 1, 67.48));
@@ -114,6 +115,13 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
       }
       const data = await response.json();
       setFixedPrice(
+        data?.[
+          currencies
+            ?.find((c) => c.value === selectedCurrency.value)
+            ?.fullname?.toLowerCase() as string
+        ]?.php
+      );
+      setOriginalPrice(
         data?.[
           currencies
             ?.find((c) => c.value === selectedCurrency.value)
@@ -316,7 +324,15 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
           <div className="flex gap-x-20">
             <div>
               <p className="text-sm text-[#222222]">Your Price</p>
-              <p className="text-[28px] font-[500] mt-2">₱ {fixedPrice}</p>
+              <p className="text-[28px] font-[500] mt-2">
+                ₱{' '}
+                {priceType === 'fixed'
+                  ? fixedPrice
+                  : (
+                      parseFloat(1 + profitPercentage / 100 + '') *
+                      originalPrice
+                    ).toFixed(2)}
+              </p>
             </div>
             {/* <div>
               <p className="text-sm text-[#222222]">Highest Order Price</p>
