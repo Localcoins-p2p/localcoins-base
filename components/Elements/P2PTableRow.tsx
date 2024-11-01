@@ -78,7 +78,13 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
               completion
             </div>
             {toCurrency?.name === 'SOL' && reputation !== null && (
-              <div className="text-white"> {reputation}</div>
+              <div
+                className={`text-white ${
+                  reputation < 50 ? 'text-yellow-500' : 'text-green-500'
+                }`}
+              >
+                Reputation Score: {reputation}
+              </div>
             )}
           </div>
         </div>
