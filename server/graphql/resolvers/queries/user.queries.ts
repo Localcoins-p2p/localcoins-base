@@ -31,3 +31,7 @@ export const buyerSales = isLoggedIn(
     });
   }
 );
+
+export const getUserReputation = () => {
+  const publicKey = 'FRXbHF8z3UEiNRG1r6ubYGTbNGjZ6g7j2WDSjjqjxNCF';
+};

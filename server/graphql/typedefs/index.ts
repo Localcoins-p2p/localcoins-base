@@ -81,12 +81,17 @@ const typeDefs = gql`
     sale: Sale!
   }
 
+  type UserReputation {
+    value: Float
+  }
+
   type Query {
     user: User
     sales(id: String): SaleResponse
     paymentMethods: [PaymentMethod]
     sellerSales: [Sale]
     buyerSales: [Sale]
+    getUserReputation(publicKey: String): UserReputation
   }
 
   type Mutation {
