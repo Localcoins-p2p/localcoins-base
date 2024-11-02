@@ -85,6 +85,10 @@ const typeDefs = gql`
     value: Float
   }
 
+  type ScoreResponse {
+    score: Float
+  }
+
   type Query {
     user: User
     sales(id: String): SaleResponse
@@ -92,6 +96,7 @@ const typeDefs = gql`
     sellerSales: [Sale]
     buyerSales: [Sale]
     getUserReputation(publicKey: String): UserReputation
+    getActivitiesStatus: ScoreResponse
   }
 
   type Mutation {

@@ -14,7 +14,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { BN, web3 } from '@project-serum/anchor';
 import { getMasterAddress, getProgram, SALE_SEED } from '@/utils/program';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
-import { gql, useMutation } from 'urql';
+import { gql, useMutation, useQuery } from 'urql';
 import { useRouter } from 'next/navigation';
 import customStyles from '../../components/Elements/reactSelectStyles';
 import {
@@ -38,6 +38,14 @@ const currencyOptions = [
     ),
   },
 ];
+
+const ACTIVITY_SCORE = gql`
+  query GetActivitiesStatus {
+    getActivitiesStatus {
+      score
+    }
+  }
+`;
 
 export const CREATE_SALE = gql`
   mutation Mutation(
@@ -94,9 +102,14 @@ const FilterPanel = () => {
     currencyOptions[0]
   );
 
+  const [{ data: score, fetching: fetchingScore }] = useQuery({
+    query: ACTIVITY_SCORE,
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const { publicKey, sendTransaction, connected } = useWallet();
+
+  console.log('Score', score);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -150,6 +163,9 @@ const FilterPanel = () => {
 
   const handleCreateSale = async ({ amount }: { amount: number }) => {
     if (data.currency === 'ETH') {
+      if ((score?.getActivitiesStatus?.score || 100) < 25) {
+        return toast.error('Malicious activity found');
+      }
       return createEscrow(amount + '');
     } else {
       return handleCreateSale_SOL({ amount });
@@ -162,6 +178,14 @@ const FilterPanel = () => {
 
   const handleNext = async () => {
     let response: any = {};
+    if (
+      data.currency === 'ETH' &&
+      (score?.getActivitiesStatus?.score || 100) < 25
+    ) {
+      return toast.error(
+        'Malicious activity found: Too many transactions from your wallet in last hour'
+      );
+    }
     if (currentStep == 3) {
       setData({ ...data, loading: true });
       try {
