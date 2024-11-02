@@ -1,10 +1,15 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { CiGlobe } from 'react-icons/ci';
 import Image from 'next/image';
-import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
+import {
+  getCurrencies,
+  getFromCurrency,
+  getToCurrency,
+} from '@/utils/getCurrency';
+import toast from 'react-hot-toast';
 
 const customStyles = {
   control: (provided: any, state: any) => ({
@@ -47,46 +52,101 @@ const customStyles = {
 };
 const toCurrency = getToCurrency();
 const fromCurrency = getFromCurrency();
-const USDTDATA = [{ value: toCurrency.name, label: toCurrency.name }];
 const PHPDATA = [{ value: fromCurrency.name, label: fromCurrency.name }];
 
 const SellToSetPrice = ({ onNext, data, setData }: any) => {
   const [tab, setTab] = useState('buy');
   const [priceType, setPriceType] = useState('fixed');
   const [fixedPrice, setFixedPrice] = useState(0);
-  const [selectedusdt, setSelectedusdt] = useState<any>(USDTDATA[0]);
+  const [profitPercentage, setProfitPercentage] = useState(0);
+  const [selectedCurrency, setSelectedCurrency] = useState<any>();
   const [selectedphp, setSelectedphp] = useState<any>(PHPDATA[0]);
+  const [currencies, setCurrencies] = useState<any[]>();
+  const [originalPrice, setOriginalPrice] = useState(0);
 
   const handleIncrement = () => {
     setFixedPrice((prevPrice) => Math.min(prevPrice + 1, 67.48));
   };
 
+  useEffect(() => {
+    getCurrencies().then((currencies) => {
+      setCurrencies(
+        currencies.map((currency) => ({
+          value: currency.name,
+          label: currency.name,
+          ...currency,
+        }))
+      );
+    });
+  }, [getCurrencies]);
+
   const handleDecrement = () => {
     setFixedPrice((prevPrice) => Math.max(prevPrice - 1, 45.0));
   };
 
-  useEffect(() => {
-    setData({ ...data, unitPrice: fixedPrice });
-  }, [fixedPrice]);
+  const handleIncrementPercentage = () => {
+    setProfitPercentage((prevPercentage) =>
+      Math.min(prevPercentage + 0.1, 100)
+    );
+  };
 
-  const getSolPrice = async () => {
+  const handleDecrementPercentage = () => {
+    setProfitPercentage((prevPercentage) =>
+      Math.max(prevPercentage - 0.1, -100)
+    );
+  };
+
+  useEffect(() => {
+    setData({
+      ...data,
+      unitPrice: fixedPrice,
+      isFloating: priceType !== 'fixed',
+      profitPercentage,
+    });
+  }, [fixedPrice, priceType, profitPercentage]);
+
+  const getCryptoPrice = async (currency: string) => {
     try {
       const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=php'
+        `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=php`
       );
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      setFixedPrice(data?.solana?.php);
+      setFixedPrice(
+        data?.[
+          currencies
+            ?.find((c) => c.value === selectedCurrency.value)
+            ?.fullname?.toLowerCase() as string
+        ]?.php
+      );
+      setOriginalPrice(
+        data?.[
+          currencies
+            ?.find((c) => c.value === selectedCurrency.value)
+            ?.fullname?.toLowerCase() as string
+        ]?.php
+      );
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
     }
   };
 
   useEffect(() => {
-    getSolPrice();
-  }, []);
+    if (selectedCurrency) {
+      setData({
+        ...data,
+        currency: selectedCurrency.value,
+        blockchain: selectedCurrency.blockchain,
+      });
+      getCryptoPrice(
+        currencies
+          ?.find((c) => c.value === selectedCurrency.value)
+          ?.fullname?.toLowerCase() as string
+      );
+    }
+  }, [selectedCurrency]);
 
   return (
     <>
@@ -95,7 +155,7 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
           <button
             className={`sm:w-[50%] w-[100%] py-3 text-[18px] font-[600] ${
               tab === 'buy'
-                ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD]'
+                ? 'bg-[#F2F2F2] border-r border-b border-[#DDDDDD] text-[#333]'
                 : ''
             }`}
             onClick={() => setTab('buy')}
@@ -127,9 +187,9 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
                 />
                 <Select
                   className="w-full "
-                  value={selectedusdt}
-                  onChange={setSelectedusdt}
-                  options={USDTDATA}
+                  value={selectedCurrency}
+                  onChange={setSelectedCurrency}
+                  options={currencies}
                   components={{
                     DropdownIndicator: () => (
                       <TiArrowSortedDown className="text-[#CCCCCC]" />
@@ -180,7 +240,7 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
                   Fixed
                 </span>
               </label>
-              {/*
+
               <label className="flex items-center">
                 <input
                   type="radio"
@@ -192,11 +252,10 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
                   Floating
                 </span>
               </label>
-              */}
             </div>
           </div>
 
-          {priceType === 'fixed' && (
+          {priceType === 'fixed' ? (
             <div className="my-4">
               <label className="text-sm font-[400] text-[#222222]">Fixed</label>
               <div className="flex items-center justify-between mt-2 p-2 sm:w-[357px] w-[250px] rounded-[5px] border border-[#DDDDDD]">
@@ -227,12 +286,53 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
                 Enter your price here
               </p>
             </div>
+          ) : (
+            <div className="my-4">
+              <label className="text-sm font-[400] text-[#222222]">
+                Profit Percentage
+              </label>
+              <div className="flex items-center justify-between mt-2 p-2 sm:w-[357px] w-[250px] rounded-[5px] border border-[#DDDDDD]">
+                <button
+                  className="px-3 py-1 bg-gray-200 rounded"
+                  onClick={handleDecrementPercentage}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={profitPercentage}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    setProfitPercentage(value);
+                  }}
+                  className="text-[18px] w-[100%] font-[500] text-[#222222] text-center"
+                />
+                <button
+                  className="px-3 py-1 bg-gray-200 rounded"
+                  onClick={handleIncrementPercentage}
+                >
+                  +
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Enter your price here
+              </p>
+            </div>
           )}
 
           <div className="flex gap-x-20">
             <div>
               <p className="text-sm text-[#222222]">Your Price</p>
-              <p className="text-[28px] font-[500] mt-2">₱ {fixedPrice}</p>
+              <p className="text-[28px] font-[500] mt-2">
+                ₱{' '}
+                {priceType === 'fixed'
+                  ? fixedPrice
+                  : (
+                      parseFloat(1 + profitPercentage / 100 + '') *
+                      originalPrice
+                    ).toFixed(2)}
+              </p>
             </div>
             {/* <div>
               <p className="text-sm text-[#222222]">Highest Order Price</p>
@@ -244,7 +344,18 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
 
       <div className="flex justify-end text-center mt-3 mb-8">
         <button
-          onClick={onNext}
+          onClick={() => {
+            if (!data.currency) {
+              return toast.error('Please choose a crypto currency');
+            }
+            if (!data.blockchain) {
+              return toast.error('Please choose a blockchain');
+            }
+            if (!data.unitPrice) {
+              return toast.error('Please add unit price');
+            }
+            onNext();
+          }}
           className="bg-[#F3AA05] px-12 text-[16px] font-[600] rounded-[8px] py-2 "
         >
           Next

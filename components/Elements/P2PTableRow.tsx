@@ -1,9 +1,9 @@
 'use client';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import BuyButton from './BuyButton';
 import Link from 'next/link';
-import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
+import { getFromCurrency, getToCurrencyv2 } from '@/utils/getCurrency';
 
 interface P2PRowProps {
   advertiser: {
@@ -12,6 +12,7 @@ interface P2PRowProps {
     orders: number;
     completionRate: string;
   };
+  reputation: any;
   price: number;
   available: number;
   limit: number;
@@ -28,12 +29,30 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
   paymentMethods,
   sale,
   type,
+  reputation,
 }) => {
   const [showAll, setShowAll] = useState(false);
 
   const handleToggle = () => {
     setShowAll(!showAll);
   };
+
+  const toCurrency = useMemo(() => {
+    if (sale && sale.currency) {
+      return getToCurrencyv2(sale.currency) as {
+        name: string;
+        x: number;
+        dp: number;
+      };
+    }
+
+    if (sale && !sale.currency) {
+      return getToCurrencyv2('SOL') as { name: string; x: number; dp: number };
+    }
+
+    return { name: '', x: 1, dp: 2 };
+  }, [sale]);
+
   return (
     <tr className="border-t py-4 md:py-0 border-gray-700 flex-boxx">
       <td className=" md:py-4 flex flex-col space-x-2">
@@ -58,6 +77,15 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
               {advertiser?.orders} orders | {advertiser?.completionRate}{' '}
               completion
             </div>
+            {toCurrency?.name === 'SOL' && reputation !== null && (
+              <div
+                className={`text-white ${
+                  reputation < 50 ? 'text-yellow-500' : 'text-green-500'
+                }`}
+              >
+                Reputation Score: {reputation}
+              </div>
+            )}
           </div>
         </div>
         <div className="text-[13px] font-[400] md:hidden text-[#EBEBEB]">
@@ -74,11 +102,11 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
       <td className=" md:py-4">
         <div className="text-[13px] font-[600] text-[#FFFFFF]">
           <span className="md:hidden">available: </span>{' '}
-          {(available / 1e9).toFixed(2)} {getToCurrency().name}
+          {(available / toCurrency.x).toFixed(toCurrency.dp)} {toCurrency.name}
         </div>
         <div className="text-[13px] font-[600] text-[#FFFFFF]">
           <span className="md:hidden">Order Limit: </span>
-          {(limit / 1e9).toFixed(2)} {getToCurrency().name}
+          {(limit / toCurrency.x).toFixed(toCurrency.dp)} {toCurrency.name}
         </div>
       </td>
       <td className="md:py-4 py-2">
@@ -125,7 +153,11 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
                 </button>
               </Link>
             ) : (
-              <BuyButton saleId={sale.id} onChainSaleId={sale.onChainSaleId} />
+              <BuyButton
+                saleId={sale.id}
+                onChainSaleId={sale.onChainSaleId}
+                sale={sale}
+              />
             )}
           </span>
         </div>
@@ -139,7 +171,11 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
               </button>
             </Link>
           ) : (
-            <BuyButton saleId={sale.id} onChainSaleId={sale.onChainSaleId} />
+            <BuyButton
+              saleId={sale.id}
+              onChainSaleId={sale.onChainSaleId}
+              sale={sale}
+            />
           )}
         </span>
       </td>

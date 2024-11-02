@@ -31,3 +31,28 @@ export const buyerSales = isLoggedIn(
     });
   }
 );
+
+export const getUserReputation = () => {
+  const publicKey = 'FRXbHF8z3UEiNRG1r6ubYGTbNGjZ6g7j2WDSjjqjxNCF';
+};
+
+export const getActivitiesStatus = isLoggedIn(
+  async (_: unknown, __: unknown, { user }: IGqlContext) => {
+    const publicKey = user?.publicKey as string;
+
+    const lastHourActivities = await prisma.onChainTransactionsHistory.findMany(
+      {
+        where: {
+          publicKey,
+          createdAt: {
+            gte: new Date(new Date().setHours(new Date().getHours() - 1)),
+          },
+        },
+      }
+    );
+    const max = parseInt(process.env.MAX_TRANSACTION_ALLOWED_IN_HOUR as string);
+    const score =
+      ((max - Math.min(lastHourActivities.length, max)) / max) * 100;
+    return { score };
+  }
+);

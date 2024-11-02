@@ -7,7 +7,17 @@ import saveImages from '@/server/utils/saveImages';
 export const createSale = isLoggedIn(
   async (
     _: unknown,
-    { amount, unitPrice, screenshotMethods, tx, onChainSaleId }: Prisma.Sale,
+    {
+      amount,
+      unitPrice,
+      screenshotMethods,
+      isFloating,
+      profitPercentage,
+      tx,
+      onChainSaleId,
+      blockchain,
+      currency,
+    }: Prisma.Sale,
     { user }: IGqlContext
   ) => {
     return prisma.sale.create({
@@ -15,9 +25,13 @@ export const createSale = isLoggedIn(
         amount,
         unitPrice,
         tx,
+        isFloating,
+        profitPercentage,
         onChainSaleId,
         screenshotMethods,
         sellerId: user?.id as string,
+        currency,
+        blockchain,
       },
     });
   }

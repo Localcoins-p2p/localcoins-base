@@ -26,6 +26,7 @@ import { PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl'; // For signature verification
 import { IGqlContext } from '@/types';
 import saveImages from '@/utils/saveImages';
+import { ethers } from 'ethers';
 
 type RegisterUserInput = Prisma.User & { password: string };
 export const registerUser = async (_: unknown, args: RegisterUserInput) => {
@@ -48,39 +49,55 @@ type LoginUserInput = {
   publicKey: string;
   signedMessage: string;
   nonce: string;
+  wallet: string;
 };
 export const login = async (
   _: unknown,
-  { publicKey, signedMessage, nonce }: LoginUserInput
+  { publicKey, signedMessage, nonce, wallet }: LoginUserInput
 ) => {
-  const user = await prisma.user.findUnique({ where: { publicKey, nonce } });
-  if (!user) {
-    return {
-      error: 'User not found',
-    };
-  }
+  try {
+    const user = await prisma.user.findUnique({ where: { publicKey, nonce } });
+    if (!user) {
+      return {
+        error: 'User not found',
+      };
+    }
+    let isVerified = false;
+    if (wallet === 'phantom') {
+      const parsedSignedMessage: any = JSON.parse(signedMessage);
+      const message = new TextEncoder().encode(nonce);
+      const signature = new Uint8Array(parsedSignedMessage.data);
+      const publicKeyDecoded = new PublicKey(publicKey);
 
-  const parsedSignedMessage: any = JSON.parse(signedMessage);
-  const message = new TextEncoder().encode(nonce);
-  const signature = new Uint8Array(parsedSignedMessage.data);
-  const publicKeyDecoded = new PublicKey(publicKey);
+      isVerified = nacl.sign.detached.verify(
+        message,
+        signature,
+        publicKeyDecoded.toBytes()
+      );
+    } else {
+      const recoveredAddress = ethers.utils.verifyMessage(
+        `${nonce}`,
+        signedMessage
+      );
+      isVerified = recoveredAddress.toLowerCase() === publicKey.toLowerCase();
+    }
 
-  const isVerified = nacl.sign.detached.verify(
-    message,
-    signature,
-    publicKeyDecoded.toBytes()
-  );
-
-  if (isVerified) {
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string);
-    return {
-      user,
-      token,
-    };
-  } else {
-    return {
-      error: 'Incorrect email or password',
-    };
+    if (isVerified) {
+      const token = jwt.sign(
+        { id: user.id, w: wallet || 'phantom' },
+        process.env.JWT_SECRET as string
+      );
+      return {
+        user,
+        token,
+      };
+    } else {
+      return {
+        error: 'Incorrect email or password',
+      };
+    }
+  } catch (err) {
+    console.log('ERROR', err);
   }
 };
 

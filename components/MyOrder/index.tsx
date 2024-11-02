@@ -50,6 +50,8 @@ const GET_SALE = gql`
         createdAt
         paidAt
         canceledAt
+        blockchain
+        currency
         onChainSaleId
         finishedAt
       }

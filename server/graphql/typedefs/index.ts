@@ -35,6 +35,8 @@ const typeDefs = gql`
     id: ID!
     amount: Float
     unitPrice: Float
+    isFloating: Boolean
+    profitPercentage: Float
     screenshotMehtods: [String]
     screenshots: [ScreenShot]
     seller: User
@@ -44,6 +46,8 @@ const typeDefs = gql`
     createdAt: Date
     finishedAt: Date
     paidAt: Date
+    blockchain: String
+    currency: String
     canceledAt: Date
   }
 
@@ -77,12 +81,22 @@ const typeDefs = gql`
     sale: Sale!
   }
 
+  type UserReputation {
+    value: Float
+  }
+
+  type ScoreResponse {
+    score: Float
+  }
+
   type Query {
     user: User
     sales(id: String): SaleResponse
     paymentMethods: [PaymentMethod]
     sellerSales: [Sale]
     buyerSales: [Sale]
+    getUserReputation(publicKey: String): UserReputation
+    getActivitiesStatus: ScoreResponse
   }
 
   type Mutation {
@@ -104,6 +118,7 @@ const typeDefs = gql`
       publicKey: String!
       nonce: String!
       signedMessage: String!
+      wallet: String
     ): LoginResponse!
     sendResetPasswordLink(email: String!): MessageResponse!
     resetPassword(password: String!, token: String!): StatusResponse!
@@ -119,9 +134,13 @@ const typeDefs = gql`
     createSale(
       amount: Float
       unitPrice: Float
+      isFloating: Boolean
+      profitPercentage: Float
       screenshotMethods: [String]
       onChainSaleId: Int
       tx: String
+      blockchain: String!
+      currency: String!
     ): Sale
     addRemoveBuyer(id: String!, command: String!): Sale
     cancelSale(id: String!): Sale

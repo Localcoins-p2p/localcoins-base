@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import customStyles from '../../components/Elements/reactSelectStyles';
@@ -9,8 +9,9 @@ import { BN } from '@project-serum/anchor';
 import useSolana from '@/utils/useSolana';
 import Loading from '../Elements/Loading';
 import Select from 'react-select';
-import { getFromCurrency, getToCurrency } from '@/utils/getCurrency';
+import { getFromCurrency, getToCurrencyv2 } from '@/utils/getCurrency';
 import { addRemoveBuyerMutation } from '../Elements/BuyButton';
+import { confirmPayment, markPaid } from '@/utils/base-calls';
 
 interface OrderComponentProps {
   sale: any;
@@ -86,13 +87,30 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 
   const paymentMethods = sale?.seller?.paymentMethods || [];
 
+  const toCurrency = useMemo(() => {
+    if (sale && sale.currency) {
+      return getToCurrencyv2(sale.currency) as { name: string; x: number };
+    }
+
+    if (sale && !sale.currency) {
+      return getToCurrencyv2('SOL') as { name: string; x: number };
+    }
+
+    return { name: '', x: 1 };
+  }, [sale]);
+
   const handleAddScreenshot = async (imageUrl: string, method: string) => {
     try {
-      await addScreenshotMutation({
-        saleId: sale.id,
-        imageUrl,
-        method: '66fb0f0fc2a69f59952e04ed',
-      });
+      if (toCurrency.name === 'ETH') {
+        await markPaid(sale.onChainSaleId);
+      }
+      if (imageUrl.indexOf('vercel') === -1) {
+        await addScreenshotMutation({
+          saleId: sale.id,
+          imageUrl,
+          method: '66fb0f0fc2a69f59952e04ed',
+        });
+      }
       toast.success('Screenshot added successfully');
     } catch (error) {
       toast.error('Failed to add screenshot');
@@ -101,25 +119,30 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 
   const handlePaymentReceived = async () => {
     try {
-      const masterPda = await getMasterAddress();
-      const onChainSaleId = new BN(sale.onChainSaleId);
-      const [salePda, saleBump] = await PublicKey.findProgramAddress(
-        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
-        programId
-      );
-      const authority = publicKey;
-      const transaction = new Transaction().add(
-        (program as any).instruction.markPaid(onChainSaleId, {
-          accounts: {
-            sale: salePda,
-            master: masterPda,
-            authority: authority as PublicKey,
-            systemProgram: SystemProgram.programId,
-          },
-        })
-      );
-      const txHash = await sendTransaction(transaction, connection);
+      if (toCurrency.name === 'ETH') {
+        await confirmPayment(sale?.onChainSaleId);
+      } else {
+        const masterPda = await getMasterAddress();
+        const onChainSaleId = new BN(sale.onChainSaleId);
+        const [salePda, saleBump] = await PublicKey.findProgramAddress(
+          [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+          programId
+        );
+        const authority = publicKey;
+        const transaction = new Transaction().add(
+          (program as any).instruction.markPaid(onChainSaleId, {
+            accounts: {
+              sale: salePda,
+              master: masterPda,
+              authority: authority as PublicKey,
+              systemProgram: SystemProgram.programId,
+            },
+          })
+        );
+        const txHash = await sendTransaction(transaction, connection);
+      }
       await markPaidMutation({ saleId: sale?.id });
+      await markFinished({ saleId: sale?.id });
     } catch (err) {
     } finally {
     }
@@ -249,7 +272,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             <div className="flex justify-between">
               <span className="text-[#A6A6A6] text-[18px]">Fiat Amount</span>
               <span className="text-[#0ECB81] text-[18px] font-bold">
-                {(sale?.amount * sale?.unitPrice) / getToCurrency().x}{' '}
+                {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
                 {getFromCurrency().name}
               </span>
             </div>
@@ -266,7 +289,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 Receive Quantity
               </span>
               <span className="text-[#FFFFFF] text-[18px] font-[600]">
-                {sale?.amount / getToCurrency().x} {getToCurrency().name}
+                {sale?.amount / toCurrency?.x} {toCurrency?.name}
               </span>
             </div>
           </div>
@@ -279,8 +302,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             </div>
             <h2 className="ml-4 text-xl font-semibold">
               Open {paymentMethods[selectedPaymentMethodIndex]?.name} to
-              transfer {(sale?.amount * sale?.unitPrice) / getToCurrency().x}{' '}
-              PHP
+              transfer {(sale?.amount * sale?.unitPrice) / toCurrency?.x} PHP
             </h2>
           </div>
           <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
