@@ -24,6 +24,7 @@ import {
 } from '@/utils/getCurrency';
 import toast from 'react-hot-toast';
 import { createEscrow } from '@/utils/base-calls';
+import SolanaPriority from './SolanaPriority';
 
 const paymentOptions = [{ value: 'All Payments', label: 'All Payments' }];
 const regionOptions = [{ value: 'All Regions', label: 'All Regions' }];
@@ -298,7 +299,7 @@ const FilterPanel = () => {
       >
         <div className="max-h-[90vh] overflow-auto no-scrollbar">
           <StepProgress currentStep={currentStep} />
-
+          {data.currency !== 'ETH' && <SolanaPriority />}
           {currentStep === 1 && (
             <SellToSetPrice onNext={handleNext} data={data} setData={setData} />
           )}
