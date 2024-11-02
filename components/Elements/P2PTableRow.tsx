@@ -12,6 +12,7 @@ interface P2PRowProps {
     orders: number;
     completionRate: string;
   };
+  reputation: any;
   price: number;
   available: number;
   limit: number;
@@ -28,6 +29,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
   paymentMethods,
   sale,
   type,
+  reputation,
 }) => {
   const [showAll, setShowAll] = useState(false);
 
@@ -75,6 +77,15 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
               {advertiser?.orders} orders | {advertiser?.completionRate}{' '}
               completion
             </div>
+            {toCurrency?.name === 'SOL' && reputation !== null && (
+              <div
+                className={`text-white ${
+                  reputation < 50 ? 'text-yellow-500' : 'text-green-500'
+                }`}
+              >
+                Reputation Score: {reputation}
+              </div>
+            )}
           </div>
         </div>
         <div className="text-[13px] font-[400] md:hidden text-[#EBEBEB]">

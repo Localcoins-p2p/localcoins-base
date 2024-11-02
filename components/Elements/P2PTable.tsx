@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import P2PTableRow from './P2PTableRow';
 import { gql, useQuery } from 'urql';
 import Loading from './Loading';
+import { getUserReputation } from '@/utils/getUserReputation';
 
 const GET_SALES = gql`
   query Sales {
@@ -102,6 +103,7 @@ export const GET_SELLER_SALES = gql`
   }
 `;
 
+
 interface P2PTableProps {
   type?: 'ALL' | 'BUYER' | 'SELLER';
 }
@@ -115,8 +117,21 @@ const queries = {
 const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
   const query = type ? queries[type] : GET_SALES;
   const [{ data, fetching }] = useQuery({ query });
+  const [reputation, setReputation] = useState<number | null>(null);
+
+
+  useEffect(() => {
+    async function fetchReputation() {
+      const score = await getUserReputation('FRXbHF8z3UEiNRG1r6ubYGTbNGjZ6g7j2WDSjjqjxNCF');
+      setReputation(score);
+    }
+    fetchReputation();
+  }, []);
+
+
   const sales =
     data?.sales?.sales || data?.sellerSales || data?.buyerSales || [];
+
 
   if (fetching) {
     return (
@@ -133,6 +148,8 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
       </div>
     );
   }
+
+ 
 
   if (data) {
     return (
@@ -161,6 +178,7 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
             {sales.map((row: any, index: number) => (
               <P2PTableRow
                 key={index}
+                reputation={reputation}
                 sale={row}
                 advertiser={row.seller}
                 price={row.unitPrice}
