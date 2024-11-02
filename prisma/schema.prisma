@@ -21,70 +21,80 @@ model User {
   isPhoneVerified Boolean @default(false)
   pwHash          String? @default("")
 
-  acceptedPaymentMethods  String[]
-  publicKey               String  @unique
-  nonce                   String?
+  acceptedPaymentMethods String[]
+  publicKey              String   @unique
+  nonce                  String?
 
-  phoneOtp                String?   @default("")
-  phoneOtpDoC             DateTime?
-  termsAccepted           Boolean   @default(false)
+  phoneOtp      String?   @default("")
+  phoneOtpDoC   DateTime?
+  termsAccepted Boolean   @default(false)
 
-  isAdmin                 Boolean               @default(false)
-  SaleBuyer               Sale[]                @relation("SellerRelation")
-  SaleSeller              Sale[]                @relation("BuyerRelation")
-  paymentMethods          PaymentMethod[]
+  isAdmin        Boolean         @default(false)
+  SaleBuyer      Sale[]          @relation("SellerRelation")
+  SaleSeller     Sale[]          @relation("BuyerRelation")
+  paymentMethods PaymentMethod[]
 }
 
 model Screenshot {
-  id                String                @id @default(auto())   @map("_id") @db.ObjectId
-  saleId            String                @db.ObjectId
-  imageUrl          String
-  methodId          String                @db.ObjectId
-  method            PaymentMethod         @relation(fields: [methodId], references: [id])
-  paidById          String                @db.ObjectId
-  sale              Sale                  @relation(fields: [saleId], references: [id])
+  id       String        @id @default(auto()) @map("_id") @db.ObjectId
+  saleId   String        @db.ObjectId
+  imageUrl String
+  methodId String        @db.ObjectId
+  method   PaymentMethod @relation(fields: [methodId], references: [id])
+  paidById String        @db.ObjectId
+  sale     Sale          @relation(fields: [saleId], references: [id])
 }
 
 model PaymentMethod {
-  id                String                @id @default(auto())   @map("_id") @db.ObjectId
-  name              String
-  accountNumber     String?
-  accountName       String?
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  accountNumber String?
+  accountName   String?
 
-  userId            String                @db.ObjectId
-  user              User @relation(fields: [userId], references: [id])
-  
-  createdAt         DateTime              @default(now())
-  screenshots       Screenshot[]        
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt   DateTime     @default(now())
+  screenshots Screenshot[]
 }
 
 model Sale {
-  id                String @id @default(auto())   @map("_id") @db.ObjectId
-  sellerId          String                        @db.ObjectId
-  seller            User                          @relation("SellerRelation", fields: [sellerId], references: [id])
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  sellerId String @db.ObjectId
+  seller   User   @relation("SellerRelation", fields: [sellerId], references: [id])
 
-  buyerId           String?                       @db.ObjectId
-  buyer             User?                         @relation("BuyerRelation", fields: [buyerId], references: [id])
+  buyerId String? @db.ObjectId
+  buyer   User?   @relation("BuyerRelation", fields: [buyerId], references: [id])
 
-  amount            Float
-  token             String?
-  unitPrice         Float
-  isFloating        Boolean?                      @default(false)
-  profitPercentage  Float?                        
+  amount           Float
+  token            String?
+  unitPrice        Float
+  isFloating       Boolean? @default(false)
+  profitPercentage Float?
 
-  tx                String?
-  onChainSaleId     Int?
+  tx            String?
+  onChainSaleId Int?
 
   screenshots       Screenshot[]
   screenshotMethods String[]
   screenshotAt      DateTime?
 
-  paidAt            DateTime?
-  finishedAt        DateTime?
-  canceledAt        DateTime?
+  paidAt     DateTime?
+  finishedAt DateTime?
+  canceledAt DateTime?
 
-  currency          String?                       @default("SOL")
-  blockchain        String?
+  currency   String? @default("SOL")
+  blockchain String?
 
-  createdAt         DateTime                      @default(now())
+  createdAt DateTime @default(now())
+}
+
+model OnChainTransactionsHistory {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  publicKey String
+
+  blockchain String
+  data       Json
+
+  createdAt DateTime @default(now())
 }
