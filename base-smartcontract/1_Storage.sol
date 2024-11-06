@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 contract EscrowFactory {
     mapping(uint256 => address) public escrows;
     uint256 public nextEscrowId;
 
     event EscrowCreated(uint256 escrowId, address escrowAddress, address seller, uint256 amount);
-    event EscrowCreated1(uint256 amount);
-
+    
+    // Create escrow contract
     function createEscrow() external payable returns (uint256) {
+        require(msg.value > 0, "Must deposit funds to create escrow");
+
+        // Create a new escrow contract
         Escrow newEscrow = new Escrow{value: msg.value}(msg.sender, msg.value);
         
         uint256 escrowId = nextEscrowId;
@@ -20,14 +25,15 @@ contract EscrowFactory {
     }
 }
 
-contract Escrow {
+contract Escrow is ReentrancyGuard {
     // Variables
     address public buyer;
     address public seller;
     uint256 public amount;
     bool public isComplete;
     address payable public feeCollector;
-    
+    uint256 public feePercentage = 1; // 1% fee, can be updated
+
     enum State { NO_BUYER, AWAITING_PAYMENT, PAID, PAYMENT_CONFIRMED, COMPLETED, REFUNDED }
     State public currentState;
 
@@ -38,6 +44,8 @@ contract Escrow {
     event PaymentConfirmed();
     event FundsReleased();
     event FundsRefunded();
+    event FeeCollected(address feeCollector, uint256 feeAmount);
+    event BuyerConfirmed(address buyer);
 
     // Modifiers
     modifier onlyBuyer() {
@@ -55,38 +63,76 @@ contract Escrow {
         _;
     }
 
+    // Constructor
     constructor(address _seller, uint256 _amount) payable {
         require(msg.value > 0, "Must deposit funds to create escrow");
         
         seller = _seller;
         amount = _amount;
         currentState = State.NO_BUYER;
+        feeCollector = payable(msg.sender);  // Fee collector set to the creator of escrow
         
         emit FundsDeposited(msg.value);
     }
 
-    function addBuyer(address _buyer) external inState(State.NO_BUYER) {
+    // Add buyer to the escrow contract
+    function addBuyer(address _buyer) external inState(State.NO_BUYER) nonReentrant {
         buyer = _buyer;
         currentState = State.AWAITING_PAYMENT;
 
         emit BuyerAdded(_buyer);
     }
 
-    function markPaid () external inState(State.AWAITING_PAYMENT) {
+    // Mark payment as received (seller)
+    function markPaid() external inState(State.AWAITING_PAYMENT) nonReentrant {
         currentState = State.PAID;
         emit MarkedPaid();
     }
 
-    function confirmPayment () external  onlySeller inState(State.PAID) {
+    // Confirm payment (seller)
+    function confirmPayment() external onlySeller inState(State.PAID) nonReentrant {
         currentState = State.PAYMENT_CONFIRMED;
         releaseFunds();
         emit PaymentConfirmed();
     }
 
-    function releaseFunds() private {
+    // Release funds to buyer
+    function releaseFunds() private nonReentrant {
+        uint256 feeAmount = (amount * feePercentage) / 100;
+        uint256 amountAfterFee = amount - feeAmount;
+        
+        // Collect fee
+        (bool feeSuccess, ) = feeCollector.call{value: feeAmount}("");
+        require(feeSuccess, "Fee transfer failed");
+        emit FeeCollected(feeCollector, feeAmount);
+
+        // Release funds to buyer
+        (bool buyerSuccess, ) = payable(buyer).call{value: amountAfterFee}("");
+        require(buyerSuccess, "Funds transfer failed");
+        
         currentState = State.COMPLETED;
-        payable(buyer).transfer(amount);
         isComplete = true;
         emit FundsReleased();
+    }
+
+    // Buyer confirms receiving the goods/services
+    function confirmReceipt() external onlyBuyer inState(State.PAYMENT_CONFIRMED) nonReentrant {
+        currentState = State.COMPLETED;
+        emit BuyerConfirmed(buyer);
+    }
+
+    // Refund funds to buyer in case of dispute (only after being marked as PAID)
+    function refund() external onlySeller inState(State.PAID) nonReentrant {
+        (bool success, ) = payable(buyer).call{value: amount}("");
+        require(success, "Refund failed");
+        currentState = State.REFUNDED;
+        emit FundsRefunded();
+    }
+
+    // Change fee percentage (only feeCollector)
+    function changeFeePercentage(uint256 _newFee) external nonReentrant {
+        require(msg.sender == feeCollector, "Only fee collector can change fee");
+        require(_newFee <= 5, "Fee percentage too high");  // Cap fee percentage to 5%
+        feePercentage = _newFee;
     }
 }
