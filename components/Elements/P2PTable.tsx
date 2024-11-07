@@ -103,7 +103,6 @@ export const GET_SELLER_SALES = gql`
   }
 `;
 
-
 interface P2PTableProps {
   type?: 'ALL' | 'BUYER' | 'SELLER';
 }
@@ -118,20 +117,29 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
   const query = type ? queries[type] : GET_SALES;
   const [{ data, fetching }] = useQuery({ query });
   const [reputation, setReputation] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
+  const itemsPerPage = 10;
 
   useEffect(() => {
     async function fetchReputation() {
-      const score = await getUserReputation('FRXbHF8z3UEiNRG1r6ubYGTbNGjZ6g7j2WDSjjqjxNCF');
+      const score = await getUserReputation(
+        'FRXbHF8z3UEiNRG1r6ubYGTbNGjZ6g7j2WDSjjqjxNCF'
+      );
       setReputation(score);
     }
     fetchReputation();
   }, []);
 
-
   const sales =
     data?.sales?.sales || data?.sellerSales || data?.buyerSales || [];
+  const paginatedSales = sales.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
 
+  const handleNextPage = () => setCurrentPage((prev) => prev + 1);
+  const handlePreviousPage = () => setCurrentPage((prev) => prev - 1);
 
   if (fetching) {
     return (
@@ -143,57 +151,68 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
 
   if (sales.length === 0) {
     return (
-      <div className="text-white text-opacity-70 text-center flex justify-center items-center h-44 ">
+      <div className="text-white text-opacity-70 text-center flex justify-center items-center h-44">
         You don&apos;t have any sales
       </div>
     );
   }
 
- 
-
-  if (data) {
-    return (
-      <div>
-        <table className="table-auto w-full text-left">
-          <thead className="hidden md:table-header-group text-[#A6A6A6] text-[14px] font-[400]">
-            <tr>
-              <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">
-                Advertisers
-              </th>
-              <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">
-                Price
-              </th>
-              <th className=" py-2 text-[#A6A6A6] text-[14px] font-[400]">
-                Available/Order Limit
-              </th>
-              <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
-                Payment
-              </th>
-              <th className=" py-2 text-end text-[#A6A6A6] text-[14px] font-[400]">
-                Trade
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sales.map((row: any, index: number) => (
-              <P2PTableRow
-                key={index}
-                reputation={reputation}
-                sale={row}
-                advertiser={row.seller}
-                price={row.unitPrice}
-                available={row.amount}
-                limit={row.amount}
-                paymentMethods={row.seller?.paymentMethods || []}
-                type={type}
-              />
-            ))}
-          </tbody>
-        </table>
+  return (
+    <div>
+      <table className="table-auto w-full text-left">
+        <thead className="hidden md:table-header-group text-[#A6A6A6] text-[14px] font-[400]">
+          <tr>
+            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+              Advertisers
+            </th>
+            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+              Price
+            </th>
+            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+              Available/Order Limit
+            </th>
+            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+              Payment
+            </th>
+            <th className="py-2 text-end text-[#A6A6A6] text-[14px] font-[400]">
+              Trade
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedSales.map((row: any, index: number) => (
+            <P2PTableRow
+              key={index}
+              reputation={reputation}
+              sale={row}
+              advertiser={row.seller}
+              price={row.unitPrice}
+              available={row.amount}
+              limit={row.amount}
+              paymentMethods={row.seller?.paymentMethods || []}
+              type={type}
+            />
+          ))}
+        </tbody>
+      </table>
+      <div className="flex justify-center gap-7 mt-4">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 0}
+          className="px-4 py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
+        >
+          Previous
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={(currentPage + 1) * itemsPerPage >= sales.length}
+          className="px-4 py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
+        >
+          Next
+        </button>
       </div>
-    );
-  }
-  return null;
+    </div>
+  );
 };
 
 export default P2PTable;
