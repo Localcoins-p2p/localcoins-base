@@ -195,18 +195,18 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
           ))}
         </tbody>
       </table>
-      <div className="flex justify-center gap-7 mt-4">
+      <div className="flex justify-end gap-4 mt-4">
         <button
           onClick={handlePreviousPage}
           disabled={currentPage === 0}
-          className="px-4 py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
+          className="w-[100px] py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
         >
           Previous
         </button>
         <button
           onClick={handleNextPage}
           disabled={(currentPage + 1) * itemsPerPage >= sales.length}
-          className="px-4 py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
+          className="w-[100px] py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
         >
           Next
         </button>
