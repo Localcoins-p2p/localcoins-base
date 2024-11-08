@@ -119,7 +119,7 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
   const [reputation, setReputation] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 6;
 
   useEffect(() => {
     async function fetchReputation() {
