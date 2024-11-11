@@ -19,6 +19,7 @@ interface P2PRowProps {
   paymentMethods: Array<{ name: string; color: string }>;
   sale: any;
   type?: 'ALL' | 'BUYER' | 'SELLER';
+  // onClick: () => void;
 }
 
 const P2PTableRow: React.FC<P2PRowProps> = ({

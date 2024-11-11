@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Login from '../Login';
+import Points from '../../public/assets/common/points.png';
+// import { Image } from 'next/image';
 
 import { useState } from 'react';
 import AddPostModel from '../Elements/AddPostModel';
@@ -38,6 +40,16 @@ const NewHeader = () => {
           </div>
         </Link>
         <div className="flex items-center space-x-4">
+          <div className="flex items-center mr-1">
+            <Image
+              className="ml-2"
+              src={Points}
+              alt="123"
+              width={44}
+              height={44}
+            />
+            <p className="ml-1 text-[#F3AA05] font-bold text-[20px]">865</p>
+          </div>
           <Link
             href={'/profile'}
             className="bg-[#F3AA05] p-2  text-black sm:p-3 rounded-[10px] flex items-center "
