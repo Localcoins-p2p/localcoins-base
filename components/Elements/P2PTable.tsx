@@ -7,8 +7,8 @@ import Loading from './Loading';
 import { getUserReputation } from '@/utils/getUserReputation';
 
 const GET_SALES = gql`
-  query Sales {
-    sales {
+  query Sales($skip: Int!, $take: Int!) {
+    sales(skip: $skip, take: $take) {
       sales {
         amount
         buyer {
@@ -35,6 +35,7 @@ const GET_SALES = gql`
         screenshotMehtods
         unitPrice
       }
+      count
     }
   }
 `;
@@ -107,6 +108,8 @@ interface P2PTableProps {
   type?: 'ALL' | 'BUYER' | 'SELLER';
 }
 
+const itemsPerPage = 4;
+
 const queries = {
   ALL: GET_SALES,
   BUYER: GET_BUYER_SALES,
@@ -115,11 +118,17 @@ const queries = {
 
 const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
   const query = type ? queries[type] : GET_SALES;
-  const [{ data, fetching }] = useQuery({ query });
-  const [reputation, setReputation] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [page, setPage] = useState(1);
 
-  const itemsPerPage = 6;
+  console.log('Skip:', (page - 1) * itemsPerPage);
+  const [{ data, fetching, error }] = useQuery({
+    query,
+    variables: { skip: (page - 1) * itemsPerPage, take: itemsPerPage },
+  });
+
+  const [reputation, setReputation] = useState<number | null>(null);
+
+  console.log('res data:', data);
 
   useEffect(() => {
     async function fetchReputation() {
@@ -131,15 +140,9 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
     fetchReputation();
   }, []);
 
-  const sales =
-    data?.sales?.sales || data?.sellerSales || data?.buyerSales || [];
-  const paginatedSales = sales.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
-
-  const handleNextPage = () => setCurrentPage((prev) => prev + 1);
-  const handlePreviousPage = () => setCurrentPage((prev) => prev - 1);
+  const sales = data?.sales?.sales || [];
+  const totalCount = data?.sales?.count || 0;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   if (fetching) {
     return (
@@ -180,7 +183,7 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
           </tr>
         </thead>
         <tbody>
-          {paginatedSales.map((row: any, index: number) => (
+          {sales.map((row: any, index: number) => (
             <P2PTableRow
               key={index}
               reputation={reputation}
@@ -195,17 +198,37 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
           ))}
         </tbody>
       </table>
-      <div className="flex justify-end gap-4 mt-4">
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center gap-2 mt-4">
+        {/* Previous Page Button */}
         <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 0}
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
           className="w-[100px] py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
         >
           Previous
         </button>
+
+        {/* Page Number Buttons */}
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setPage(i + 1)}
+            className={`px-4 py-1 rounded-[50vh] ${
+              page === i + 1
+                ? 'bg-[#F3AA05] text-white'
+                : 'bg-[#393939] text-[#f0f0f0]'
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        {/* Next Page Button */}
         <button
-          onClick={handleNextPage}
-          disabled={(currentPage + 1) * itemsPerPage >= sales.length}
+          onClick={() => setPage(page + 1)}
+          disabled={page === totalPages}
           className="w-[100px] py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
         >
           Next

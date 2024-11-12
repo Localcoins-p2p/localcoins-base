@@ -10,7 +10,6 @@ export const sales = async (
       id,
       ...(!id && {
         buyer: { is: null },
-        canceledAt: null,
       }),
     },
     include: {
@@ -28,13 +27,7 @@ export const sales = async (
     take,
     skip,
   });
-  console.log('>>>', {
-    id,
-    ...(!id && {
-      buyer: { is: null },
-      canceledAt: null,
-    }),
-  });
+  console.log(sales);
   const count = await prisma.sale.count({
     where: {
       id,
