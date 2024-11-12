@@ -15,6 +15,7 @@ const typeDefs = gql`
     publicKey: String
     termsAccepted: Boolean
     paymentMethods: [PaymentMethod]
+    points: Int
   }
 
   type PaymentMethod {

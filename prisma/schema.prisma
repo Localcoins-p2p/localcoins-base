@@ -29,6 +29,8 @@ model User {
   phoneOtpDoC   DateTime?
   termsAccepted Boolean   @default(false)
 
+  points        Int       @default(0)
+
   isAdmin        Boolean         @default(false)
   SaleBuyer      Sale[]          @relation("SellerRelation")
   SaleSeller     Sale[]          @relation("BuyerRelation")
