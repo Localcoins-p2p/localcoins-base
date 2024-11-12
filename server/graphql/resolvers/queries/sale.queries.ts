@@ -10,7 +10,6 @@ export const sales = async (
       id,
       ...(!id && {
         buyer: { is: null },
-        canceledAt: null,
       }),
     },
     include: {

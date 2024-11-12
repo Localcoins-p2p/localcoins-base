@@ -12,6 +12,7 @@ export const GET_USER = gql`
       publicKey
       termsAccepted
       country
+      points
     }
   }
 `;

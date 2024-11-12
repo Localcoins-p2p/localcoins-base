@@ -6,14 +6,19 @@ import Login from '../Login';
 import Points from '../../public/assets/common/points.png';
 // import { Image } from 'next/image';
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import AddPostModel from '../Elements/AddPostModel';
 import ConnectWallet from '../Elements/ConnectWallet';
+import { AppContext } from '@/utils/context';
 const NewHeader = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
+
+  const {
+    context: { user },
+  } = useContext(AppContext);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -48,7 +53,9 @@ const NewHeader = () => {
               width={44}
               height={44}
             />
-            <p className="ml-1 text-[#F3AA05] font-bold text-[20px]">865</p>
+            <p className="ml-1 text-[#F3AA05] font-bold text-[20px]">
+              {user?.points || 0}
+            </p>
           </div>
           <Link
             href={'/profile'}

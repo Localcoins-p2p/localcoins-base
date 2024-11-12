@@ -6,6 +6,7 @@ export interface IUser {
   publicKey: string;
   email: string;
   country?: string;
+  points: number;
 }
 export interface IAppContext {
   context: {

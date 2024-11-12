@@ -5,24 +5,29 @@ class Tracker {
   pointableEvent(event: string) {
     return true;
   }
-  async track({
-    event,
-    data,
-    user,
-  }: {
-    event: string;
-    data: unknown;
-    user?: { id: string };
-  }) {
+  async track(
+    event: string,
+    data: unknown,
+    user?: { id: string; points: number }
+  ) {
     if (user && this.pointableEvent(event)) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          points: {
-            increment: 5,
+      if (user.points) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            points: {
+              increment: 5,
+            },
           },
-        },
-      });
+        });
+      } else {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            points: 5,
+          },
+        });
+      }
     }
   }
 }

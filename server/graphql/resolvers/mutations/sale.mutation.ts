@@ -3,6 +3,7 @@ import { isLoggedIn } from '../../wrappers';
 import * as Prisma from '@prisma/client';
 import { IGqlContext } from '@/types';
 import saveImages from '@/server/utils/saveImages';
+import { tracker } from '@/server/utils/track';
 
 export const createSale = isLoggedIn(
   async (
@@ -20,6 +21,7 @@ export const createSale = isLoggedIn(
     }: Prisma.Sale,
     { user }: IGqlContext
   ) => {
+    await tracker.track('SALE_CREATED', null, user as Prisma.User);
     return prisma.sale.create({
       data: {
         amount,
@@ -43,6 +45,7 @@ export const addRemoveBuyer = isLoggedIn(
     { id, command }: { id: string; command: 'ADD' | 'REMOVE' },
     { user }: IGqlContext
   ) => {
+    tracker.track('ADD_REMOVE_BUYER', null, user as Prisma.User);
     return prisma.sale.update({
       where: { id },
       data: {
@@ -54,6 +57,7 @@ export const addRemoveBuyer = isLoggedIn(
 
 export const cancelSale = isLoggedIn(
   async (_: unknown, { id }: { id: string }, { user }: IGqlContext) => {
+    tracker.track('SALE_CANCELED', null, user as Prisma.User);
     const currentSale = await prisma.sale.findUnique({
       where: { id },
       include: {
@@ -86,6 +90,7 @@ export const cancelSale = isLoggedIn(
 
 export const markSalePaid = isLoggedIn(
   async (_: unknown, { id }: { id: string }, { user }: IGqlContext) => {
+    tracker.track('SALE_PAID', null, user as Prisma.User);
     const currentSale = await prisma.sale.findUnique({
       where: { id },
       include: {
@@ -116,6 +121,7 @@ export const markSalePaid = isLoggedIn(
 
 export const markSaleFinished = isLoggedIn(
   async (_: unknown, { id }: { id: string }, { user }: IGqlContext) => {
+    tracker.track('SALE_FINISHED', null, user as Prisma.User);
     const currentSale = await prisma.sale.findUnique({
       where: { id },
       include: {
