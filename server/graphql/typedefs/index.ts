@@ -72,6 +72,7 @@ const typeDefs = gql`
 
   type SaleResponse {
     sales: [Sale]
+    count: Int
   }
   type Screenshot {
     id: String!
@@ -91,7 +92,7 @@ const typeDefs = gql`
 
   type Query {
     user: User
-    sales(id: String): SaleResponse
+    sales(id: String, skip: Int, take: Int): SaleResponse
     paymentMethods: [PaymentMethod]
     sellerSales: [Sale]
     buyerSales: [Sale]
