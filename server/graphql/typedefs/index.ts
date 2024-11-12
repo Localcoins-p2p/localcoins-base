@@ -72,6 +72,7 @@ const typeDefs = gql`
 
   type SaleResponse {
     sales: [Sale]
+    count: Int
   }
   type Screenshot {
     id: String!

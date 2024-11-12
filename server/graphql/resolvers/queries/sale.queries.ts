@@ -10,6 +10,7 @@ export const sales = async (
       id,
       ...(!id && {
         buyer: { is: null },
+        canceledAt: null,
       }),
     },
     include: {
@@ -27,6 +28,22 @@ export const sales = async (
     take,
     skip,
   });
+  console.log('>>>', {
+    id,
+    ...(!id && {
+      buyer: { is: null },
+      canceledAt: null,
+    }),
+  });
+  const count = await prisma.sale.count({
+    where: {
+      id,
+      ...(!id && {
+        buyer: { is: null },
+        canceledAt: { not: null },
+      }),
+    },
+  });
   if (id && sales[0].screenshots[0]) {
     sales[0].screenshots[0].method = await prisma.paymentMethod.findFirst({
       where: { userId: sales[0].sellerId },
@@ -34,8 +51,11 @@ export const sales = async (
   }
 
   if (!id) {
-    return { sales: sales.filter((sale: Prisma.Sale) => !sale.canceledAt) };
+    return {
+      sales: sales.filter((sale: Prisma.Sale) => !sale.canceledAt),
+      count,
+    };
   }
 
-  return { sales };
+  return { sales, count };
 };
