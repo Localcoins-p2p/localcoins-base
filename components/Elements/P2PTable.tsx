@@ -200,12 +200,12 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
       </table>
 
       {/* Pagination Controls */}
-      <div className="flex justify-center gap-2 mt-4">
+      <div className="flex justify-center gap-2 mt-6">
         {/* Previous Page Button */}
         <button
           onClick={() => setPage(page - 1)}
           disabled={page === 1}
-          className="w-[100px] py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
+          className="w-[100px] py-1 bg-[#F3AA05] text-white rounded-2xl disabled:bg-gray-500"
         >
           Previous
         </button>
@@ -215,7 +215,7 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
           <button
             key={i}
             onClick={() => setPage(i + 1)}
-            className={`px-4 py-1 rounded-[50vh] ${
+            className={`px-3 py-1 rounded-[50vh] ${
               page === i + 1
                 ? 'bg-[#F3AA05] text-white'
                 : 'bg-[#393939] text-[#f0f0f0]'
@@ -229,7 +229,7 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
         <button
           onClick={() => setPage(page + 1)}
           disabled={page === totalPages}
-          className="w-[100px] py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
+          className="w-[100px] py-1 bg-[#F3AA05] text-white rounded-2xl disabled:bg-gray-500"
         >
           Next
         </button>
