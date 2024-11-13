@@ -65,6 +65,8 @@ const Index: React.FC = () => {
   const totalCount = data?.sales?.count || 0;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
+  console.log(sales);
+
   const handleOpenModal = (sale: any) => {
     setSelectedSale(sale);
     setIsOpen(true);
@@ -95,9 +97,9 @@ const Index: React.FC = () => {
       <NewHeader />
       <h1 className="text-[#fff] mt-[70px] text-[28px]">Disputes</h1>
 
-      <div className="mt-[25px]">
-        <table className="table-auto w-full text-left">
-          <thead className="hidden md:table-header-group text-[#A6A6A6] text-[14px] font-[400]">
+      <div className="mt-[25px] overflow-scroll">
+        <table className="table-auto text-left min-w-[1200px]">
+          <thead className="text-[#A6A6A6] text-[14px] font-[400]">
             <tr>
               <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
                 Buyer
@@ -200,7 +202,7 @@ const Index: React.FC = () => {
         </table>
 
         {/* Pagination Controls */}
-        <div className="flex justify-center gap-2 mt-[60px]">
+        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex justify-center gap-2 mt-[60px]">
           <button
             onClick={() => setPage(page - 1)}
             disabled={page === 1}
