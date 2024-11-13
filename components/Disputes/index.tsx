@@ -90,7 +90,7 @@ const Index: React.FC = () => {
             {/* Display other fields as needed */}
           </div>
         ) : (
-          <p>Loading...</p>
+          <p className="mt-5">Loading...</p>
         )}
       </ModalComponent>
 
@@ -169,7 +169,7 @@ const Index: React.FC = () => {
           <tbody>
             {fetching ? (
               <tr>
-                <td colSpan={5} className="text-center text-[#fff]">
+                <td colSpan={5} className="mt-10 text-center text-[#fff]">
                   Loading...
                 </td>
               </tr>
