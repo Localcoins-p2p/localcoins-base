@@ -251,10 +251,11 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 
   const handleSellerDispute = async () => {
     if (true) {
-      alert(1);
       raiseSellerDispute(sale?.onChainSaleId);
     }
   };
+
+  const handleBuyerDispute = async () => {};
 
   const options = paymentMethods.map((method: any) => ({
     value: method.name,
@@ -405,12 +406,22 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               </div>
               <span>Transfered, Notify Seller</span>
             </button>
-            <button
-              className="text-[#F3AA05] font-semibold "
-              onClick={handleBuyerCancel}
-            >
-              Cancel
-            </button>
+            <div className="flex justify-between ml-4 gap-4">
+              {showBuyerDisputeButton && (
+                <button
+                  className="text-[#F3AA05] font-semibold "
+                  onClick={handleBuyerDispute}
+                >
+                  Dispute
+                </button>
+              )}
+              <button
+                className="text-[#F3AA05] font-semibold "
+                onClick={handleBuyerCancel}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         )}
         {showConfirmPaymentReceivedButton && (
@@ -429,12 +440,14 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               <span>Confirm Payment Received</span>
             </button>
             <div className="flex gap-4">
-              <button
-                className="text-[#F3AA05] font-semibold "
-                onClick={handleSellerDispute}
-              >
-                Dispute
-              </button>
+              {showSellerDisputeButton && (
+                <button
+                  className="text-[#F3AA05] font-semibold "
+                  onClick={handleSellerDispute}
+                >
+                  Dispute
+                </button>
+              )}
               <button
                 className="text-[#F3AA05] font-semibold "
                 onClick={handleSellerCancel}

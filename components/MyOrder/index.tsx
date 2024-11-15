@@ -96,8 +96,8 @@ const MyOrder = () => {
     isBuyer && !sale?.paidAt && !sale?.isCanceled;
   const showClaimPaymentButton = isBuyer && sale?.paidAt && !sale.finishedAt;
 
-  const showSellerDisputeButton = isSeller && sale?.paidAt;
-  const showBuyerDisputeButton = isBuyer && sale?.paidAt;
+  const showSellerDisputeButton = isSeller && sale?.screenshots?.length > 0;
+  const showBuyerDisputeButton = isBuyer && sale?.screenshots?.length > 0;
 
   // if (!sale) {
   //   return <div className='text-white'>Loading...</div>;

@@ -29,7 +29,7 @@ model User {
   phoneOtpDoC   DateTime?
   termsAccepted Boolean   @default(false)
 
-  points        Int       @default(0)
+  points Int @default(0)
 
   isAdmin        Boolean         @default(false)
   SaleBuyer      Sale[]          @relation("SellerRelation")
@@ -60,6 +60,11 @@ model PaymentMethod {
   screenshots Screenshot[]
 }
 
+enum SellerBuyer {
+  Seller
+  Buyer
+}
+
 model Sale {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   sellerId String @db.ObjectId
@@ -84,6 +89,8 @@ model Sale {
   paidAt     DateTime?
   finishedAt DateTime?
   canceledAt DateTime?
+  isDisputed Boolean?
+  disputedBy SellerBuyer?
 
   currency   String? @default("SOL")
   blockchain String?
