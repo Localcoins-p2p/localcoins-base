@@ -1,4 +1,4 @@
-export const contractAddress = '0xD7ACd2a9FD159E69Bb102A1ca21C9a3e3A5F771B';
+export const contractAddress = '0x29f61437131a1bbE662b8d37fB5A06AC5A6Ea517';
 export const baseSepolia = {
   chainId: '0x14a34',
   chainName: 'Base Sepolia',
@@ -58,18 +58,7 @@ export const contractABI = [
     type: 'event',
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_seller',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '_amount',
-        type: 'uint256',
-      },
-    ],
+    inputs: [],
     name: 'createEscrow',
     outputs: [
       {

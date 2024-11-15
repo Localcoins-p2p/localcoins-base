@@ -96,6 +96,9 @@ const MyOrder = () => {
     isBuyer && !sale?.paidAt && !sale?.isCanceled;
   const showClaimPaymentButton = isBuyer && sale?.paidAt && !sale.finishedAt;
 
+  const showSellerDisputeButton = isSeller && sale?.paidAt;
+  const showBuyerDisputeButton = isBuyer && sale?.paidAt;
+
   // if (!sale) {
   //   return <div className='text-white'>Loading...</div>;
   // }
@@ -138,6 +141,8 @@ const MyOrder = () => {
               image={image}
               isSeller={isSeller}
               isBuyer={isBuyer}
+              showSellerDisputeButton={showSellerDisputeButton}
+              showBuyerDisputeButton={showBuyerDisputeButton}
             />
           </div>
           <div className="col-span-5 mt-6 rounded-[15px] h-full">

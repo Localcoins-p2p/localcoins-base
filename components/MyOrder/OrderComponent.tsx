@@ -11,7 +11,11 @@ import Loading from '../Elements/Loading';
 import Select from 'react-select';
 import { getFromCurrency, getToCurrencyv2 } from '@/utils/getCurrency';
 import { addRemoveBuyerMutation } from '../Elements/BuyButton';
-import { confirmPayment, markPaid } from '@/utils/base-calls';
+import {
+  confirmPayment,
+  markPaid,
+  raiseSellerDispute,
+} from '@/utils/base-calls';
 
 interface OrderComponentProps {
   sale: any;
@@ -22,6 +26,8 @@ interface OrderComponentProps {
   image: string;
   isSeller?: boolean;
   isBuyer?: boolean;
+  showBuyerDisputeButton: boolean;
+  showSellerDisputeButton: boolean;
 }
 
 const ADD_SCREENSHOT = gql`
@@ -73,6 +79,8 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   image,
   isSeller,
   isBuyer,
+  showSellerDisputeButton,
+  showBuyerDisputeButton,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{ fetching }, removeBuyer] = useMutation(addRemoveBuyerMutation);
@@ -238,6 +246,13 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     } catch (err) {
       console.log(err);
     } finally {
+    }
+  };
+
+  const handleSellerDispute = async () => {
+    if (true) {
+      alert(1);
+      raiseSellerDispute(sale?.onChainSaleId);
     }
   };
 
@@ -413,12 +428,20 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               </div>
               <span>Confirm Payment Received</span>
             </button>
-            <button
-              className="text-[#F3AA05] font-semibold "
-              onClick={handleSellerCancel}
-            >
-              Cancel
-            </button>
+            <div className="flex gap-4">
+              <button
+                className="text-[#F3AA05] font-semibold "
+                onClick={handleSellerDispute}
+              >
+                Dispute
+              </button>
+              <button
+                className="text-[#F3AA05] font-semibold "
+                onClick={handleSellerCancel}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         )}
         {showClaimPaymentButton && (
