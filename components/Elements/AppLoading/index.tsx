@@ -15,6 +15,7 @@ const AppLoading = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 999,
       }}
     >
       <span className="animate-spin">

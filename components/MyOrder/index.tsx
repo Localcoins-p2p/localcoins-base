@@ -49,6 +49,7 @@ const GET_SALE = gql`
         unitPrice
         createdAt
         paidAt
+        isDisputed
         canceledAt
         blockchain
         currency
@@ -96,8 +97,18 @@ const MyOrder = () => {
     isBuyer && !sale?.paidAt && !sale?.isCanceled;
   const showClaimPaymentButton = isBuyer && sale?.paidAt && !sale.finishedAt;
 
-  const showSellerDisputeButton = isSeller && sale?.screenshots?.length > 0;
-  const showBuyerDisputeButton = isBuyer && sale?.screenshots?.length > 0;
+  const showSellerDisputeButton =
+    isSeller &&
+    sale?.screenshots?.length > 0 &&
+    !sale.isDisputed &&
+    !sale.isCanceled &&
+    !sale.isFinished;
+  const showBuyerDisputeButton =
+    isBuyer &&
+    sale?.screenshots?.length > 0 &&
+    !sale.isDisputed &&
+    !sale.isCanceled &&
+    !sale.isFinished;
 
   // if (!sale) {
   //   return <div className='text-white'>Loading...</div>;

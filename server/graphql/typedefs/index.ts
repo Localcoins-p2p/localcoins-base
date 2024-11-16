@@ -46,6 +46,7 @@ const typeDefs = gql`
     onChainSaleId: Int
     createdAt: Date
     finishedAt: Date
+    isDisputed: Boolean
     paidAt: Date
     blockchain: String
     currency: String
