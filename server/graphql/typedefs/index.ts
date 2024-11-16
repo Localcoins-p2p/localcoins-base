@@ -166,6 +166,8 @@ const typeDefs = gql`
       accountName: String
     ): PaymentMethod
     deletePaymentMethod(id: String!): PaymentMethod
+
+    markDisputed(saleId: String!): Sale!
   }
 
   ${projectTypedefs}

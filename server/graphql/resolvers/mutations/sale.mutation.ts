@@ -163,7 +163,6 @@ export const addScreenshot = isLoggedIn(
     { user }: IGqlContext
   ) => {
     const [image] = await saveImages([imageUrl]);
-    console.log('Image', image);
     const currentSale = await prisma.sale.findUnique({
       where: { id: saleId },
       include: {
@@ -191,6 +190,36 @@ export const addScreenshot = isLoggedIn(
         imageUrl: image,
         methodId: method,
         paidById: user.id as string,
+      },
+    });
+  }
+);
+export const markDisputed = isLoggedIn(
+  async (_: unknown, { saleId }: { saleId: string }, { user }: IGqlContext) => {
+    const currentSale = await prisma.sale.findUnique({
+      where: { id: saleId },
+      include: {
+        buyer: true,
+        seller: true,
+      },
+    });
+
+    if (!currentSale) {
+      throw new Error('Sale not found');
+    }
+
+    const isSeller = currentSale.sellerId === user?.id;
+    const isBuyer = currentSale.buyerId === user?.id;
+
+    if (!isSeller && !isBuyer) {
+      throw new Error('Unauthorized to mark sale as disputed');
+    }
+
+    return prisma.sale.update({
+      where: { id: saleId },
+      data: {
+        isDisputed: true,
+        disputedBy: isSeller ? 'Seller' : 'Buyer',
       },
     });
   }

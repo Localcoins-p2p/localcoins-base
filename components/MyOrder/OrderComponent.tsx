@@ -14,6 +14,7 @@ import { addRemoveBuyerMutation } from '../Elements/BuyButton';
 import {
   confirmPayment,
   markPaid,
+  raiseBuyerDispute,
   raiseSellerDispute,
 } from '@/utils/base-calls';
 
@@ -70,6 +71,14 @@ const MARK_FINISHED = gql`
   }
 `;
 
+const MARK_DISPUTED = gql`
+  mutation Mutation($saleId: String!) {
+    markDisputed(saleId: $saleId) {
+      id
+    }
+  }
+`;
+
 const OrderComponent: React.FC<OrderComponentProps> = ({
   sale,
   showConfirmPaymentReceivedButton,
@@ -84,6 +93,8 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{ fetching }, removeBuyer] = useMutation(addRemoveBuyerMutation);
+  const [{ fetching: markingDisputed }, markDisputedMutation] =
+    useMutation(MARK_DISPUTED);
   const [{ fetching: canceling }, cancelSale] = useMutation(CANCEL_SALE);
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
   const [selectedPaymentMethodIndex, setSelectedPaymentMethodIndex] =
@@ -251,11 +262,17 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 
   const handleSellerDispute = async () => {
     if (true) {
-      raiseSellerDispute(sale?.onChainSaleId);
+      await raiseSellerDispute(sale?.onChainSaleId);
+      await markDisputedMutation({ saleId: sale?.id });
     }
   };
 
-  const handleBuyerDispute = async () => {};
+  const handleBuyerDispute = async () => {
+    if (true) {
+      await raiseBuyerDispute(sale?.onChainSaleId);
+      await markDisputedMutation({ saleId: sale?.id });
+    }
+  };
 
   const options = paymentMethods.map((method: any) => ({
     value: method.name,

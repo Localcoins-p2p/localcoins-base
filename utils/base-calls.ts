@@ -189,7 +189,7 @@ export const raiseSellerDispute = async (escrowId: string) => {
     );
     const tx = await escrowContract.sellerDispute();
     const receipt = await tx.wait();
-    console.log(receipt);
+    return receipt;
   } catch (err) {
     console.log(err);
     return { error: 'Failed to confirm payment' };
@@ -221,6 +221,7 @@ export const raiseBuyerDispute = async (escrowId: string) => {
     );
     const tx = await escrowContract.buyerDispute();
     const receipt = await tx.wait();
+    return receipt;
   } catch (err) {
     console.log(err);
     return { error: 'Failed to confirm payment' };
