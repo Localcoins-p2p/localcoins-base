@@ -3,13 +3,23 @@ import * as Prisma from '@prisma/client';
 
 export const sales = async (
   _: unknown,
-  { id, take = 10, skip = 0 }: { id?: string; take?: number; skip: number }
+  {
+    id,
+    filters,
+    take = 10,
+    skip = 0,
+  }: {
+    id?: string;
+    take?: number;
+    filters?: { isDisputed?: boolean };
+    skip: number;
+  }
 ) => {
   const sales: any = await prisma.sale.findMany({
     where: {
       id,
       ...(!id && {
-        buyer: { is: null },
+        ...(filters ? filters : { buyer: { is: null } }),
       }),
     },
     include: {

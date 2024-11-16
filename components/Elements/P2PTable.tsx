@@ -139,8 +139,9 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
     }
     fetchReputation();
   }, []);
-
-  const sales = data?.sales?.sales || [];
+  console.log('><>>>', data?.sales);
+  const sales =
+    data?.sales?.sales || data?.sellerSales || data?.buyerSales || [];
   const totalCount = data?.sales?.count || 0;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 

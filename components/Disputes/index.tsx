@@ -6,10 +6,11 @@ import NewHeader from '../NewHeader/NewHeader';
 import Loading from '../Elements/Loading';
 import { gql, useQuery } from 'urql';
 import ModalComponent from '../Elements/ConnectWallet';
+import Link from 'next/link';
 
 const GET_SALES = gql`
-  query Sales($skip: Int!, $take: Int!) {
-    sales(skip: $skip, take: $take) {
+  query Sales($filters: SaleFilters, $skip: Int, $take: Int) {
+    sales(filters: $filters, skip: $skip, take: $take) {
       sales {
         amount
         buyer {
@@ -29,18 +30,18 @@ const GET_SALES = gql`
           name
           publicKey
           id
-          paymentMethods {
-            id
-            name
-            accountNumber
-            accountName
-          }
+        }
+        buyer {
+          name
+          publicKey
+          id
         }
         unitPrice
         blockchain
         currency
         onChainSaleId
         finishedAt
+        disputedBy
       }
       count
     }
@@ -58,7 +59,11 @@ const Index: React.FC = () => {
 
   const [{ data, fetching }] = useQuery({
     query: GET_SALES,
-    variables: { skip: (page - 1) * itemsPerPage, take: itemsPerPage },
+    variables: {
+      filters: { isDisputed: true },
+      skip: (page - 1) * itemsPerPage,
+      take: itemsPerPage,
+    },
   });
 
   const sales = data?.sales?.sales || [];
@@ -110,7 +115,9 @@ const Index: React.FC = () => {
               <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
                 Amount
               </th>
-              <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">ID</th>
+              <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+                Dispute By
+              </th>
               <th className="py-2 text-start text-[#A6A6A6] text-[14px] font-[400]">
                 Payment
               </th>
@@ -177,17 +184,21 @@ const Index: React.FC = () => {
               sales.map((row: any, index: number) => (
                 <tr key={index} className="text-[#fff] text-center">
                   <td className="py-2 text-start">
-                    {row.buyer?.publicKey || 'N/A'}
+                    {row.buyer?.name || 'N/A'}
                   </td>
                   <td className="py-2 text-start">
                     {row.seller?.name || 'No Seller'}
                   </td>
-                  <td className="py-2 text-start">{row.amount}</td>
-                  <td className="py-2 text-start">{row.id}</td>
                   <td className="py-2 text-start">
-                    <button className="text-[#fff] bg-[#393939] py-1 px-3 rounded-2xl">
-                      Seller Disputes
-                    </button>
+                    {row.amount} {row.currency}
+                  </td>
+                  <td className="py-2 text-start">{row.disputedBy}</td>
+                  <td className="py-2 text-start">
+                    <Link href={`/my-order?sale=${row.id}`} target="_blank">
+                      <button className="text-[#fff] bg-[#393939] py-1 px-3 rounded-2xl">
+                        View
+                      </button>
+                    </Link>
                     {/* {row.seller?.paymentMethods?.map((method: any, methodIndex: number) => (
                       <div key={methodIndex} className="flex flex-col items-center">
                         <span>{method.name}</span>

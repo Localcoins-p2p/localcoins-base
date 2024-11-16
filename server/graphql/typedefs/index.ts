@@ -51,6 +51,7 @@ const typeDefs = gql`
     blockchain: String
     currency: String
     canceledAt: Date
+    disputedBy: String
   }
 
   type LoginResponse {
@@ -92,9 +93,13 @@ const typeDefs = gql`
     score: Float
   }
 
+  input SaleFilters {
+    isDisputed: Boolean
+  }
+
   type Query {
     user: User
-    sales(id: String, skip: Int, take: Int): SaleResponse
+    sales(id: String, filters: SaleFilters, skip: Int, take: Int): SaleResponse
     paymentMethods: [PaymentMethod]
     sellerSales: [Sale]
     buyerSales: [Sale]
