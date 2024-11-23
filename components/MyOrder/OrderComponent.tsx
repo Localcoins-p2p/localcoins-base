@@ -401,7 +401,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         {showConfirmPaymentReceivedButton && (
           <div className="flex justify-between ml-4">
             <button
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg flex gap-2"
+              className="bg-yellow-500 mt-4 hover:bg-yellow-600 text-black font-semibold py-2 px-5 rounded-lg flex gap-2"
               onClick={handlePaymentReceived}
             >
               <div>

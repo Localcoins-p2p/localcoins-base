@@ -40,7 +40,7 @@ const NewHeader = () => {
         <div className="flex items-center space-x-4">
           <Link
             href={'/profile'}
-            className="bg-[#F3AA05] p-2  text-black sm:p-3 rounded-[10px] flex items-center "
+            className="bg-[#F3AA05] p-3  text-black sm:p-4 rounded-[10px] flex items-center "
           >
             <Image
               src="/assets/common/setting.svg"
