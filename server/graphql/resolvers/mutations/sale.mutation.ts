@@ -89,7 +89,11 @@ export const cancelSale = isLoggedIn(
 );
 
 export const markSalePaid = isLoggedIn(
-  async (_: unknown, { id }: { id: string }, { user }: IGqlContext) => {
+  async (
+    _: unknown,
+    { id, referenceId }: { id: string; referenceId: string },
+    { user }: IGqlContext
+  ) => {
     tracker.track('SALE_PAID', null, user as Prisma.User);
     const currentSale = await prisma.sale.findUnique({
       where: { id },
@@ -109,6 +113,24 @@ export const markSalePaid = isLoggedIn(
     if (currentSale.canceledAt) {
       throw new Error('Sale cannot be marked as paid as it has been canceled');
     }
+
+    const screenshots = await prisma.screenshot.findMany({
+      where: {
+        saleId: id,
+        referenceId,
+      },
+    });
+    if (screenshots.length === 0) {
+      throw new Error('Incorrect Reference Number');
+    }
+    await prisma.screenshot.update({
+      where: {
+        id: screenshots[0].id,
+      },
+      data: {
+        sellerVerified: true,
+      },
+    });
 
     return prisma.sale.update({
       where: { id },
@@ -159,7 +181,13 @@ export const addScreenshot = isLoggedIn(
       saleId,
       imageUrl,
       method,
-    }: { saleId: string; imageUrl: string; method: string },
+      referenceId,
+    }: {
+      saleId: string;
+      imageUrl: string;
+      method: string;
+      referenceId: string;
+    },
     { user }: IGqlContext
   ) => {
     const [image] = await saveImages([imageUrl]);
@@ -190,6 +218,7 @@ export const addScreenshot = isLoggedIn(
         imageUrl: image,
         methodId: method,
         paidById: user.id as string,
+        referenceId,
       },
     });
   }

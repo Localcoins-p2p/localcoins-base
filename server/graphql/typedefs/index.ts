@@ -152,12 +152,13 @@ const typeDefs = gql`
     ): Sale
     addRemoveBuyer(id: String!, command: String!): Sale
     cancelSale(id: String!): Sale
-    markSalePaid(id: String!): Sale
+    markSalePaid(id: String!, referenceId: String!): Sale
     markSaleFinished(id: String!): Sale
     addScreenshot(
       saleId: String!
       imageUrl: String!
       method: String!
+      referenceId: String!
     ): Screenshot
     updateProfile(name: String, email: String, termsAccepted: Boolean): User
     addPaymentMethod(

@@ -1,4 +1,5 @@
 import prisma from '@/prisma/prisma';
+import { IGqlContext } from '@/types';
 import * as Prisma from '@prisma/client';
 
 export const sales = async (
@@ -13,7 +14,8 @@ export const sales = async (
     take?: number;
     filters?: { isDisputed?: boolean };
     skip: number;
-  }
+  },
+  { user }: IGqlContext
 ) => {
   const sales: any = await prisma.sale.findMany({
     where: {
@@ -57,6 +59,10 @@ export const sales = async (
       sales: sales.filter((sale: Prisma.Sale) => !sale.canceledAt),
       count,
     };
+  }
+
+  if (id && sales[0].buyerId === user?.id) {
+    return delete sales[0].screenshots;
   }
 
   return { sales, count };
