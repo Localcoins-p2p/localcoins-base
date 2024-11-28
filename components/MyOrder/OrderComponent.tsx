@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import customStyles from '../../components/Elements/reactSelectStyles';
@@ -16,8 +16,10 @@ import {
   markPaid,
   raiseBuyerDispute,
   raiseSellerDispute,
+  releasePaymentToSeller,
 } from '@/utils/base-calls';
 import AppLoading from '../Elements/AppLoading';
+import { AppContext } from '@/utils/context';
 
 interface OrderComponentProps {
   sale: any;
@@ -107,6 +109,9 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     useSolana();
 
   const paymentMethods = sale?.seller?.paymentMethods || [];
+  const {
+    context: { user },
+  } = useContext(AppContext);
 
   const toCurrency = useMemo(() => {
     if (sale && sale.currency) {
@@ -287,6 +292,22 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     } finally {
       setDisputeLoading(false);
       toast.success('Marked disputed. Admins will check this sale order');
+    }
+  };
+
+  const handleReleaseFundsToSeller = async () => {
+    try {
+      setDisputeLoading(true);
+      if (true) {
+        console.log('>>>Sale', sale);
+        await releasePaymentToSeller(sale?.onChainSaleId);
+        //await markDisputedMutation({ saleId: sale?.id });
+      }
+    } catch (err) {
+      console.log('ERROR', err);
+    } finally {
+      setDisputeLoading(false);
+      toast.success('Funds released to seller');
     }
   };
 
@@ -514,6 +535,22 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             </div>
           )}
         </div>
+        {user?.isAdmin && sale?.isDisputed && (
+          <div className="flex gap-4 ml-8 mt-8">
+            <button
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 flex gap-2 rounded-lg"
+              onClick={handleReleaseFundsToSeller}
+            >
+              Release Payment to Seller
+            </button>
+            <button
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 flex gap-2 rounded-lg"
+              onClick={handleClaimPayment}
+            >
+              Release Payment to Buyer
+            </button>
+          </div>
+        )}
       </div>
       {markingDisputed && <AppLoading />}
     </>

@@ -7,6 +7,7 @@ export interface IUser {
   email: string;
   country?: string;
   points: number;
+  isAdmin?: boolean;
 }
 export interface IAppContext {
   context: {
