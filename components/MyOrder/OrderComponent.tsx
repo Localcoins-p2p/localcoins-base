@@ -39,8 +39,14 @@ const ADD_SCREENSHOT = gql`
     $saleId: String!
     $imageUrl: String!
     $method: String!
+    $referenceId: String!
   ) {
-    addScreenshot(saleId: $saleId, imageUrl: $imageUrl, method: $method) {
+    addScreenshot(
+      saleId: $saleId
+      imageUrl: $imageUrl
+      method: $method
+      referenceId: $referenceId
+    ) {
       id
       imageUrl
       method
