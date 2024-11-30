@@ -14,12 +14,15 @@ const ChatBox = ({
   sale,
   setImage,
   isBuyer,
+  setReferenceId
 }: {
   sale: any;
   setImage: (x: string) => void;
   isBuyer: any;
+  setReferenceId:any
 }) => {
   const [message, setMessage] = useState('');
+  const [referenceId, setRefId] = useState('');
   const [selectedPayment, setSelectedPayment] = useState<any>(
     paymentOptions[0]
   );
@@ -45,7 +48,9 @@ const ChatBox = ({
       setSelectedImage(sale.screenshots[0].imageUrl);
     }
   }, [sale]);
-
+  // console.log("saless",sale)
+  // console.log("isBuyer",isBuyer)
+  console.log("referenceId",referenceId)
   return (
     <div className="h-[90%] bg-[#FFFFFF] rounded-[15px] flex flex-col justify-between shadow-lg">
       <div className="">
@@ -68,24 +73,21 @@ const ChatBox = ({
             </div>
           </div>
         </div>
-        {/* <div className="p-4 ">
+        <div className="p-4 ">
           <div className="flex items-end space-x-2">
-            <Image
-              src="/assets/common/c-t.svg"
-              alt="User Avatar"
-              width={30}
-              height={30}
-              className="rounded-full"
+            {/* Input field */}
+            <input
+              type="text"
+              value={referenceId}
+              onChange={(e) => {
+                setRefId(e.target.value);
+                setReferenceId(e.target.value);
+              }}
+              placeholder="Enter reference id"
+              className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="bg-white p-3 rounded-lg shadow-sm">
-              <p className="text-sm text-gray-700">
-                This is a message. Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </p>
-            </div>
           </div>
-        </div>  */}
+        </div>
         {selectedImage ? (
           <div className="p-4 ">
             <div className="flex items-end space-x-2">
@@ -109,28 +111,28 @@ const ChatBox = ({
           </div>
         ) : (
           <div className="flex justify-center flex-col gap-4 items-center h-[400px]">
-            {isBuyer && (
-              <>
-                <label htmlFor="imageUpload">
-                  <Image
-                    src="/assets/common/add_circle.svg"
-                    alt="Add Circle Icon"
-                    width={50}
-                    height={50}
-                    className="cursor-pointer"
-                  />
-                </label>
-
-                <p>Upload payment screenshot</p>
-                <input
-                  id="imageUpload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
+            {/* {isBuyer && ( */}
+            <>
+              <label htmlFor="imageUpload">
+                <Image
+                  src="/assets/common/add_circle.svg"
+                  alt="Add Circle Icon"
+                  width={50}
+                  height={50}
+                  className="cursor-pointer"
                 />
-              </>
-            )}
+              </label>
+
+              <p>Upload payment screenshot</p>
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+            </>
+            {/* )} */}
           </div>
         )}
       </div>

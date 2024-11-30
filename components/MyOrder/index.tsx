@@ -49,6 +49,7 @@ const GET_SALE = gql`
         unitPrice
         createdAt
         paidAt
+        isDisputed
         canceledAt
         blockchain
         currency
@@ -64,7 +65,8 @@ const MyOrder = () => {
   const salesId = searchParams.get('sale');
   const [sale, setSale] = useState<any>();
   const [image, setImage] = useState('');
-
+  const [referenceId, setReferenceId] = useState()
+// console.log("img",image)
   const [{ fetching, data }, fetchSale] = useQuery({
     query: GET_SALE,
     variables: { salesId },
@@ -95,6 +97,19 @@ const MyOrder = () => {
   const showConfirmPaymentSentButton =
     isBuyer && !sale?.paidAt && !sale?.isCanceled;
   const showClaimPaymentButton = isBuyer && sale?.paidAt && !sale.finishedAt;
+
+  const showSellerDisputeButton =
+    isSeller &&
+    sale?.screenshots?.length > 0 &&
+    !sale.isDisputed &&
+    !sale.isCanceled &&
+    !sale.isFinished;
+  const showBuyerDisputeButton =
+    isBuyer &&
+    sale?.screenshots?.length > 0 &&
+    !sale.isDisputed &&
+    !sale.isCanceled &&
+    !sale.isFinished;
 
   // if (!sale) {
   //   return <div className='text-white'>Loading...</div>;
@@ -138,10 +153,13 @@ const MyOrder = () => {
               image={image}
               isSeller={isSeller}
               isBuyer={isBuyer}
+              showSellerDisputeButton={showSellerDisputeButton}
+              showBuyerDisputeButton={showBuyerDisputeButton}
+              referenceId={referenceId}
             />
           </div>
           <div className="col-span-5 mt-6 rounded-[15px] h-full">
-            <ChatBox sale={sale} setImage={setImage} isBuyer={isBuyer} />
+            <ChatBox setReferenceId={setReferenceId} sale={sale} setImage={setImage} isBuyer={isBuyer} />
           </div>
         </div>
       </div>

@@ -12,21 +12,31 @@ export const GET_USER = gql`
       publicKey
       termsAccepted
       country
+      points
+      isAdmin
     }
   }
 `;
 
 function SetContext() {
-  const [{ fetching: fetchingCurrentUser, data: userData }] = useQuery({
-    query: GET_USER,
-    pause: !Cookies.get('token'),
-  });
+  const [{ fetching: fetchingCurrentUser, data: userData }, refetchQuery] =
+    useQuery({
+      query: GET_USER,
+      pause: !Cookies.get('token'),
+    });
   const { setUser, setFetching } = useContext(AppContext);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    setFetching?.(fetchingCurrentUser);
+    setFetching?.(fetchingCurrentUser && !userData?.user);
+    if (userData?.user) {
+      const interval = setInterval(() => {
+        refetchQuery({ requestPolicy: 'network-only' });
+      }, 30000);
+
+      return () => clearInterval(interval);
+    }
   }, [fetchingCurrentUser]);
 
   useEffect(() => {

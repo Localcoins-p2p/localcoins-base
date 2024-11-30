@@ -6,6 +6,8 @@ export interface IUser {
   publicKey: string;
   email: string;
   country?: string;
+  points: number;
+  isAdmin?: boolean;
 }
 export interface IAppContext {
   context: {

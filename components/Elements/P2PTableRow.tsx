@@ -18,7 +18,8 @@ interface P2PRowProps {
   limit: number;
   paymentMethods: Array<{ name: string; color: string }>;
   sale: any;
-  type?: 'ALL' | 'BUYER' | 'SELLER';
+  type?: 'ALL' | 'BUYER' | 'SELLER' | 'BUYER DISPUTE' | 'SELLER DISBUTE';
+  // onClick: () => void;
 }
 
 const P2PTableRow: React.FC<P2PRowProps> = ({

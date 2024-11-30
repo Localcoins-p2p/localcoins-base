@@ -7,8 +7,8 @@ import Loading from './Loading';
 import { getUserReputation } from '@/utils/getUserReputation';
 
 const GET_SALES = gql`
-  query Sales {
-    sales {
+  query Sales($skip: Int!, $take: Int!) {
+    sales(skip: $skip, take: $take) {
       sales {
         amount
         buyer {
@@ -35,6 +35,7 @@ const GET_SALES = gql`
         screenshotMehtods
         unitPrice
       }
+      count
     }
   }
 `;
@@ -107,6 +108,8 @@ interface P2PTableProps {
   type?: 'ALL' | 'BUYER' | 'SELLER';
 }
 
+const itemsPerPage = 4;
+
 const queries = {
   ALL: GET_SALES,
   BUYER: GET_BUYER_SALES,
@@ -115,25 +118,33 @@ const queries = {
 
 const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
   const query = type ? queries[type] : GET_SALES;
-  const [{ data, fetching }] = useQuery({ query });
+  const [page, setPage] = useState(1);
+
+  console.log('Skip:', (page - 1) * itemsPerPage);
+  const [{ data, fetching, error }] = useQuery({
+    query,
+    variables: { skip: (page - 1) * itemsPerPage, take: itemsPerPage },
+  });
+
   const [reputation, setReputation] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const itemsPerPage = 10;
-  
+  console.log('res data:', data);
+
   useEffect(() => {
     async function fetchReputation() {
-      const score = await getUserReputation('FRXbHF8z3UEiNRG1r6ubYGTbNGjZ6g7j2WDSjjqjxNCF');
+      const score = await getUserReputation(
+        'FRXbHF8z3UEiNRG1r6ubYGTbNGjZ6g7j2WDSjjqjxNCF'
+      );
       setReputation(score);
     }
     fetchReputation();
   }, []);
-
-  const sales = data?.sales?.sales || data?.sellerSales || data?.buyerSales || [];
-  const paginatedSales = sales.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
-
-  const handleNextPage = () => setCurrentPage(prev => prev + 1);
-  const handlePreviousPage = () => setCurrentPage(prev => prev - 1);
+  console.log('><>>>', data?.sales);
+  const sales =
+    data?.sales?.sales || data?.sellerSales || data?.buyerSales || [];
+  const totalCount = data?.sales?.count || 0;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   if (fetching) {
     return (
@@ -156,15 +167,25 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
       <table className="table-auto w-full text-left">
         <thead className="hidden md:table-header-group text-[#A6A6A6] text-[14px] font-[400]">
           <tr>
-            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">Advertisers</th>
-            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">Price</th>
-            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">Available/Order Limit</th>
-            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">Payment</th>
-            <th className="py-2 text-end text-[#A6A6A6] text-[14px] font-[400]">Trade</th>
+            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+              Advertisers
+            </th>
+            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+              Price
+            </th>
+            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+              Available/Order Limit
+            </th>
+            <th className="py-2 text-[#A6A6A6] text-[14px] font-[400]">
+              Payment
+            </th>
+            <th className="py-2 text-end text-[#A6A6A6] text-[14px] font-[400]">
+              Trade
+            </th>
           </tr>
         </thead>
         <tbody>
-          {paginatedSales.map((row: any, index: number) => (
+          {sales.map((row: any, index: number) => (
             <P2PTableRow
               key={index}
               reputation={reputation}
@@ -179,18 +200,38 @@ const P2PTable: React.FC<P2PTableProps> = ({ type }) => {
           ))}
         </tbody>
       </table>
-      <div className="flex justify-center gap-7 mt-4">
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center gap-2 mt-6">
+        {/* Previous Page Button */}
         <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 0}
-          className="px-4 py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+          className="w-[100px] py-1 bg-[#F3AA05] text-white rounded-2xl disabled:bg-gray-500"
         >
           Previous
         </button>
+
+        {/* Page Number Buttons */}
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setPage(i + 1)}
+            className={`px-3 py-1 rounded-[50vh] ${
+              page === i + 1
+                ? 'bg-[#F3AA05] text-white'
+                : 'bg-[#393939] text-[#f0f0f0]'
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        {/* Next Page Button */}
         <button
-          onClick={handleNextPage}
-          disabled={(currentPage + 1) * itemsPerPage >= sales.length}
-          className="px-4 py-2 bg-[#F3AA05] text-white rounded disabled:bg-gray-500"
+          onClick={() => setPage(page + 1)}
+          disabled={page === totalPages}
+          className="w-[100px] py-1 bg-[#F3AA05] text-white rounded-2xl disabled:bg-gray-500"
         >
           Next
         </button>

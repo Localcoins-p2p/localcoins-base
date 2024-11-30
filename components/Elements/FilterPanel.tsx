@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { CiGlobe } from 'react-icons/ci';
 import Image from 'next/image';
@@ -25,6 +25,7 @@ import {
 import toast from 'react-hot-toast';
 import { createEscrow } from '@/utils/base-calls';
 import SolanaPriority from './SolanaPriority';
+import { AppContext } from '@/utils/context';
 
 const paymentOptions = [{ value: 'All Payments', label: 'All Payments' }];
 const regionOptions = [{ value: 'All Regions', label: 'All Regions' }];
@@ -110,9 +111,14 @@ const FilterPanel = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const { publicKey, sendTransaction, connected } = useWallet();
 
-  console.log('Score', score);
+  const {
+    context: { user },
+  } = useContext(AppContext);
 
   const handleOpenModal = () => {
+    if (!user) {
+      return toast.error(<>Please connect your wallet to continue</>);
+    }
     setIsModalOpen(true);
   };
 

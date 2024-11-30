@@ -27,6 +27,7 @@ import nacl from 'tweetnacl'; // For signature verification
 import { IGqlContext } from '@/types';
 import saveImages from '@/utils/saveImages';
 import { ethers } from 'ethers';
+import { tracker } from '@/server/utils/track';
 
 type RegisterUserInput = Prisma.User & { password: string };
 export const registerUser = async (_: unknown, args: RegisterUserInput) => {
@@ -129,6 +130,7 @@ export const updateProfile = isLoggedIn(
     { name, email, termsAccepted }: Prisma.User,
     { user }: IGqlContext
   ) => {
+    tracker.track('PROFILE_UPDATED', null, user as Prisma.User);
     return prisma.user.update({
       where: { id: user?.id },
       data: { name, email, termsAccepted },
@@ -152,7 +154,7 @@ export const updateUser = isLoggedIn(
     { user }: IGqlContext
   ) => {
     const data: any = { email, name, phone, termsAccepted, country };
-
+    tracker.track('PROFILE_UPDATED', null, user as Prisma.User);
     let profileImage;
     if (image) {
       [profileImage] = await saveImages([image]);
@@ -174,6 +176,7 @@ export const addPaymentMethod = isLoggedIn(
     { name, accountNumber, accountName }: Prisma.PaymentMethod,
     { user }: IGqlContext
   ) => {
+    tracker.track('PAYMENT_METHOD_ADDED', null, user as Prisma.User);
     return prisma.paymentMethod.create({
       data: {
         name,

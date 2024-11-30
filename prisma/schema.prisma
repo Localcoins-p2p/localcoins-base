@@ -29,6 +29,8 @@ model User {
   phoneOtpDoC   DateTime?
   termsAccepted Boolean   @default(false)
 
+  points Int @default(0)
+
   isAdmin        Boolean         @default(false)
   SaleBuyer      Sale[]          @relation("SellerRelation")
   SaleSeller     Sale[]          @relation("BuyerRelation")
@@ -36,13 +38,15 @@ model User {
 }
 
 model Screenshot {
-  id       String        @id @default(auto()) @map("_id") @db.ObjectId
-  saleId   String        @db.ObjectId
-  imageUrl String
-  methodId String        @db.ObjectId
-  method   PaymentMethod @relation(fields: [methodId], references: [id])
-  paidById String        @db.ObjectId
-  sale     Sale          @relation(fields: [saleId], references: [id])
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  saleId         String        @db.ObjectId
+  imageUrl       String
+  methodId       String        @db.ObjectId
+  method         PaymentMethod @relation(fields: [methodId], references: [id])
+  paidById       String        @db.ObjectId
+  sale           Sale          @relation(fields: [saleId], references: [id])
+  referenceId    String?       @default("")
+  sellerVerified Boolean?      @default(false)
 }
 
 model PaymentMethod {
@@ -56,6 +60,11 @@ model PaymentMethod {
 
   createdAt   DateTime     @default(now())
   screenshots Screenshot[]
+}
+
+enum SellerBuyer {
+  Seller
+  Buyer
 }
 
 model Sale {
@@ -82,6 +91,8 @@ model Sale {
   paidAt     DateTime?
   finishedAt DateTime?
   canceledAt DateTime?
+  isDisputed Boolean?
+  disputedBy SellerBuyer?
 
   currency   String? @default("SOL")
   blockchain String?

@@ -1,4 +1,4 @@
-export const contractAddress = '0x843Cadc28e091204e3Cd4A3cC024Ed06E768e8F5';
+export const contractAddress = '0x9230F51f31F7f7e0555641F8219dDE95594aEa99';
 export const baseSepolia = {
   chainId: '0x14a34',
   chainName: 'Base Sepolia',
@@ -7,6 +7,69 @@ export const baseSepolia = {
   blockExplorerUrls: ['https://sepolia.basescan.org'],
 };
 export const contractABI = [
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'newAdmin',
+        type: 'address',
+      },
+    ],
+    name: 'addAdmin',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_admin',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'admin',
+        type: 'address',
+      },
+    ],
+    name: 'AdminAdded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'admin',
+        type: 'address',
+      },
+    ],
+    name: 'AdminRemoved',
+    type: 'event',
+  },
+  {
+    inputs: [],
+    name: 'createEscrow',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'payable',
+    type: 'function',
+  },
   {
     anonymous: false,
     inputs: [
@@ -39,29 +102,35 @@ export const contractABI = [
     type: 'event',
   },
   {
-    anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
+        internalType: 'address',
+        name: 'adminToRemove',
+        type: 'address',
       },
     ],
-    name: 'EscrowCreated1',
-    type: 'event',
+    name: 'removeAdmin',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    inputs: [],
-    name: 'createEscrow',
-    outputs: [
+    inputs: [
       {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
       },
     ],
-    stateMutability: 'payable',
+    name: 'admins',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -111,6 +180,11 @@ export const escrowABI = [
         name: '_amount',
         type: 'uint256',
       },
+      {
+        internalType: 'address[]',
+        name: '_admins',
+        type: 'address[]',
+      },
     ],
     stateMutability: 'payable',
     type: 'constructor',
@@ -126,6 +200,12 @@ export const escrowABI = [
       },
     ],
     name: 'BuyerAdded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [],
+    name: 'BuyerDisputed',
     type: 'event',
   },
   {
@@ -156,6 +236,24 @@ export const escrowABI = [
   {
     anonymous: false,
     inputs: [],
+    name: 'FundsReleasedByAdmin',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [],
+    name: 'FundsReleasedToBuyer',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [],
+    name: 'FundsReleasedToSeller',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [],
     name: 'MarkedPaid',
     type: 'event',
   },
@@ -167,15 +265,8 @@ export const escrowABI = [
   },
   {
     anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'i',
-        type: 'uint256',
-      },
-    ],
-    name: 'Test',
+    inputs: [],
+    name: 'SellerDisputed',
     type: 'event',
   },
   {
@@ -189,6 +280,25 @@ export const escrowABI = [
     name: 'addBuyer',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'admins',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -215,6 +325,13 @@ export const escrowABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'buyerDispute',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -272,6 +389,20 @@ export const escrowABI = [
   },
   {
     inputs: [],
+    name: 'releaseFundsToBuyer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'releaseFundsToSeller',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'seller',
     outputs: [
       {
@@ -281,6 +412,13 @@ export const escrowABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'sellerDispute',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
 ];

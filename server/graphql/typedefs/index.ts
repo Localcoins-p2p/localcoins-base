@@ -15,6 +15,7 @@ const typeDefs = gql`
     publicKey: String
     termsAccepted: Boolean
     paymentMethods: [PaymentMethod]
+    points: Int
   }
 
   type PaymentMethod {
@@ -45,10 +46,12 @@ const typeDefs = gql`
     onChainSaleId: Int
     createdAt: Date
     finishedAt: Date
+    isDisputed: Boolean
     paidAt: Date
     blockchain: String
     currency: String
     canceledAt: Date
+    disputedBy: String
   }
 
   type LoginResponse {
@@ -72,6 +75,7 @@ const typeDefs = gql`
 
   type SaleResponse {
     sales: [Sale]
+    count: Int
   }
   type Screenshot {
     id: String!
@@ -89,9 +93,13 @@ const typeDefs = gql`
     score: Float
   }
 
+  input SaleFilters {
+    isDisputed: Boolean
+  }
+
   type Query {
     user: User
-    sales(id: String): SaleResponse
+    sales(id: String, filters: SaleFilters, skip: Int, take: Int): SaleResponse
     paymentMethods: [PaymentMethod]
     sellerSales: [Sale]
     buyerSales: [Sale]
@@ -144,12 +152,13 @@ const typeDefs = gql`
     ): Sale
     addRemoveBuyer(id: String!, command: String!): Sale
     cancelSale(id: String!): Sale
-    markSalePaid(id: String!): Sale
+    markSalePaid(id: String!, referenceId: String!): Sale
     markSaleFinished(id: String!): Sale
     addScreenshot(
       saleId: String!
       imageUrl: String!
       method: String!
+      referenceId: String!
     ): Screenshot
     updateProfile(name: String, email: String, termsAccepted: Boolean): User
     addPaymentMethod(
@@ -164,6 +173,8 @@ const typeDefs = gql`
       accountName: String
     ): PaymentMethod
     deletePaymentMethod(id: String!): PaymentMethod
+
+    markDisputed(saleId: String!): Sale!
   }
 
   ${projectTypedefs}
