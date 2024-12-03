@@ -264,8 +264,12 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         saleId: sale.id,
         referenceId: referenceNumber,
       });
-      alert(isReferenceIdCorrect?.data?.isReferenceIdCorrect?.status);
-      return;
+      if (
+        isReferenceIdCorrect?.data?.isReferenceIdCorrect?.status === 'WRONG'
+      ) {
+        toast.error('Reference number is incorrect');
+        return;
+      }
       if (toCurrency.name === 'ETH') {
         await confirmPayment(sale?.onChainSaleId);
         await markPaidMutation({
@@ -294,7 +298,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         const txHash = await sendTransaction(transaction, connection);
         await markPaidMutation({
           saleId: sale?.id,
-          refenceId: referenceNumber,
+          referenceId: referenceNumber,
         });
       }
     } catch (err) {
