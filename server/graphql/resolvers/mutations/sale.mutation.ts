@@ -88,6 +88,37 @@ export const cancelSale = isLoggedIn(
   }
 );
 
+export const isReferenceIdCorrect = isLoggedIn(
+  async (
+    _: unknown,
+    { id, referenceId }: { id: string; referenceId: string },
+    { user }: IGqlContext
+  ) => {
+    tracker.track('Checking reference id', null, user as Prisma.User);
+    const currentSale = await prisma.sale.findUnique({
+      where: { id },
+      include: {
+        seller: true,
+      },
+    });
+
+    if (!currentSale) {
+      throw new Error('Sale not found');
+    }
+
+    const screenshots = await prisma.screenshot.findMany({
+      where: {
+        saleId: id,
+        referenceId,
+      },
+    });
+
+    return {
+      status: screenshots.length > 0 ? 'OK' : 'WRONG',
+    };
+  }
+);
+
 export const markSalePaid = isLoggedIn(
   async (
     _: unknown,

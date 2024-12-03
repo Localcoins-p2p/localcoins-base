@@ -58,9 +58,17 @@ const ADD_SCREENSHOT = gql`
   }
 `;
 
+const IS_REFERENCE_ID_CORRECT = gql`
+  mutation IsReferenceIdCorrect($saleId: String!, $referenceId: String!) {
+    isReferenceIdCorrect(id: $saleId, referenceId: $referenceId) {
+      status
+    }
+  }
+`;
+
 const MARK_PAID = gql`
-  mutation MarkPaid($saleId: String!) {
-    markSalePaid(id: $saleId) {
+  mutation MarkPaid($saleId: String!, $referenceId: String!) {
+    markSalePaid(id: $saleId, referenceId: $referenceId) {
       id
       paidAt
     }
@@ -118,6 +126,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
   const [referenceNumber, setReferenceNumber] = useState('');
+  const [{}, checkIsReferenceIdCorrect] = useMutation(IS_REFERENCE_ID_CORRECT);
 
   const paymentMethods = sale?.seller?.paymentMethods || [];
   const {
@@ -188,6 +197,48 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     });
   };
 
+  const confirmPaymentReceived = async () => {
+    confirmAlert({
+      title: 'Confirm Payment Received',
+      message:
+        'Are you sure you want to confirm payment received? If received, kindly enter the reference id of the payment. We ask for payments to ensure that the seller receives the payment and avoid any mistake.',
+      customUI: ({ onClose }) => {
+        return (
+          <div className="rounded-xl p-4 p-1 bg-black text-white w-[75vw] md:w-[400px]">
+            <h1 className="font-bold text-xl">Confirm Payment Received</h1>
+            <p className="text-sm opacity-90">
+              Are you sure you want to confirm payment received? If received,
+              kindly enter the reference id of the payment. We ask for payments
+              to ensure that the seller receives the payment and avoid any
+              mistake.
+            </p>
+
+            <input
+              type="text"
+              className="w-full p-2 mt-2 rounded-md"
+              placeholder="Reference Number"
+              onChange={(e) => setReferenceNumber(e.target.value)}
+            />
+            <div className="flex justify-between mt-2">
+              <button className="text-white" onClick={onClose}>
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  await handlePaymentReceived();
+                  onClose();
+                }}
+                className="float-right p-2 font-medium rounded-md bg-white text-black"
+              >
+                Confirm Payment
+              </button>
+            </div>
+          </div>
+        );
+      },
+    });
+  };
+
   const handleAddScreenshot = async (imageUrl: string, method: string) => {
     try {
       if (toCurrency.name === 'ETH') {
@@ -209,8 +260,19 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
 
   const handlePaymentReceived = async () => {
     try {
+      const isReferenceIdCorrect = await checkIsReferenceIdCorrect({
+        saleId: sale.id,
+        referenceId: referenceNumber,
+      });
+      alert(isReferenceIdCorrect?.data?.isReferenceIdCorrect?.status);
+      return;
       if (toCurrency.name === 'ETH') {
         await confirmPayment(sale?.onChainSaleId);
+        await markPaidMutation({
+          saleId: sale?.id,
+          refenceId: referenceNumber,
+        });
+        await markFinished({ saleId: sale?.id });
       } else {
         const masterPda = await getMasterAddress();
         const onChainSaleId = new BN(sale.onChainSaleId);
@@ -230,9 +292,11 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
           })
         );
         const txHash = await sendTransaction(transaction, connection);
+        await markPaidMutation({
+          saleId: sale?.id,
+          refenceId: referenceNumber,
+        });
       }
-      await markPaidMutation({ saleId: sale?.id });
-      await markFinished({ saleId: sale?.id });
     } catch (err) {
     } finally {
     }
@@ -560,7 +624,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               ) : (
                 <button
                   className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg flex gap-2"
-                  onClick={handlePaymentReceived}
+                  onClick={confirmPaymentReceived}
                 >
                   <div>
                     {loading ? (

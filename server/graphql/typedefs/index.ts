@@ -154,6 +154,7 @@ const typeDefs = gql`
     addRemoveBuyer(id: String!, command: String!): Sale
     cancelSale(id: String!): Sale
     markSalePaid(id: String!, referenceId: String!): Sale
+    isReferenceIdCorrect(referenceId: String!, id: String!): StatusResponse
     markSaleFinished(id: String!): Sale
     addScreenshot(
       saleId: String!
