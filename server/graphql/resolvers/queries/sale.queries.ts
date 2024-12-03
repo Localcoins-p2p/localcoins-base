@@ -61,8 +61,12 @@ export const sales = async (
     };
   }
 
-  if (id && sales[0].buyerId === user?.id) {
-    return delete sales[0].screenshots;
+  if (id && sales[0].buyerId !== user?.id) {
+    delete sales[0].screenshots;
+    sales[0].hasScreenshots = true;
+    return { sales };
+  } else if (id) {
+    return { sales };
   }
 
   return { sales, count };

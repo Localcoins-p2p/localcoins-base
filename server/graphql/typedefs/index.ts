@@ -52,6 +52,7 @@ const typeDefs = gql`
     currency: String
     canceledAt: Date
     disputedBy: String
+    hasScreenshots: Boolean
   }
 
   type LoginResponse {

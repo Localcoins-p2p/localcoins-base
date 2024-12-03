@@ -29,6 +29,7 @@ const GET_SALE = gql`
             name
           }
         }
+        hasScreenshots
         seller {
           name
           publicKey
@@ -93,6 +94,8 @@ const MyOrder = () => {
 
   const showConfirmPaymentReceivedButton =
     isSeller && !sale?.paidAt && !sale?.canceledAt;
+  const hideConfirmButtonShowDisputes =
+    showConfirmPaymentReceivedButton && !sale?.hasScreenshots;
   const showConfirmPaymentSentButton =
     isBuyer && !sale?.paidAt && !sale?.isCanceled;
   const showClaimPaymentButton = isBuyer && sale?.paidAt && !sale.finishedAt;
@@ -148,6 +151,7 @@ const MyOrder = () => {
                 showConfirmPaymentReceivedButton
               }
               showClaimPaymentButton={showClaimPaymentButton}
+              hideConfirmButtonShowDisputes={hideConfirmButtonShowDisputes}
               loading={fetching}
               image={image}
               isSeller={isSeller}

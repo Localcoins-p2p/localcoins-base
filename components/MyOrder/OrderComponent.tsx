@@ -20,6 +20,8 @@ import {
 } from '@/utils/base-calls';
 import AppLoading from '../Elements/AppLoading';
 import { AppContext } from '@/utils/context';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 interface OrderComponentProps {
   sale: any;
@@ -32,6 +34,7 @@ interface OrderComponentProps {
   isBuyer?: boolean;
   showBuyerDisputeButton: boolean;
   showSellerDisputeButton: boolean;
+  hideConfirmButtonShowDisputes: boolean;
 }
 
 const ADD_SCREENSHOT = gql`
@@ -99,6 +102,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   isBuyer,
   showSellerDisputeButton,
   showBuyerDisputeButton,
+  hideConfirmButtonShowDisputes,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{ fetching }, removeBuyer] = useMutation(addRemoveBuyerMutation);
@@ -113,6 +117,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   const [{}, markFinished] = useMutation(MARK_FINISHED);
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
+  const [referenceNumber, setReferenceNumber] = useState('');
 
   const paymentMethods = sale?.seller?.paymentMethods || [];
   const {
@@ -131,6 +136,58 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     return { name: '', x: 1 };
   }, [sale]);
 
+  const takeReferenceNumber = async (image: string) => {
+    confirmAlert({
+      title: 'Enter the reference number',
+      message:
+        'Please enter the reference number. Make sure you are transferring the funds to the correct account and same bank',
+      buttons: [
+        {
+          label: 'Submit',
+          onClick: async () => {
+            if (referenceNumber === '') {
+              toast.error('Please enter a valid reference number');
+              return;
+            }
+            await handleAddScreenshot(image, '');
+          },
+        },
+      ],
+      customUI: ({ onClose }) => {
+        return (
+          <div className="rounded-xl p-4 p-1 bg-black text-white w-[75vw] md:w-[400px]">
+            <h1 className="font-bold text-xl">Enter the reference number</h1>
+            <p className="text-sm opacity-90">
+              Please enter the reference number. Make sure you are transferring
+              the funds to the correct account and same bank
+            </p>
+
+            <input
+              type="text"
+              className="w-full p-2 mt-2 rounded-md"
+              placeholder="Reference Number"
+              onChange={(e) => setReferenceNumber(e.target.value)}
+            />
+            <div className="flex justify-between mt-2">
+              <button className="text-white" onClick={onClose}>
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  await handleAddScreenshot(image, '');
+                  onClose();
+                }}
+                className="float-right p-2 font-medium rounded-md bg-white text-black"
+              >
+                Add Screenshot
+              </button>
+            </div>
+          </div>
+        );
+      },
+    });
+  };
+
   const handleAddScreenshot = async (imageUrl: string, method: string) => {
     try {
       if (toCurrency.name === 'ETH') {
@@ -140,6 +197,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         await addScreenshotMutation({
           saleId: sale.id,
           imageUrl,
+          referenceId: referenceNumber,
           method: '66fb0f0fc2a69f59952e04ed',
         });
       }
@@ -461,7 +519,9 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             <div className="flex justify-between ml-4">
               <button
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 pr-10 flex gap-2 rounded-lg"
-                onClick={() => handleAddScreenshot(image, '.')}
+                onClick={() => {
+                  takeReferenceNumber(image);
+                }}
               >
                 <div>
                   {loading ? (
@@ -492,19 +552,26 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
           )}
           {showConfirmPaymentReceivedButton && (
             <div className="flex justify-between ml-4">
-              <button
-                className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg flex gap-2"
-                onClick={handlePaymentReceived}
-              >
-                <div>
-                  {loading ? (
-                    <Loading width="5" height="5" color="#333" />
-                  ) : (
-                    <div className="w-5 h-5" />
-                  )}
-                </div>
-                <span>Confirm Payment Received</span>
-              </button>
+              {hideConfirmButtonShowDisputes ? (
+                <p>
+                  Waiting for buyer to send you payment screenshot. Once you
+                  receive the payment, you will see the confirm button here.
+                </p>
+              ) : (
+                <button
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg flex gap-2"
+                  onClick={handlePaymentReceived}
+                >
+                  <div>
+                    {loading ? (
+                      <Loading width="5" height="5" color="#333" />
+                    ) : (
+                      <div className="w-5 h-5" />
+                    )}
+                  </div>
+                  <span>Confirm Payment Received</span>
+                </button>
+              )}
               <div className="flex gap-4">
                 {showSellerDisputeButton && (
                   <button
