@@ -40,6 +40,12 @@ export const LOGIN = gql`
       user {
         email
         id
+        paymentMethods {
+          accountName
+          id
+          name
+          accountNumber
+        }
       }
       error
     }

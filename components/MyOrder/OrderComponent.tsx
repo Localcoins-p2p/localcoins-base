@@ -35,6 +35,7 @@ interface OrderComponentProps {
   showBuyerDisputeButton: boolean;
   showSellerDisputeButton: boolean;
   hideConfirmButtonShowDisputes: boolean;
+  referenceId: any;
 }
 
 const ADD_SCREENSHOT = gql`
@@ -73,6 +74,7 @@ const MARK_PAID = gql`
       paidAt
     }
   }
+}
 `;
 
 export const CANCEL_SALE = gql`
@@ -111,6 +113,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
   showSellerDisputeButton,
   showBuyerDisputeButton,
   hideConfirmButtonShowDisputes,
+  referenceId,
 }) => {
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{ fetching }, removeBuyer] = useMutation(addRemoveBuyerMutation);
@@ -258,6 +261,8 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     }
   };
 
+  // console.log("handleAddScreenshot",handleAddScreenshot)
+
   const handlePaymentReceived = async () => {
     try {
       const isReferenceIdCorrect = await checkIsReferenceIdCorrect({
@@ -391,7 +396,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
       const response = await cancelSale({
         cancelSaleId: sale.id,
       });
-      console.log('Response', response);
+      // console.log('Response', response);
       toast.success('Sale canceled');
     } catch (err) {
       console.log(err);
@@ -431,7 +436,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
     try {
       setDisputeLoading(true);
       if (true) {
-        console.log('>>>Sale', sale);
+        // console.log('>>>Sale', sale);
         await releasePaymentToSeller(sale?.onChainSaleId);
         //await markDisputedMutation({ saleId: sale?.id });
       }
@@ -501,18 +506,41 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
           </div>
 
           <div>
-            <div className="flex items-center my-4">
-              <div className="w-6 h-6 absolute left-[-13px] rounded-full bg-white text-black font-bold flex items-center justify-center">
-                2
-              </div>
-              <h2 className="ml-4 text-xl font-semibold">
-                Open {paymentMethods[selectedPaymentMethodIndex]?.name} to
-                transfer {(sale?.amount * sale?.unitPrice) / toCurrency?.x} PHP
-              </h2>
-            </div>
-            <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
-              Transfer the funds to the seller&apos;s account provided below.
-            </p>
+            {isSeller && (
+              <>
+                <div className="flex items-center my-4">
+                  <div className="w-6 h-6 absolute left-[-13px] rounded-full bg-white text-black font-bold flex items-center justify-center">
+                    2
+                  </div>
+                  <h2 className="ml-4 text-xl font-semibold">
+                    {(sale?.amount * sale?.unitPrice) / toCurrency?.x} PHP
+                    transfer to{' '}
+                    {paymentMethods[selectedPaymentMethodIndex]?.name}
+                  </h2>
+                </div>
+                <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
+                  Funds transfer to blow account
+                </p>
+              </>
+            )}
+            {isBuyer && (
+              <>
+                <div className="flex items-center my-4">
+                  <div className="w-6 h-6 absolute left-[-13px] rounded-full bg-white text-black font-bold flex items-center justify-center">
+                    2
+                  </div>
+                  <h2 className="ml-4 text-xl font-semibold">
+                    Open {paymentMethods[selectedPaymentMethodIndex]?.name} to
+                    transfer {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
+                    PHP
+                  </h2>
+                </div>
+                <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
+                  Transfer the funds to the seller&apos;s account provided
+                  below.
+                </p>
+              </>
+            )}
             <div className="border border-[#4D4D4D] p-4 rounded-[5px]">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-1">
@@ -591,13 +619,13 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                   takeReferenceNumber(image);
                 }}
               >
-                <div>
+                {/* <div>
                   {loading ? (
                     <Loading width="5" height="5" color="#333" />
                   ) : (
                     <div className="w-5 h-5" />
                   )}
-                </div>
+                </div> */}
                 <span>Transfered, Notify Seller</span>
               </button>
               <div className="flex justify-between ml-4 gap-4">
@@ -664,13 +692,13 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 flex gap-2 rounded-lg"
                 onClick={handleClaimPayment}
               >
-                <div>
+                {/* <div>
                   {loading ? (
                     <Loading width="5" height="5" color="#333" />
                   ) : (
                     <div className="w-5 h-5" />
                   )}
-                </div>
+                </div> */}
                 <span>Claim Payment</span>
               </button>
             </div>
