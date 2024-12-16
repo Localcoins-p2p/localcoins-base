@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { gql, useMutation } from 'urql';
 import Footer from '../Footer/Footer';
 import NewHeader from '../NewHeader/NewHeader';
-import Loading from '../Elements/Loading';
+import Loading, { Loading2 } from '../Elements/Loading';
 import Select from 'react-select';
 
 export const UPDATE_USER = gql`
@@ -67,7 +67,7 @@ const Profile = () => {
   };
 
   if (fetching) {
-    return <Loading height="50" width="50" />;
+    return <Loading2 height="50" width="50" />;
   }
   interface CountryOption {
     label: string;

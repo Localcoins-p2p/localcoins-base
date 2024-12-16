@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
 import appLoading from '@/public/assets/app-loading.svg';
-
 interface LoadingProps {
   width: string;
   height: string;
@@ -9,6 +8,22 @@ interface LoadingProps {
 }
 
 const Loading: React.FC<LoadingProps> = ({ width, height, color }) => {
+  return (
+    <div
+      className={`animate-spin rounded-full h-${height} w-${width} border-t-2 border-b-2 ${
+        color ? `border-[${color}]` : 'border-[#333]'
+      } border-2 border-r-transparent border-l-transparent`}
+    ></div>
+  );
+};
+
+interface LoadingProps {
+  width: string;
+  height: string;
+  color?: string;
+}
+
+export const Loading2: React.FC<LoadingProps> = ({ width, height, color }) => {
   return (
     <div
       style={{
