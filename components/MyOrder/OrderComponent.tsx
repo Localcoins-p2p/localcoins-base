@@ -519,7 +519,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                   </h2>
                 </div>
                 <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
-                  Funds transfer to blow account
+                  Funds will be transfered to one of the payment methods below.
                 </p>
               </>
             )}
@@ -602,14 +602,17 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
               <div className="w-6 absolute h-6 left-[-13px] bottom-0 rounded-full bg-white text-black font-bold flex items-center justify-center">
                 3
               </div>
-              <h2 className="ml-4 text-xl font-semibold">Notify Seller</h2>
+              <h2 className="ml-4 text-xl font-semibold">
+                {isSeller ? 'Check your accounts' : 'Notify Seller'}
+              </h2>
             </div>
           </div>
         </div>
         <div className="pl-4">
           <p className="text-[#FFFFFF] text-[18px] font-[400] mb-4 ml-4">
-            After payment, remember to click the &apos;Transferred, Notify
-            Seller&apos; button to facilitate the crypto release by the seller.
+            {isSeller
+              ? 'Please check your account to confirm the payment. Once the buyer has uploaded the screenshot, you will see Confirm Payment button. Click on that button and enter reference id.'
+              : 'After payment, remember to click the &apos;Transferred, Notify Seller&apos; button to facilitate the crypto release by the seller.'}
           </p>
           {showConfirmPaymentSentButton && (
             <div className="flex justify-between ml-4">

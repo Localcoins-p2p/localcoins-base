@@ -73,9 +73,9 @@ const ChatBox = ({
             </div>
           </div>
         </div>
+        {/*
         <div className="p-4 ">
           <div className="flex items-end space-x-2">
-            {/* Input field */}
             <input
               type="text"
               value={referenceId}
@@ -88,6 +88,7 @@ const ChatBox = ({
             />
           </div>
         </div>
+        */}
         {selectedImage ? (
           <div className="p-4 ">
             <div className="flex items-end space-x-2">

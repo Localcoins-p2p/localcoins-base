@@ -97,6 +97,7 @@ const MyOrder = () => {
     isSeller && !sale?.paidAt && !sale?.canceledAt;
   const hideConfirmButtonShowDisputes =
     showConfirmPaymentReceivedButton && !sale?.hasScreenshots;
+  console.log('<<<<', showConfirmPaymentReceivedButton, sale?.hasScreenshots);
   const showConfirmPaymentSentButton =
     isBuyer && !sale?.paidAt && !sale?.isCanceled;
   const showClaimPaymentButton = isBuyer && sale?.paidAt && !sale.finishedAt;
