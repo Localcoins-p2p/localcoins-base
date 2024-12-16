@@ -9,11 +9,18 @@ export const GET_USER = gql`
     user {
       id
       name
+      email
       publicKey
       termsAccepted
       country
       points
       isAdmin
+      paymentMethods {
+        accountName
+        accountNumber
+        id
+        name
+      }
     }
   }
 `;

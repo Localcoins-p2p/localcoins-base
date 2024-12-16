@@ -53,7 +53,9 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
 
     return { name: '', x: 1, dp: 2 };
   }, [sale]);
-
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('en-US', { minimumFractionDigits: 2 });
+  };
   return (
     <tr className="border-t py-4 md:py-0 border-gray-700 flex-boxx">
       <td className=" md:py-4 flex flex-col space-x-2">
@@ -94,7 +96,7 @@ const P2PTableRow: React.FC<P2PRowProps> = ({
         </div>
       </td>
       <td className=" md:py-4 font-bold">
-        <span className="text-xl text-[#FFFFFF]">{price}</span>
+        <span className="text-xl text-[#FFFFFF]">{formatPrice(price)}</span>
         <span className="text-[13px] text-[#FFFFFF]">
           {' '}
           {getFromCurrency().name}

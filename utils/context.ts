@@ -1,5 +1,12 @@
 import { createContext } from 'react';
 
+interface PaymentMethod {
+  accountName: string;
+  id: string;
+  name: string;
+  accountNumber: string;
+}
+
 export interface IUser {
   id: string;
   name: string;
@@ -8,6 +15,7 @@ export interface IUser {
   country?: string;
   points: number;
   isAdmin?: boolean;
+  paymentMethods?: PaymentMethod[];
 }
 export interface IAppContext {
   context: {

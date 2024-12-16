@@ -116,8 +116,13 @@ const FilterPanel = () => {
   } = useContext(AppContext);
 
   const handleOpenModal = () => {
+    console.log('user', user);
     if (!user) {
       return toast.error(<>Please connect your wallet to continue</>);
+    }
+    if (!user?.paymentMethods || user?.paymentMethods.length === 0) {
+      toast.error('Please add a payment method before submitting.');
+      return;
     }
     setIsModalOpen(true);
   };
@@ -231,7 +236,7 @@ const FilterPanel = () => {
 
   return (
     <div className=" text-white flex justify-center sm:justify-between items-center overflow-x-auto">
-      <div className="grid-cols-3 gap-2 hidden md:grid">
+      <div className="grid-cols-3 gap-x-2  hidden md:grid">
         <div className="flex items-center border justify-center border-[#4D4D4D] rounded-[5px] px-4 py-1">
           <input
             type="text"
@@ -254,7 +259,7 @@ const FilterPanel = () => {
           />
         </div>
 
-        <div className=" hidden md:block border  border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[350px] ">
+        <div className=" hidden md:block border  border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[100%] ">
           <Select
             menuPosition="fixed"
             value={selectedPayment}
@@ -270,7 +275,7 @@ const FilterPanel = () => {
           />
         </div>
 
-        <div className=" border hidden md:flex border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[350px] items-center ">
+        <div className=" border  hidden md:flex border-[#4D4D4D] rounded-[5px] px-2 py-1 w-[100%] items-center ">
           <CiGlobe className="h-[24px] w-[26px] font-bold text-[#fff]" />
           <Select
             menuPosition="fixed"
@@ -291,7 +296,7 @@ const FilterPanel = () => {
       <div>
         <button
           onClick={handleOpenModal}
-          className="flex items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3.5 hover:bg-gray-700 text-white"
+          className="flex items-center justify-center border border-[#4D4D4D] rounded-md px-3 py-3 hover:bg-gray-700 text-white"
         >
           Sell Crypto
         </button>
@@ -305,7 +310,7 @@ const FilterPanel = () => {
       >
         <div className="max-h-[90vh] overflow-auto no-scrollbar">
           <StepProgress currentStep={currentStep} />
-          {data.currency !== 'ETH' && <SolanaPriority />}
+          {/* {data.currency !== 'ETH' && <SolanaPriority />} */}
           {currentStep === 1 && (
             <SellToSetPrice onNext={handleNext} data={data} setData={setData} />
           )}
