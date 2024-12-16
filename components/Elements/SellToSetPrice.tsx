@@ -147,7 +147,7 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
       );
     }
   }, [selectedCurrency]);
-
+  console.log('currencies ', currencies);
   return (
     <>
       <div className=" mx-auto border border-[#DDDDDD] rounded-lg mt-3">
@@ -179,12 +179,22 @@ const SellToSetPrice = ({ onNext, data, setData }: any) => {
             <div>
               <span className="text-[14px] text-[#222222]">Asset</span>
               <div className="border  flex border-[##DDDDDD] bg-[#F2F2F2]  rounded-[5px] px-2 items-center ">
-                <Image
-                  src="/assets/common/cripto.svg"
-                  height={24}
-                  width={24}
-                  alt="s"
-                />
+                {selectedCurrency?.value === 'ETH' ? (
+                   <Image
+                   src="/assets/common/eath-logo.svg"
+                   height={15}
+                   width={15}
+                   alt="s"
+                 />
+                ) : (
+                 
+                  <Image
+                    src="/assets/common/cripto.svg"
+                    height={24}
+                    width={24}
+                    alt="s"
+                  />
+                )}
                 <Select
                   className="w-full "
                   value={selectedCurrency}

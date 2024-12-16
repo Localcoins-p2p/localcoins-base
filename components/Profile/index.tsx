@@ -1,7 +1,7 @@
 'use client';
 import { AppContext } from '@/utils/context';
 import { useRouter } from 'next/navigation';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { gql, useMutation } from 'urql';
 import Footer from '../Footer/Footer';
@@ -23,6 +23,12 @@ export const UPDATE_USER = gql`
       country: $country
     ) {
       id
+       paymentMethods {
+      accountName
+      id
+      name
+      accountNumber
+    }
     }
   }
 `;
@@ -38,11 +44,27 @@ const Profile = () => {
     context: { user },
   } = useContext(AppContext);
 
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
+      setCountry(
+        user.country
+          ? { label: user.country, value: user.country.toUpperCase() }
+          : null
+      );
+    }
+  }, [user]);
   const handleSubmit = () => {
+    if (!user?.paymentMethods || user.paymentMethods.length === 0) {
+      router.push('/my-account?page=p2p-payment-methods');
+      return;
+    }
     updateUser({ name, email, country: country?.value }).then(() => {
       toast.success('Account updated successfully');
       router.push('/');
     });
+    
   };
 
   if (fetching) {
@@ -69,7 +91,7 @@ const Profile = () => {
     { label: 'Bangladesh', value: 'BANGLADESH' },
     { label: 'Sri Lanka', value: 'SRILANKA' },
   ];
-
+console.log("sd",user)
   return (
     <div>
       <div className="px-10">

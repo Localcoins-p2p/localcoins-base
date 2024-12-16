@@ -181,7 +181,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
         const txHash = await sendTransaction(transaction, connection);
       }
      const res= await markPaidMutation({ markSalePaidId: sale?.id ,referenceId:referenceId});
-     console.log("res",res)
+    
       await markFinished({ saleId: sale?.id });
     } catch (err) {
     } finally {
@@ -383,6 +383,24 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
           </div>
 
           <div>
+         
+         {isSeller && 
+         <>
+            <div className="flex items-center my-4">
+              <div className="w-6 h-6 absolute left-[-13px] rounded-full bg-white text-black font-bold flex items-center justify-center">
+                2
+              </div>
+              <h2 className="ml-4 text-xl font-semibold">
+                
+               {(sale?.amount * sale?.unitPrice) / toCurrency?.x} PHP transfer to {paymentMethods[selectedPaymentMethodIndex]?.name}
+              </h2>
+            </div>
+            <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
+              Funds transfer to blow account
+            </p>
+            </>}
+            {isBuyer && 
+         <>
             <div className="flex items-center my-4">
               <div className="w-6 h-6 absolute left-[-13px] rounded-full bg-white text-black font-bold flex items-center justify-center">
                 2
@@ -395,6 +413,7 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             <p className="text-[#FFFFFF] text-[18px] ml-4 mb-4">
               Transfer the funds to the seller&apos;s account provided below.
             </p>
+            </>}
             <div className="border border-[#4D4D4D] p-4 rounded-[5px]">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-1">
@@ -471,13 +490,13 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 pr-10 flex gap-2 rounded-lg"
                 onClick={() => handleAddScreenshot(image,referenceId, '.')}
               >
-                <div>
+                {/* <div>
                   {loading ? (
                     <Loading width="5" height="5" color="#333" />
                   ) : (
                     <div className="w-5 h-5" />
                   )}
-                </div>
+                </div> */}
                 <span>Transfered, Notify Seller</span>
               </button>
               <div className="flex justify-between ml-4 gap-4">
@@ -504,13 +523,13 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-lg flex gap-2"
                 onClick={handlePaymentReceived}
               >
-                <div>
+                {/* <div>
                   {loading ? (
                     <Loading width="5" height="5" color="#333" />
                   ) : (
                     <div className="w-5 h-5" />
                   )}
-                </div>
+                </div> */}
                 <span>Confirm Payment Received</span>
               </button>
               <div className="flex gap-4">
@@ -537,13 +556,13 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 flex gap-2 rounded-lg"
                 onClick={handleClaimPayment}
               >
-                <div>
+                {/* <div>
                   {loading ? (
                     <Loading width="5" height="5" color="#333" />
                   ) : (
                     <div className="w-5 h-5" />
                   )}
-                </div>
+                </div> */}
                 <span>Claim Payment</span>
               </button>
             </div>

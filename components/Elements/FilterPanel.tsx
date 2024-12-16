@@ -116,8 +116,14 @@ const FilterPanel = () => {
   } = useContext(AppContext);
 
   const handleOpenModal = () => {
+
+    console.log("user",user)
     if (!user) {
       return toast.error(<>Please connect your wallet to continue</>);
+    }
+    if (!user?.paymentMethods || user?.paymentMethods.length === 0) {
+      toast.error('Please add a payment method before submitting.');
+      return;
     }
     setIsModalOpen(true);
   };
@@ -305,7 +311,7 @@ const FilterPanel = () => {
       >
         <div className="max-h-[90vh] overflow-auto no-scrollbar">
           <StepProgress currentStep={currentStep} />
-          {data.currency !== 'ETH' && <SolanaPriority />}
+          {/* {data.currency !== 'ETH' && <SolanaPriority />} */}
           {currentStep === 1 && (
             <SellToSetPrice onNext={handleNext} data={data} setData={setData} />
           )}
