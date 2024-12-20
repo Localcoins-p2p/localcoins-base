@@ -56,13 +56,12 @@ const Profile = () => {
     }
   }, [user]);
   const handleSubmit = () => {
-    if (!user?.paymentMethods || user.paymentMethods.length === 0) {
-      router.push('/my-account?page=p2p-payment-methods');
-      return;
-    }
     updateUser({ name, email, country: country?.value }).then(() => {
       toast.success('Account updated successfully');
-      router.push('/');
+      if (!user?.paymentMethods || user.paymentMethods.length === 0) {
+        router.push('/my-account?page=p2p-payment-methods');
+        return;
+      } else router.push('/');
     });
   };
 
