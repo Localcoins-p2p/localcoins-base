@@ -108,7 +108,7 @@ interface P2PTableProps {
   type?: 'ALL' | 'BUYER' | 'SELLER';
 }
 
-const itemsPerPage = 4;
+const itemsPerPage = 10;
 
 const queries = {
   ALL: GET_SALES,

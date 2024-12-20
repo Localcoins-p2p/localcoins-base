@@ -36,7 +36,7 @@ export const sales = async (
     orderBy: {
       createdAt: 'desc',
     },
-    take,
+    take: take * 10,
     skip,
   });
   const count = await prisma.sale.count({
@@ -56,7 +56,9 @@ export const sales = async (
 
   if (!id) {
     return {
-      sales: sales.filter((sale: Prisma.Sale) => !sale.canceledAt),
+      sales: sales
+        .filter((sale: Prisma.Sale) => !sale.canceledAt)
+        .slice(0, take),
       count,
     };
   }
@@ -69,5 +71,5 @@ export const sales = async (
     return { sales };
   }
 
-  return { sales, count };
+  return { sales: sales.slice(0, take), count };
 };
