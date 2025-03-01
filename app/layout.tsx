@@ -19,6 +19,8 @@ import { AppContext, IAppContext, IUser } from '@/utils/context';
 import SetContext from '@/components/Elements/SetContext';
 import AppLoading from '@/components/Elements/AppLoading';
 import { decodeJwt } from '@/utils/decode-jwt';
+import NewHeader from '@/components/NewHeader/NewHeader';
+import BackgroundImage from '@/components/Elements/BackgroundImage';
 require('@solana/wallet-adapter-react-ui/styles.css');
 
 const inter = Inter({ subsets: ['latin'] });
@@ -82,6 +84,8 @@ export default function RootLayout({
                 <AppContext.Provider value={{ context, setUser, setFetching }}>
                   {
                     <Provider value={client}>
+                      <NewHeader />
+                      <BackgroundImage />
                       <SetContext />
                       {children}
                       {(context as any).fetching && <AppLoading />}
