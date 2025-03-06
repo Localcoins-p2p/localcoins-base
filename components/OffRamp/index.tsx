@@ -74,13 +74,13 @@ const OffRamp = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <ShadowBox className="bg-secondary opacity-70 w-[722px]">
+      <ShadowBox className="bg-secondary  w-[722px]">
         <ShadowBox className="bg-cool-grey flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h4 className="text-custom-font-16 text-secondary ">
               Transactions
             </h4>
-            <button className="px-4 py-2 rounded-lg bg-primary  font-normal text-xs leading-4">
+            <button className="px-4 py-2 rounded-lg bg-primary bg-opacity-50 border border-primary font-medium text-base leading-[100%]">
               + New off ramp
             </button>
           </div>
@@ -119,14 +119,14 @@ const OffRamp = () => {
                   </button>
                 )}
 
-                {activeTab === 'completed' && (
+                {/* {activeTab === 'completed' && (
                   <div className="flex justify-end items-center gap-2  text-white font-normal text-xs leading-4">
                     <span>From:</span>
                     <input type="date" className=" p-1 rounded-md" />
                     <span>To:</span>
                     <input type="date" className=" p-1 rounded-md" />
                   </div>
-                )}
+                )} */}
               </div>
 
               <div className="mt-4">

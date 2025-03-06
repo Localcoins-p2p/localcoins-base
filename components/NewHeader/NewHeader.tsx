@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown, Check } from 'lucide-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 interface NavigationItem {
   name: string;
@@ -137,7 +138,7 @@ export default function NewHeader() {
 
           {/* Right side Crypto Selector */}
           <div className="flex items-center">
-            <div className="relative group ">
+            {/* <div className="relative group ">
               <button
                 className="inline-flex w-[120px] items-center px-4 py-2 bg-primary text-secondary border border-gray-200 text-sm font-medium rounded-lg  transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-blue-500"
                 aria-haspopup="listbox"
@@ -181,7 +182,8 @@ export default function NewHeader() {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
+            <WalletMultiButton />
           </div>
 
           {/* Mobile menu button */}

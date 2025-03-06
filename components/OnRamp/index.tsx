@@ -5,11 +5,31 @@ import Dropdown from '../Elements/Dropdown';
 import ShadowBox from '../Elements/ShadowBox';
 import { ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 
-const Home = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState('php');
+const OnRamp = () => {
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('php');
+  const [selectedPaymentMehodToSend, setSelectedPaymentMehodToSend] =
+    useState('php');
+  const [selectedPaymentMehodToRecieve, setSelectedPaymentMehodToRecieve] =
+    useState('php');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [amountTo, setAmountTo] = useState({
+    amountToSend: 5500,
+    amountToReceive: 99.001,
+  });
 
   const programmingLanguages = [
+    { value: 'GCASH', label: 'GCASH', icon: 'G' },
+    { value: 'Maya', label: 'Maya', icon: 'M' },
+    { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
+    { value: 'GoTyme Bank', label: 'GoTyme Bank', icon: 'GB' },
+  ];
+  const paymentMethodSend = [
+    { value: 'GCASH', label: 'GCASH', icon: 'G' },
+    { value: 'Maya', label: 'Maya', icon: 'M' },
+    { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
+    { value: 'GoTyme Bank', label: 'GoTyme Bank', icon: 'GB' },
+  ];
+  const paymentMethodRecieve = [
     { value: 'GCASH', label: 'GCASH', icon: 'G' },
     { value: 'Maya', label: 'Maya', icon: 'M' },
     { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
@@ -22,7 +42,7 @@ const Home = () => {
         <ShadowBox className="bg-milk-white">
           <h3 className="text-primary text-custom-font-16 pb-4">On ramp</h3>
           <ShadowBox className="flex flex-col gap-4 bg-secondary">
-            <ShadowBox className=" rounded-lg ">
+            <ShadowBox className="rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="">
                   <p className="text-cool-grey">Payment method</p>
@@ -30,8 +50,8 @@ const Home = () => {
                 <div>
                   <Dropdown
                     options={programmingLanguages}
-                    value={selectedLanguage}
-                    onChange={setSelectedLanguage}
+                    value={selectedPaymentMethod}
+                    onChange={setSelectedPaymentMethod}
                     className="bg-secondary border"
                   />
                 </div>
@@ -41,14 +61,24 @@ const Home = () => {
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
                   <p className="text-cool-grey text-sm">You send</p>
-                  <h3>5,500</h3>
+                  <input
+                    type="number"
+                    value={amountTo.amountToSend}
+                    onChange={(e) =>
+                      setAmountTo({
+                        ...amountTo,
+                        amountToSend: Number(e.target.value),
+                      })
+                    }
+                    className="bg-transparent text-white focus:outline-none"
+                  />
                 </div>
                 <div>
                   <Dropdown
-                    options={programmingLanguages}
-                    value={selectedLanguage}
-                    onChange={setSelectedLanguage}
-                    className="bg-secondary "
+                    options={paymentMethodSend}
+                    value={selectedPaymentMehodToSend}
+                    onChange={setSelectedPaymentMehodToSend}
+                    className="bg-secondary"
                   />
                 </div>
               </div>
@@ -57,14 +87,24 @@ const Home = () => {
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
                   <p className="text-cool-grey text-sm">You receive</p>
-                  <h3>99.001</h3>
+                  <input
+                    type="number"
+                    value={amountTo.amountToReceive}
+                    onChange={(e) =>
+                      setAmountTo({
+                        ...amountTo,
+                        amountToReceive: Number(e.target.value),
+                      })
+                    }
+                    className="bg-transparent text-white focus:outline-none"
+                  />
                 </div>
                 <div>
                   <Dropdown
-                    options={programmingLanguages}
-                    value={selectedLanguage}
-                    onChange={setSelectedLanguage}
-                    className="bg-secondary "
+                    options={paymentMethodRecieve}
+                    value={selectedPaymentMehodToRecieve}
+                    onChange={setSelectedPaymentMehodToRecieve}
+                    className="bg-secondary"
                   />
                 </div>
               </div>
@@ -72,16 +112,16 @@ const Home = () => {
             <div className="overflow-hidden">
               {/* Header - Always visible */}
               <div
-                className=" flex justify-between items-center cursor-pointe "
+                className="flex justify-between items-center cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
-                <div className="flex items-center gap-2 ">
+                <div className="flex items-center gap-2">
                   <span className="text-cool-grey font-normal text-xs">
-                    5,500 PHP
+                    {amountTo?.amountToSend} {selectedPaymentMehodToSend}
                   </span>
                   <ArrowRight className="w-3 h-3 text-white" />
                   <span className="text-cool-grey font-normal text-xs">
-                    99.001 USDC
+                    {amountTo?.amountToReceive} {selectedPaymentMehodToRecieve}
                   </span>
                 </div>
                 {isExpanded ? (
@@ -121,4 +161,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default OnRamp;

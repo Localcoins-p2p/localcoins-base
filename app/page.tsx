@@ -2,6 +2,6 @@
 
 // export default P2PTrading;
 
-import Home from '@/components/Home';
+import OnRamp from '@/components/OnRamp';
 
-export default Home;
+export default OnRamp;
