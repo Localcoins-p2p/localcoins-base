@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Dropdown from '../Elements/Dropdown';
 import ShadowBox from '../Elements/ShadowBox';
 import { ArrowRight, ChevronDown, ChevronUp, MoveLeft } from 'lucide-react';
+import fdtojson from '@/utils/fdtojson';
+import { deposit } from '@/utils/base-calls';
 
 const NewOffRamp = ({
   setNewOffRampState,
@@ -35,8 +37,12 @@ const NewOffRamp = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Handle form submission logic here
+    const { amount } = fdtojson(new FormData(e.target as HTMLFormElement));
+    if (parseFloat(amount) <= 0) {
+      alert('Please enter a valid amount');
+      return;
+    }
+    deposit(amount);
   };
 
   return (
@@ -58,6 +64,7 @@ const NewOffRamp = ({
                     <p className="text-cool-grey text-sm">Off ramp amount</p>
                     <input
                       type="number"
+                      name="amount"
                       value={offRamp.amount}
                       onChange={(e) =>
                         setOffRamp({
