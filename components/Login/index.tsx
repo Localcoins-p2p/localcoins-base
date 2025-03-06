@@ -169,11 +169,11 @@ const Login = () => {
         {(connected && user) || (metaKey && user) ? (
           <>
             <button
-              className="bg-[#F3AA05] space-x-2  text-black sm:p-4 p-2 rounded-[10px] flex items-center "
+              className="bg-primary space-x-2 text-secondary px-4 py-2 rounded-lg flex items-center "
               onClick={handleLogout}
             >
               <Image
-                src="/assets/common/Wallet.svg"
+                src="/rampz/bitcoin-ic-.png"
                 alt="Wallet Icon"
                 width={24}
                 height={24}
@@ -189,14 +189,14 @@ const Login = () => {
           </>
         ) : (
           <button
-            className="bg-[#F3AA05] space-x-2  text-black sm:p-4 p-2 rounded-[10px] flex items-center"
+            className="bg-primary space-x-2 text-secondary px-4 py-2 rounded-lg flex items-center"
             onClick={() => setShowOptions(true)}
           >
             {fetching ? (
               <Loading width="6" height="6" />
             ) : (
               <Image
-                src="/assets/common/Wallet.svg"
+                src="/rampz/bitcoin-ic-.png"
                 alt="Wallet Icon"
                 width={24}
                 height={24}
