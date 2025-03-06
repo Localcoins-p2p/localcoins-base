@@ -219,7 +219,7 @@ const Login = () => {
             Metamask
           </div>
           <div
-            className="border border-white rounded-lg text-white text-3xl p-4 w-[320px] text-center cursor-pointer"
+            className="hidden border border-white rounded-lg text-white text-3xl p-4 w-[320px] text-center cursor-pointer"
             onClick={handleLogin}
           >
             Phantom
