@@ -24,24 +24,20 @@ const OnRamp = () => {
     { value: 'GoTyme Bank', label: 'GoTyme Bank', icon: 'GB' },
   ];
   const paymentMethodSend = [
-    { value: 'GCASH', label: 'GCASH', icon: 'G' },
-    { value: 'Maya', label: 'Maya', icon: 'M' },
-    { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
-    { value: 'GoTyme Bank', label: 'GoTyme Bank', icon: 'GB' },
+    { value: 'PHP', label: 'PHP', image: '/rampz/php.png' },
+    { value: 'USDC', label: 'USDC', image: '/rampz/usdc.png' },
   ];
   const paymentMethodRecieve = [
-    { value: 'GCASH', label: 'GCASH', icon: 'G' },
-    { value: 'Maya', label: 'Maya', icon: 'M' },
-    { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
-    { value: 'GoTyme Bank', label: 'GoTyme Bank', icon: 'GB' },
+    { value: 'PHP', label: 'PHP', image: '/rampz/php.png' },
+    { value: 'USDC', label: 'USDC', image: '/rampz/usdc.png' },
   ];
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <ShadowBox className="w-[444px] bg-secondary bg-opacity-70">
-        <ShadowBox className="bg-milk-white">
+      <ShadowBox className="w-[444px] bg-secondary bg-opacity-70 p-4 rounded-lg">
+        <ShadowBox className="bg-[#D2E1D9] p-4 rounded-lg">
           <h3 className="text-primary text-custom-font-16 pb-4">On ramp</h3>
-          <ShadowBox className="flex flex-col gap-4 bg-secondary">
+          <ShadowBox className="flex flex-col gap-4 bg-secondary p-4 rounded-lg">
             <ShadowBox className="rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="">

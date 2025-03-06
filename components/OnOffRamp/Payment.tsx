@@ -1,3 +1,4 @@
+
 'use client';
 
 import { PlusIcon } from 'lucide-react';
@@ -6,7 +7,7 @@ import type React from 'react';
 import { useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 
-export default function PaymentPage() {
+export default function Payment() {
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,8 +18,8 @@ export default function PaymentPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <ShadowBox className="bg-secondary bg-opacity-70 w-[444px]">
-        <ShadowBox className="bg-cool-grey flex flex-col gap-4">
+      <ShadowBox className="bg-secondary bg-opacity-70 w-[444px] p-4">
+        <ShadowBox className="bg-[#D2E1D9] rounded-lg flex flex-col gap-4 p-4">
           {/* Pending amount header */}
           <div className="border-b border-secondary pb-2 mb-4">
             <div className="flex justify-between items-center custom-font-16 text-secondary">
@@ -30,7 +31,7 @@ export default function PaymentPage() {
           {/* Upload proof button */}
           <label
             htmlFor="proof-upload"
-            className=" bg-[#2A2A2A] bg-opacity-70 text-white rounded-lg h-[169px] flex items-center justify-center cursor-pointer transition-colors"
+            className=" bg-secondary bg-opacity-70 text-white rounded-lg h-[169px] flex items-center justify-center cursor-pointer transition-colors"
           >
             <div className="flex items-center justify-center">
               <PlusIcon className="mr-2" />

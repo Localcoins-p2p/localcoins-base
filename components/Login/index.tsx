@@ -169,14 +169,14 @@ const Login = () => {
         {(connected && user) || (metaKey && user) ? (
           <>
             <button
-              className="bg-primary space-x-2 text-secondary px-4 py-2 rounded-lg flex items-center "
+              className="bg-primary space-x-2 text-secondary px-4 py-2 rounded-lg flex items-center font-medium text-base leading-[100%]"
               onClick={handleLogout}
             >
               <Image
                 src="/rampz/bitcoin-ic-.png"
                 alt="Wallet Icon"
-                width={24}
-                height={24}
+                width={20}
+                height={20}
               />
               <span className="hidden md:block">
                 {(publicKey || metaKey)?.toString().substring(0, 5) +
@@ -198,8 +198,8 @@ const Login = () => {
               <Image
                 src="/rampz/bitcoin-ic-.png"
                 alt="Wallet Icon"
-                width={24}
-                height={24}
+                width={20}
+                height={20}
               />
             )}
             <span className="hidden md:block">Connect Wallet</span>

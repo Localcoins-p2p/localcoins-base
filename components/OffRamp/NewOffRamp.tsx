@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Dropdown from '../Elements/Dropdown';
 import ShadowBox from '../Elements/ShadowBox';
-import { ArrowRight, ChevronDown, ChevronUp, MoveLeft } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp, MoveLeft } from 'lucide-react'; 
 
 const NewOffRamp = ({
   setNewOffRampState,
@@ -11,8 +11,8 @@ const NewOffRamp = ({
   setNewOffRampState: (value: boolean) => void;
 }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('php');
-  const [selectedPaymentMehodToSend, setSelectedPaymentMehodToSend] =
-    useState('php');
+  const [selectedPaymentMehodOffRamp, setSelectedPaymentMehodOffRamp] =
+    useState('ETH');
   const [offRamp, setOffRamp] = useState({
     amount: 0.0,
     currency: 'php',
@@ -20,13 +20,10 @@ const NewOffRamp = ({
     number: '',
   });
 
-  const programmingLanguages = [
-    { value: 'GCASH', label: 'GCASH', icon: 'G' },
-    { value: 'Maya', label: 'Maya', icon: 'M' },
-    { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
-    { value: 'GoTyme Bank', label: 'GoTyme Bank', icon: 'GB' },
+  const paymentMethod = [
+    { value: 'ETH', label: 'ETH', image: '/rampz/eth.png' },
   ];
-  const paymentMethodSend = [
+  const paymentMethodOffRamp = [
     { value: 'GCASH', label: 'GCASH', icon: 'G' },
     { value: 'Maya', label: 'Maya', icon: 'M' },
     { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
@@ -40,10 +37,11 @@ const NewOffRamp = ({
   };
 
   return (
+    <> 
     <div className="flex items-center justify-center min-h-screen">
       <form onSubmit={handleSubmit}>
         <ShadowBox className="w-[444px] bg-secondary bg-opacity-70">
-          <ShadowBox className="bg-milk-white flex flex-col gap-4 p-4">
+          <ShadowBox className="bg-[#D2E1D9] flex flex-col gap-4 p-4">
             <div className="flex items-center gap-4 ">
               <MoveLeft
                 className="w-6 h-6 cursor-pointer"
@@ -70,10 +68,10 @@ const NewOffRamp = ({
                   </div>
                   <div>
                     <Dropdown
-                      options={paymentMethodSend}
-                      value={selectedPaymentMehodToSend}
-                      onChange={setSelectedPaymentMehodToSend}
-                      className="bg-secondary"
+                      options={paymentMethod}
+                      value={selectedPaymentMethod}
+                      onChange={setSelectedPaymentMethod}
+                      className="bg-secondary "
                     />
                   </div>
                 </div>
@@ -85,9 +83,9 @@ const NewOffRamp = ({
                   </div>
                   <div>
                     <Dropdown
-                      options={programmingLanguages}
-                      value={selectedPaymentMethod}
-                      onChange={setSelectedPaymentMethod}
+                      options={paymentMethodOffRamp}
+                      value={selectedPaymentMehodOffRamp}
+                      onChange={setSelectedPaymentMehodOffRamp}
                       className="bg-secondary border"
                     />
                   </div>
@@ -131,6 +129,7 @@ const NewOffRamp = ({
         </ShadowBox>
       </form>
     </div>
+    </>
   );
 };
 

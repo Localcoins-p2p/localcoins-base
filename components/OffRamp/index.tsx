@@ -4,6 +4,10 @@ import { useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 import Image from 'next/image';
 import NewOffRamp from './NewOffRamp';
+import CryptoPaymentConfirmation from './CryptoPaymentConfirmation';
+import TransactionConfirmation from '../OnOffRamp/TransactionConfirmation';
+import PendingTransaction from '../OnOffRamp/PendingTransaction';
+import Payment from '../OnOffRamp/Payment';
 
 const OffRamp = () => {
   const [activeTab, setActiveTab] = useState('completed');
@@ -77,12 +81,29 @@ const OffRamp = () => {
 
   return (
     <>
+      <Payment />
+      
+      <PendingTransaction
+        amount="0.99"
+        currency="USDC"
+        initialMinutes={14}
+        initialSeconds={59}
+      />
+
+      <TransactionConfirmation
+        amount="0.99"
+        currency="USDC"
+        message="Was released by you."
+        type="Off ramp"
+      />
+      <CryptoPaymentConfirmation />
+
       {newOffRampState ? (
         <NewOffRamp setNewOffRampState={setNewOffRampState} />
       ) : (
         <div className="flex items-center justify-center min-h-screen">
-          <ShadowBox className="bg-secondary  w-[722px]">
-            <ShadowBox className="bg-cool-grey flex flex-col gap-4">
+          <ShadowBox className="bg-secondary bg-opacity-70  w-[722px] p-4">
+            <ShadowBox className="bg-[#D2E1D9] flex flex-col gap-4 p-4 rounded-lg">
               <div className="flex items-center justify-between">
                 <h4 className="text-custom-font-16 text-secondary ">
                   Transactions
@@ -96,7 +117,7 @@ const OffRamp = () => {
                   + New off ramp
                 </button>
               </div>
-              <ShadowBox className="bg-secondary">
+              <ShadowBox className="bg-secondary p-4">
                 <div className="h-[395px] overflow-y-auto ">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">

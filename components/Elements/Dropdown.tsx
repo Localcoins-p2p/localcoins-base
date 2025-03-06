@@ -2,11 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
+import Image from 'next/image';
 
 interface DropdownOption {
   value: string;
   label: string;
   icon?: string;
+  image?: string;
 }
 
 interface DropdownProps {
@@ -61,6 +63,11 @@ export default function Dropdown({
               </span>
             </div>
           )}
+          {selectedOption.image && (
+            <div className="flex items-center justify-center w-6 h-6 mr-2 rounded-full ">
+              <Image src={selectedOption.image} alt={selectedOption.label} width={20} height={20} />
+            </div>
+          )}
           <span className="text-sm font-medium">{selectedOption.label}</span>
         </div>
         <ChevronDown
@@ -90,6 +97,11 @@ export default function Dropdown({
                       <span className="text-white font-bold">
                         {option.icon}
                       </span>
+                    </div>
+                  )}
+                  {option?.image && (
+                    <div className="flex items-center justify-center w-8 h-8 mr-2 rounded-full"> 
+                      <Image src={option.image} alt={option.label} width={20} height={20} />
                     </div>
                   )}
                   <span>{option.label}</span>
