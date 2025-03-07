@@ -55,6 +55,17 @@ const typeDefs = gql`
     hasScreenshots: Boolean
   }
 
+  type Transaction {
+    id: ID!
+    blockchain: String
+    data: JSON
+    amount: Float
+    size: Float
+    currency: String
+    tx: String
+    createdAt: Date
+  }
+
   type LoginResponse {
     token: String
     error: String
@@ -177,6 +188,13 @@ const typeDefs = gql`
     deletePaymentMethod(id: String!): PaymentMethod
 
     markDisputed(saleId: String!): Sale!
+    createTransaction(
+      blockchain: String!
+      data: JSON
+      amount: Float!
+      currency: String!
+      tx: String!
+    ): Transaction
   }
 
   ${projectTypedefs}

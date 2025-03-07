@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ChevronDown, Check } from 'lucide-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import Login from '../Login';
+import { usePathname } from 'next/navigation';
 
 interface NavigationItem {
   name: string;
@@ -22,7 +23,7 @@ interface CryptoOption {
 }
 
 const MAIN_NAVIGATION: NavigationItem[] = [
-  { name: 'On ramp', href: '/on-ramp', isActive: true },
+  { name: 'On ramp', href: '/' },
   { name: 'Off ramp', href: '/off-ramp' },
   { name: 'Swap', href: '/swap' },
 ];
@@ -60,11 +61,12 @@ export default function NewHeader() {
     setIsOpen((prev) => !prev);
   }, []);
 
+  const pathname = usePathname(); // Get the current path
+
   const NavigationLink = useCallback(
     ({
       name,
       href,
-      isActive,
       className = '',
     }: NavigationItem & { className?: string }) => {
       const baseStyles =
@@ -72,6 +74,7 @@ export default function NewHeader() {
       const activeStyles = 'text-primary ';
       const inactiveStyles = 'text-secondary hover:text-primary';
 
+      const isActive = pathname === href; // Determine if the link is active
       const combinedStyles = `${baseStyles} ${
         isActive ? activeStyles : inactiveStyles
       } ${className}`;
@@ -82,7 +85,7 @@ export default function NewHeader() {
         </Link>
       );
     },
-    []
+    [pathname] // Add pathname as a dependency
   );
 
   return (
