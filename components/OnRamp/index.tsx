@@ -17,7 +17,7 @@ const OnRamp = () => {
     amountToReceive: 99.001,
   });
 
-  const programmingLanguages = [
+  const paymentMethod = [
     { value: 'GCASH', label: 'GCASH', icon: 'G' },
     { value: 'Maya', label: 'Maya', icon: 'M' },
     { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
@@ -45,7 +45,7 @@ const OnRamp = () => {
                 </div>
                 <div>
                   <Dropdown
-                    options={programmingLanguages}
+                    options={paymentMethod}
                     value={selectedPaymentMethod}
                     onChange={setSelectedPaymentMethod}
                     className="bg-secondary border"

@@ -55,6 +55,8 @@ export default function RootLayout({
             <AppContext.Provider value={{ context, setUser, setFetching }}>
               {
                 <Provider value={client}>
+                  <NewHeader />
+                  <BackgroundImage />
                   <SetContext />
                   {children}
                   {(context as any).fetching && <AppLoading />}

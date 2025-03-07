@@ -8,9 +8,9 @@
   font-family: Lexend Deca, Nunito, sans-serif;
 }
 
-body {
+/* body {
   background: linear-gradient(19.69deg, #131413 51.91%, #191919 99.42%);
-}
+} */
 
 @media screen and (max-width: 640px) {
   .flex-container {
@@ -52,9 +52,9 @@ body {
 }
 
 
-.backgbody{
+/* .backgbody{
   background: linear-gradient(19.69deg, #131413 51.91%, #191919 99.42%);
-}
+} */
 
 input, button {
   color: #333;

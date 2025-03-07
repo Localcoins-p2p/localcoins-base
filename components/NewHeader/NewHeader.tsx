@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ChevronDown, Check } from 'lucide-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import Login from '../Login';
-import { usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation'; 
 
 interface NavigationItem {
   name: string;
@@ -23,7 +23,7 @@ interface CryptoOption {
 }
 
 const MAIN_NAVIGATION: NavigationItem[] = [
-  { name: 'On ramp', href: '/' },
+  { name: 'On ramp', href: '/on-ramp', isActive: true },
   { name: 'Off ramp', href: '/off-ramp' },
   { name: 'Swap', href: '/swap' },
 ];
@@ -52,6 +52,7 @@ const CRYPTO_OPTIONS: CryptoOption[] = [
 ];
 
 export default function NewHeader() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCrypto, setSelectedCrypto] = useState(
     CRYPTO_OPTIONS.find((c) => c.isSelected) || CRYPTO_OPTIONS[0]
@@ -60,8 +61,7 @@ export default function NewHeader() {
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
-
-  const pathname = usePathname(); // Get the current path
+ 
 
   const NavigationLink = useCallback(
     ({
@@ -108,9 +108,11 @@ export default function NewHeader() {
 
           {/* Desktop Navigation */}
           <div className="hidden sm:ml-6 sm:flex sm:space-x-2">
-            {MAIN_NAVIGATION.map((item) => (
-              <NavigationLink key={item.href} {...item} />
-            ))}
+            {MAIN_NAVIGATION.map((item) => {
+              const isActive = pathname.startsWith(item.href);
+              item.isActive = isActive;
+              return <NavigationLink key={item.href} {...item} />;
+            })}
 
             {/* More Dropdown */}
             <div className="relative group">
@@ -128,13 +130,17 @@ export default function NewHeader() {
                 aria-orientation="vertical"
               >
                 <div className="py-1">
-                  {DROPDOWN_ITEMS.map((item) => (
-                    <NavigationLink
-                      key={item.href}
-                      {...item}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    />
-                  ))}
+                  {DROPDOWN_ITEMS.map((item) => {
+                    const isActive = pathname.startsWith(item.href);
+                    item.isActive = isActive;
+                    return (
+                      <NavigationLink
+                        key={item.href}
+                        {...item}
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      />
+                    );
+                  })}
                 </div>
               </div>
             </div>

@@ -50,7 +50,7 @@ export default function Payment() {
           {/* Upload proof button */}
           <label
             htmlFor="proof-upload"
-            className=" bg-secondary bg-opacity-70 text-white rounded-lg h-[169px] flex items-center justify-center cursor-pointer transition-colors"
+            className="relative bg-secondary bg-opacity-70 text-white rounded-lg h-[169px] flex items-center justify-center cursor-pointer transition-colors"
           >
             <div className="flex items-center justify-center">
               <PlusIcon className="mr-2" />
@@ -95,40 +95,17 @@ export default function Payment() {
 
           {/* Action buttons */}
           <div className="grid grid-cols-2 gap-3">
-            <button className="border py-2 rounded-lg hover:bg-primary text-secondary font-medium transition-colors">
+            <button className="border border-secondary py-2 rounded-lg hover:bg-secondary text-secondary hover:text-white font-medium transition-colors duration-300">
               Cancel
             </button>
-            <button className="bg-primary hover:bg-secondary py-2 rounded-lg text-secondary hover:text-white font-medium transition-colors">
+            <button className="bg-primary hover:bg-secondary py-2 rounded-lg text-secondary hover:text-white font-medium transition-colors duration-300">
               Submit
             </button>
           </div>
 
-          {/*Pending amount */}
-          <ShadowBox className="bg-secondary bg-opacity-70 flex justify-between gap-4">
-            <p className="custom-font-16 text-white">
-              Your crypto will be released in
-            </p>
-            <ShadowBox className="flex justify-center gap-4 bg-secondary">
-              <div className="flex items-center gap-1">
-                <div className="flex h-8 w-8 items-center justify-center rounded bg-black/30 text-lg font-bold">
-                  {minutes.toString().padStart(2, '0')}
-                </div>
-                <span className="text-xs">Min</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="flex h-8 w-8 items-center justify-center rounded bg-black/30 text-lg font-bold">
-                  {seconds.toString().padStart(2, '0')}
-                </div>
-                <span className="text-xs">Sec</span>
-              </div>
-            </ShadowBox>
-          </ShadowBox>
-
-          <button className="w-full rounded-lg py-2 bg-primary hover:bg-secondary text-secondary hover:text-white transition-colors">
-            Appeal
-          </button>
-        </ShadowBox>
+      </ShadowBox>
       </ShadowBox>
     </div>
   );
 }
+
