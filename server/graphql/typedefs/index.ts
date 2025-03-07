@@ -122,6 +122,7 @@ const typeDefs = gql`
     buyerSales: [Sale]
     getUserReputation(publicKey: String): UserReputation
     getActivitiesStatus: ScoreResponse
+    transactions: [Transaction]
   }
 
   type Mutation {
