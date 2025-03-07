@@ -39,13 +39,9 @@ const OnRamp = () => {
         toast.error('Error occurred while on-ramping.');
       } else {
         toast.success('Successully on-ramped.');
-        setIsNewRamp(true);
-        // setAmountTo({
-        //   amountToSend: 0,
-        //   amountToReceive: 0,
-        // });
       }
     } catch (error) {
+      console.log('ERROR', error);
       toast.error('Error occurred while on-ramping.');
     }
   };
