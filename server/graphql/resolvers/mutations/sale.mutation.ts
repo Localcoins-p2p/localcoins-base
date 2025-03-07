@@ -325,3 +325,17 @@ export const createTransaction = isLoggedIn(
     });
   }
 );
+
+export const matchSeller = isLoggedIn(
+  async (_: unknown, { amount }: { amount: number }, { user }: IGqlContext) => {
+    const seller = await prisma.user.findFirst({
+      where: {
+        availableForWithdrawal: {
+          gte: amount,
+        },
+      },
+    });
+    const publicKey = seller?.publicKey;
+    return { publicKey };
+  }
+);

@@ -106,6 +106,10 @@ const typeDefs = gql`
     score: Float
   }
 
+  type SaleMatch {
+    publicKey: String
+  }
+
   input SaleFilters {
     isDisputed: Boolean
   }
@@ -195,6 +199,7 @@ const typeDefs = gql`
       currency: String!
       tx: String!
     ): Transaction
+    matchSeller(amount: Float!): SaleMatch
   }
 
   ${projectTypedefs}
