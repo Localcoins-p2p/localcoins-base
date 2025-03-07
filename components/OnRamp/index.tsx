@@ -4,6 +4,16 @@ import { useState } from 'react';
 import Dropdown from '../Elements/Dropdown';
 import ShadowBox from '../Elements/ShadowBox';
 import { ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { gql, useMutation } from 'urql';
+import toast from 'react-hot-toast';
+
+export const RAMP_AMOUNT = gql`
+  mutation Mutation($amount: Float!) {
+    matchSeller(amount: $amount) {
+      publicKey
+    }
+  }
+`;
 
 const OnRamp = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('php');
@@ -13,9 +23,34 @@ const OnRamp = () => {
     useState('php');
   const [isExpanded, setIsExpanded] = useState(false);
   const [amountTo, setAmountTo] = useState({
-    amountToSend: 5500,
-    amountToReceive: 99.001,
+    amountToSend: 0,
+    amountToReceive: 0,
   });
+
+  const handleOnRamp = async () => {
+    try {
+      const result = await mutateRampAmount({
+        amount: amountTo.amountToReceive, // amountToReceive wali amount send karein
+      });
+
+      if (result.error) {
+        toast.error('Error occurred while on-ramping.');
+      } else {
+        toast.success('Successully on-ramped.');
+      }
+    } catch (error) {
+      toast.error('Error occurred while on-ramping.');
+    }
+  };
+
+  const [
+    {
+      fetching: fetchingRampAmount,
+      error: errorRampAmount,
+      data: dataRampAmount,
+    },
+    mutateRampAmount,
+  ] = useMutation(RAMP_AMOUNT);
 
   const paymentMethod = [
     { value: 'GCASH', label: 'GCASH', icon: 'G' },
@@ -148,8 +183,12 @@ const OnRamp = () => {
               I agree with <span className="underline">term & conditions</span>
             </p>
           </div>
-          <button className="bg-primary hover:bg-secondary hover:text-white px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200">
-            On ramp
+          <button
+            onClick={handleOnRamp} // onClick handler add karein
+            className="bg-primary hover:bg-secondary hover:text-white disabled:bg-gray-500 disabled:cursor-not-allowed disabled:hover:text-secondary px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200"
+            disabled={fetchingRampAmount || amountTo.amountToReceive <= 0} // Disable button during fetching
+          >
+            {fetchingRampAmount ? 'Processing...' : 'On ramp'}
           </button>
         </ShadowBox>
       </ShadowBox>
