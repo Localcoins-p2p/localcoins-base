@@ -311,7 +311,7 @@ export const deposit = async (amount: string) => {
   };
 };
 
-export const createEscrow = async (seller: string, amount: number) => {
+export const createEscrow = async (seller: string, amount: string) => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const escrowContract = new ethers.Contract(
@@ -319,12 +319,25 @@ export const createEscrow = async (seller: string, amount: number) => {
     escrowABI,
     signer
   );
-  const tx = await escrowContract.createEscrow(seller, {
-    value: ethers.utils.parseEther(amount.toString()),
-  });
+  const tx = await escrowContract.createEscrow(
+    seller,
+    parseInt('' + parseFloat(amount) * 1e18)
+  );
+
   const receipt = await tx.wait();
+
+  const event = receipt.events?.find((e: any) => e.event === 'EscrowCreated');
+  let escrowId;
+  if (event) {
+    escrowId = event.args?.[0].toNumber();
+    escrowId;
+  } else {
+    console.error('EscrowCreated event not found in receipt.');
+  }
+
   return {
     receipt,
     tx,
+    escrowId,
   };
 };

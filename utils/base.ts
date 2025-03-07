@@ -1,4 +1,4 @@
-export const contractAddress = '0xBAF6965194261042528fb9f2ccAC448A1c6aDca7';
+export const contractAddress = '0x2C744A37CFB7A1b74De2A94F48b03f1793D6b89B';
 
 export const baseSepolia = {
   chainId: '0x14a34',
@@ -49,7 +49,13 @@ export const escrowABI = [
       },
     ],
     name: 'createEscrow',
-    outputs: [],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'nonpayable',
     type: 'function',
   },

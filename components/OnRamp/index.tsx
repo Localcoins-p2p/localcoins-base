@@ -6,6 +6,7 @@ import ShadowBox from '../Elements/ShadowBox';
 import { ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { gql, useMutation } from 'urql';
 import toast from 'react-hot-toast';
+import { createEscrow } from '@/utils/base-calls';
 
 export const RAMP_AMOUNT = gql`
   mutation Mutation($amount: Float!) {
@@ -35,10 +36,14 @@ const OnRamp = () => {
 
       if (result.error) {
         toast.error('Error occurred while on-ramping.');
-      } else {
-        toast.success('Successully on-ramped.');
+      }
+
+      if (result.data?.matchSeller?.publicKey) {
+        const sellerKey = result.data?.matchSeller?.publicKey;
+        await createEscrow(sellerKey, amountTo.amountToReceive + '');
       }
     } catch (error) {
+      console.log('ERROR', error);
       toast.error('Error occurred while on-ramping.');
     }
   };
