@@ -65,7 +65,12 @@ export default function Dropdown({
           )}
           {selectedOption.image && (
             <div className="flex items-center justify-center w-6 h-6 mr-2 rounded-full ">
-              <Image src={selectedOption.image} alt={selectedOption.label} width={20} height={20} />
+              <Image
+                src={selectedOption.image}
+                alt={selectedOption.label}
+                width={20}
+                height={20}
+              />
             </div>
           )}
           <span className="text-sm font-medium">{selectedOption.label}</span>
@@ -100,8 +105,13 @@ export default function Dropdown({
                     </div>
                   )}
                   {option?.image && (
-                    <div className="flex items-center justify-center w-8 h-8 mr-2 rounded-full"> 
-                      <Image src={option.image} alt={option.label} width={20} height={20} />
+                    <div className="flex items-center justify-center w-8 h-8 mr-2 rounded-full">
+                      <Image
+                        src={option.image}
+                        alt={option.label}
+                        width={20}
+                        height={20}
+                      />
                     </div>
                   )}
                   <span>{option.label}</span>

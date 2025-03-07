@@ -9,7 +9,7 @@ import Link from 'next/link';
 export default function CryptoPaymentConfirmation() {
   const [minutes, setMinutes] = useState(14);
   const [seconds, setSeconds] = useState(59);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,7 +55,10 @@ export default function CryptoPaymentConfirmation() {
           </ShadowBox>
 
           {/* Payment details */}
-          <div className="relative w-full h-[180px] rounded-lg border cursor-pointer" onClick={() => setIsModalOpen(true)}>
+          <div
+            className="relative w-full h-[180px] rounded-lg border cursor-pointer"
+            onClick={() => setIsModalOpen(true)}
+          >
             <Image
               src="/rampz/eth.png"
               alt="ETH"
@@ -64,8 +67,11 @@ export default function CryptoPaymentConfirmation() {
               className="object-cover w-full h-full rounded-lg"
             />
             <div className="absolute inset-0 flex items-center justify-center text-white gap-3">
-              <Eye className='w-6 h-6 ' />
-              <h3 className='text-base font-medium leading-[100%]'> See Proof</h3>
+              <Eye className="w-6 h-6 " />
+              <h3 className="text-base font-medium leading-[100%]">
+                {' '}
+                See Proof
+              </h3>
             </div>
           </div>
 
@@ -112,7 +118,10 @@ export default function CryptoPaymentConfirmation() {
 
           {/* Dispute link */}
           <div className="text-center">
-            <Link href="#" className="text-secondary text-sm leading-[100%] underline">
+            <Link
+              href="#"
+              className="text-secondary text-sm leading-[100%] underline"
+            >
               Dispute
             </Link>
           </div>

@@ -284,3 +284,23 @@ export const markDisputed = isLoggedIn(
     });
   }
 );
+
+export const createTransaction = isLoggedIn(
+  async (
+    _: unknown,
+    { blockchain, data, amount, currency, tx }: Prisma.Transaction,
+    { user }: IGqlContext
+  ) => {
+    return prisma.transaction.create({
+      data: {
+        blockchain,
+        data,
+        amount,
+        size: Math.abs(amount),
+        currency,
+        tx,
+        userId: user?.id as string,
+      },
+    });
+  }
+);

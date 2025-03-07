@@ -1,10 +1,10 @@
-
 'use client';
 
 import { PlusIcon } from 'lucide-react';
+import Image from 'next/image'; // Import Image from next/image
 import type React from 'react';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 
 export default function Payment() {
@@ -15,6 +15,25 @@ export default function Payment() {
       setFile(e.target.files[0]);
     }
   };
+
+  // pending amount
+  const [minutes, setMinutes] = useState(14);
+  const [seconds, setSeconds] = useState(59);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (seconds > 0) {
+        setSeconds(seconds - 1);
+      } else if (minutes > 0) {
+        setMinutes(minutes - 1);
+        setSeconds(59);
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [minutes, seconds]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -44,37 +63,70 @@ export default function Payment() {
               onChange={handleFileChange}
               accept="image/*"
             />
+            {file && ( // Display the selected image if available
+              <Image
+                src={URL.createObjectURL(file)} // Create a URL for the selected file
+                alt="Selected Proof"
+                width={169} // Set width to fit the button
+                height={169} // Set height to fit the button
+                className="absolute inset-0 w-full h-full object-cover rounded-lg" // Style the image
+              />
+            )}
+            {/* Display selected file name if any */}
+            {file && (
+              <div className="absolute bottom-2 px-2 text-sm text-secondary max-w-sm truncate">
+                {file.name}
+              </div>
+            )}
           </label>
 
           {/* Transaction details */}
           <div className="bg-secondary text-white rounded-lg flex flex-col gap-2 p-4">
             <h3 className="font-medium">Details for Transaction</h3>
-            <div className="grid grid-cols-2 gap-1">
-              <span className="text-gray-300 text-sm">Payment Method:</span>
-              <span className="text-right text-sm">GCASH</span>
-              <span className="text-gray-300 text-sm">Name:</span>
-              <span className="text-right text-sm">Nadeem</span>
-              <span className="text-gray-300 text-sm">Account Number:</span>
-              <span className="text-right text-sm">8103499985</span>
+            <div className="grid grid-cols-2 gap-1 custom-font-12 text-cool-grey">
+              <span className=" ">Payment Method:</span>
+              <span className="text-right  ">GCASH</span>
+              <span className=" ">Name:</span>
+              <span className="text-right ">Nadeem</span>
+              <span className=" ">Account Number:</span>
+              <span className="text-right ">8103499985</span>
             </div>
           </div>
 
           {/* Action buttons */}
           <div className="grid grid-cols-2 gap-3">
-            <button className="bg-gray-200 hover:bg-gray-300 py-3 rounded-lg text-gray-700 font-medium transition-colors">
+            <button className="border py-2 rounded-lg hover:bg-primary text-secondary font-medium transition-colors">
               Cancel
             </button>
-            <button className="bg-[#00D37F] hover:bg-[#00B86D] py-3 rounded-lg text-white font-medium transition-colors">
+            <button className="bg-primary hover:bg-secondary py-2 rounded-lg text-secondary hover:text-white font-medium transition-colors">
               Submit
             </button>
           </div>
 
-          {/* Display selected file name if any */}
-          {file && (
-            <div className=" text-sm text-secondary">
-              Selected file: {file.name}
-            </div>
-          )}
+          {/*Pending amount */}
+          <ShadowBox className="bg-secondary bg-opacity-70 flex justify-between gap-4">
+            <p className="custom-font-16 text-white">
+              Your crypto will be released in
+            </p>
+            <ShadowBox className="flex justify-center gap-4 bg-secondary">
+              <div className="flex items-center gap-1">
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-black/30 text-lg font-bold">
+                  {minutes.toString().padStart(2, '0')}
+                </div>
+                <span className="text-xs">Min</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-black/30 text-lg font-bold">
+                  {seconds.toString().padStart(2, '0')}
+                </div>
+                <span className="text-xs">Sec</span>
+              </div>
+            </ShadowBox>
+          </ShadowBox>
+
+          <button className="w-full rounded-lg py-2 bg-primary hover:bg-secondary text-secondary hover:text-white transition-colors">
+            Appeal
+          </button>
         </ShadowBox>
       </ShadowBox>
     </div>

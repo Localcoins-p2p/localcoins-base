@@ -82,7 +82,7 @@ const OffRamp = () => {
   return (
     <>
       <Payment />
-      
+
       <PendingTransaction
         amount="0.99"
         currency="USDC"

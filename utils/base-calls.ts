@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { contractABI, contractAddress, escrowABI } from './base';
+import { contractAddress, escrowABI } from './base';
 import Web3Modal from 'web3modal';
 
 export const getConnection = async () => {
@@ -16,7 +16,7 @@ export const fetchAllEscrows = async () => {
     const { signer } = await getConnection();
     const escrowFactoryContract = new ethers.Contract(
       contractAddress,
-      contractABI,
+      {} as any,
       signer
     );
 
@@ -47,7 +47,7 @@ export const createEscrow = async (amount: string) => {
 
     const escrowFactoryContract = new ethers.Contract(
       contractAddress,
-      contractABI,
+      {} as any,
       signer
     );
 
@@ -291,4 +291,22 @@ export const releasePaymentToBuyer = async (escrowId: string) => {
     console.log(err);
     return { error: 'Failed to confirm payment' };
   }
+};
+
+export const deposit = async (amount: string) => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const escrowContract = new ethers.Contract(
+    contractAddress,
+    escrowABI,
+    signer
+  );
+  const tx = await escrowContract.deposit({
+    value: ethers.utils.parseEther(amount),
+  });
+  const receipt = await tx.wait();
+  return {
+    receipt,
+    tx,
+  };
 };
