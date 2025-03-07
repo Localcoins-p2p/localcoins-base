@@ -8,11 +8,61 @@ import CryptoPaymentConfirmation from './CryptoPaymentConfirmation';
 import TransactionConfirmation from '../OnOffRamp/TransactionConfirmation';
 import PendingTransaction from '../OnOffRamp/PendingTransaction';
 import Payment from '../OnOffRamp/Payment';
+import { gql, useQuery } from 'urql';
+
+export const TRANSACTIONS = gql`
+  query Sales($filters: SaleFilters, $skip: Int, $take: Int) {
+    sales(filters: $filters, skip: $skip, take: $take) {
+      sales {
+        amount
+        buyer {
+          id
+          publicKey
+        }
+        createdAt
+        id
+        tx
+        screenshots {
+          imageUrl
+          method {
+            name
+          }
+        }
+        seller {
+          name
+          publicKey
+          id
+        }
+        buyer {
+          name
+          publicKey
+          id
+        }
+        unitPrice
+        blockchain
+        currency
+        onChainSaleId
+        finishedAt
+        disputedBy
+      }
+      count
+    }
+  }
+`;
 
 const OffRamp = () => {
   const [activeTab, setActiveTab] = useState('completed');
-
   const [newOffRampState, setNewOffRampState] = useState<boolean>(false);
+
+  const [
+    {
+      data: transactionsData,
+      fetching: fetchingTransactions,
+      error: transactionsError,
+    },
+  ] = useQuery({
+    query: TRANSACTIONS,
+  });
 
   const transactions = {
     active: [
@@ -81,22 +131,22 @@ const OffRamp = () => {
 
   return (
     <>
-      <Payment />
+      {/* <Payment /> */}
 
-      <PendingTransaction
+      {/* <PendingTransaction
         amount="0.99"
         currency="USDC"
         initialMinutes={14}
         initialSeconds={59}
-      />
+      /> */}
 
-      <TransactionConfirmation
+      {/* <TransactionConfirmation
         amount="0.99"
         currency="USDC"
         message="Was released by you."
         type="Off ramp"
-      />
-      <CryptoPaymentConfirmation />
+      /> */}
+      {/* <CryptoPaymentConfirmation /> */}
 
       {newOffRampState ? (
         <NewOffRamp setNewOffRampState={setNewOffRampState} />

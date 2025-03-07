@@ -4,36 +4,101 @@ import { PlusIcon } from 'lucide-react';
 import Image from 'next/image'; // Import Image from next/image
 import type React from 'react';
 
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
+import { gql, useMutation } from 'urql';
+import toast from 'react-hot-toast';
+import saveImages from '@/utils/saveImages';
 
-export default function Payment() {
+export const MATCH_SELLER_MUTATION = gql`
+  mutation Mutation(
+    $saleId: String!
+    $imageUrl: String!
+    $method: String!
+    $referenceId: String!
+  ) {
+    addScreenshot(
+      saleId: $saleId
+      imageUrl: $imageUrl
+      method: $method
+      referenceId: $referenceId
+    ) {
+      id
+      imageUrl
+    }
+  }
+`;
+
+const Payment = ({
+  pendingAmount,
+  paymentPendingMethod,
+  paymentMethod,
+  name,
+  accountNumber,
+  setIsNewRamp,
+  ...props
+}: any) => {
+  const [
+    {
+      fetching: fetchingMatchSeller,
+      error: errorMatchSeller,
+      data: dataMatchSeller,
+    },
+    mutateMatchSeller,
+  ] = useMutation(MATCH_SELLER_MUTATION);
+
   const [file, setFile] = useState<File | null>(null);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
     }
   };
 
-  // pending amount
-  const [minutes, setMinutes] = useState(14);
-  const [seconds, setSeconds] = useState(59);
+  const handleSubmit = async () => {
+    if (!file) {
+      toast.error('Please upload a proof of payment.');
+      return;
+    }
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (seconds > 0) {
-        setSeconds(seconds - 1);
-      } else if (minutes > 0) {
-        setMinutes(minutes - 1);
-        setSeconds(59);
-      } else {
-        clearInterval(interval);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      const base64Image = reader.result as string;
+
+      try {
+        // Upload image to Vercel Blob and get URL
+        const [imageUrl] = await saveImages([base64Image]);
+
+        if (!imageUrl) {
+          toast.error('Failed to upload image.');
+          return;
+        }
+
+        // Send the uploaded image URL to the backend
+        const result = await mutateMatchSeller({
+          saleId: 'dummySaleId', // Replace with actual saleId
+          imageUrl, // Use uploaded image URL
+          method: 'dummyMethod', // Replace with actual method
+          referenceId: 'dummyReferenceId', // Replace with actual referenceId
+        });
+
+        if (result.error) {
+          toast.error('Proof not submitted.');
+          console.error('Error Proof not submitted:', result.error);
+        } else {
+          toast.success('Proof submitted successfully!');
+          setIsNewRamp(false);
+        }
+      } catch (error) {
+        console.error('Error occurred while submitting the proof', error);
+        toast.error('Error occurred while submitting the proof.');
       }
-    }, 1000);
+    };
 
-    return () => clearInterval(interval);
-  }, [minutes, seconds]);
+    reader.onerror = () => {
+      toast.error('Failed to read the file.');
+    };
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -43,7 +108,9 @@ export default function Payment() {
           <div className="border-b border-secondary pb-2 mb-4">
             <div className="flex justify-between items-center custom-font-16 text-secondary">
               <span className="">Pending amount</span>
-              <span className="">0.99 USDC</span>
+              <span className="">
+                {pendingAmount} {paymentPendingMethod}
+              </span>
             </div>
           </div>
 
@@ -85,27 +152,33 @@ export default function Payment() {
             <h3 className="font-medium">Details for Transaction</h3>
             <div className="grid grid-cols-2 gap-1 custom-font-12 text-cool-grey">
               <span className=" ">Payment Method:</span>
-              <span className="text-right  ">GCASH</span>
+              <span className="text-right  ">{paymentMethod}</span>
               <span className=" ">Name:</span>
-              <span className="text-right ">Nadeem</span>
+              <span className="text-right ">{name}</span>
               <span className=" ">Account Number:</span>
-              <span className="text-right ">8103499985</span>
+              <span className="text-right ">{accountNumber}</span>
             </div>
           </div>
 
           {/* Action buttons */}
           <div className="grid grid-cols-2 gap-3">
-            <button className="border border-secondary py-2 rounded-lg hover:bg-secondary text-secondary hover:text-white font-medium transition-colors duration-300">
+            <button
+              onClick={() => setIsNewRamp(false)}
+              className="border border-secondary py-2 rounded-lg hover:bg-secondary text-secondary hover:text-white font-medium transition-colors duration-300"
+            >
               Cancel
             </button>
-            <button className="bg-primary hover:bg-secondary py-2 rounded-lg text-secondary hover:text-white font-medium transition-colors duration-300">
-              Submit
+            <button
+              onClick={handleSubmit} // Updated handler
+              className="bg-primary hover:bg-secondary py-2 rounded-lg text-secondary hover:text-white disabled:cursor-not-allowed font-medium transition-colors duration-300"
+            >
+              {fetchingMatchSeller ? 'Submitting...' : 'Submit'}
             </button>
           </div>
-
-      </ShadowBox>
+        </ShadowBox>
       </ShadowBox>
     </div>
   );
-}
+};
 
+export default memo(Payment);
