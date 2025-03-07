@@ -6,6 +6,25 @@ import ShadowBox from '../Elements/ShadowBox';
 import { ArrowRight, ChevronDown, ChevronUp, MoveLeft } from 'lucide-react';
 import fdtojson from '@/utils/fdtojson';
 import { deposit } from '@/utils/base-calls';
+import { gql, useMutation } from 'urql';
+
+export const CREATE_TRANSACTION = gql`
+  mutation CreateTransaction(
+    $blockchain: String!
+    $amount: Float!
+    $currency: String!
+    $tx: String!
+  ) {
+    createTransaction(
+      blockchain: $blockchain
+      amount: $amount
+      currency: $currency
+      tx: $tx
+    ) {
+      id
+    }
+  }
+`;
 
 const NewOffRamp = ({
   setNewOffRampState,
@@ -13,6 +32,8 @@ const NewOffRamp = ({
   setNewOffRampState: (value: boolean) => void;
 }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('php');
+  const [{ fetching: creatingTransaction }, createTransaction] =
+    useMutation(CREATE_TRANSACTION);
   const [selectedPaymentMehodOffRamp, setSelectedPaymentMehodOffRamp] =
     useState('ETH');
   const [offRamp, setOffRamp] = useState({
@@ -32,14 +53,20 @@ const NewOffRamp = ({
     { value: 'GoTyme Bank', label: 'GoTyme Bank', icon: 'GB' },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { amount } = fdtojson(new FormData(e.target as HTMLFormElement));
     if (parseFloat(amount) <= 0) {
       alert('Please enter a valid amount');
       return;
     }
-    deposit(amount);
+    const { tx } = await deposit(amount);
+    createTransaction({
+      blockchain: 'base',
+      amount: parseFloat(amount),
+      currency: 'eth',
+      tx: tx.hash,
+    });
   };
 
   return (

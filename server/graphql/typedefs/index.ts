@@ -58,7 +58,6 @@ const typeDefs = gql`
   type Transaction {
     id: ID!
     blockchain: String
-    data: JSON
     amount: Float
     size: Float
     currency: String
@@ -190,7 +189,6 @@ const typeDefs = gql`
     markDisputed(saleId: String!): Sale!
     createTransaction(
       blockchain: String!
-      data: JSON
       amount: Float!
       currency: String!
       tx: String!
