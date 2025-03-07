@@ -52,7 +52,7 @@ export default function Dropdown({
     <div ref={dropdownRef} className={`relative ${parentClassName}`}>
       <button
         type="button"
-        className={`flex items-center justify-between px-2 py-1 text-white bg-primary rounded-md focus:outline-none ${className}`}
+        className={`flex items-center justify-between min-w-[116px]  px-2 py-1 text-white bg-primary rounded-md focus:outline-none ${className}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center">
