@@ -34,7 +34,7 @@ export const fetchAllEscrows = async () => {
   }
 };
 
-export const createEscrow = async (amount: string) => {
+export const createEscrowLC = async (amount: string) => {
   if (!amount || Number(amount) <= 0) {
     return { err: 'Please enter a valid amount' };
   }
@@ -303,6 +303,24 @@ export const deposit = async (amount: string) => {
   );
   const tx = await escrowContract.deposit({
     value: ethers.utils.parseEther(amount),
+  });
+  const receipt = await tx.wait();
+  return {
+    receipt,
+    tx,
+  };
+};
+
+export const createEscrow = async (seller: string, amount: number) => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const escrowContract = new ethers.Contract(
+    contractAddress,
+    escrowABI,
+    signer
+  );
+  const tx = await escrowContract.createEscrow(seller, {
+    value: ethers.utils.parseEther(amount.toString()),
   });
   const receipt = await tx.wait();
   return {

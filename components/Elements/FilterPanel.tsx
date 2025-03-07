@@ -178,7 +178,7 @@ const FilterPanel = () => {
       if ((score?.getActivitiesStatus?.score || 100) < 25) {
         return toast.error('Malicious activity found');
       }
-      return createEscrow(amount + '');
+      //return createEscrow(amount + '');
     } else {
       return handleCreateSale_SOL({ amount });
     }
