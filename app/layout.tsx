@@ -9,16 +9,12 @@ import { useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Toaster } from 'react-hot-toast';
 import Header from '@/components/Header/Header';
-import {
-  ConnectionProvider,
-  WalletProvider,
-} from '@solana/wallet-adapter-react';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { AppContext, IAppContext, IUser } from '@/utils/context';
 import SetContext from '@/components/Elements/SetContext';
 import AppLoading from '@/components/Elements/AppLoading';
 import { decodeJwt } from '@/utils/decode-jwt';
+import NewHeader from '@/components/NewHeader/NewHeader';
+import BackgroundImage from '@/components/Elements/BackgroundImage';
 require('@solana/wallet-adapter-react-ui/styles.css');
 
 const inter = Inter({ subsets: ['latin'] });
@@ -45,10 +41,10 @@ export default function RootLayout({
     return data.w;
   }, []);
 
-  const wallets = useMemo(
-    () => (wallet === 'phantom' ? [new PhantomWalletAdapter()] : []),
-    [wallet]
-  );
+  // const wallets = useMemo(
+  //   () => (wallet === 'phantom' ? [new PhantomWalletAdapter()] : []),
+  //   [wallet]
+  // );
 
   if (wallet === 'metamask') {
     return (
@@ -59,6 +55,8 @@ export default function RootLayout({
             <AppContext.Provider value={{ context, setUser, setFetching }}>
               {
                 <Provider value={client}>
+                  <NewHeader />
+                  <BackgroundImage />
                   <SetContext />
                   {children}
                   {(context as any).fetching && <AppLoading />}
@@ -74,24 +72,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className + ' '}>
-        <ConnectionProvider endpoint={endpoint}>
-          <WalletProvider wallets={wallets} autoConnect>
-            <WalletModalProvider>
-              <Toaster />
-              <SessionProvider>
-                <AppContext.Provider value={{ context, setUser, setFetching }}>
-                  {
-                    <Provider value={client}>
-                      <SetContext />
-                      {children}
-                      {(context as any).fetching && <AppLoading />}
-                    </Provider>
-                  }
-                </AppContext.Provider>
-              </SessionProvider>
-            </WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
+        <Toaster />
+        <SessionProvider>
+          <AppContext.Provider value={{ context, setUser, setFetching }}>
+            {
+              <Provider value={client}>
+                <NewHeader />
+                <BackgroundImage />
+                <SetContext />
+                {children}
+                {(context as any).fetching && <AppLoading />}
+              </Provider>
+            }
+          </AppContext.Provider>
+        </SessionProvider>
       </body>
     </html>
   );

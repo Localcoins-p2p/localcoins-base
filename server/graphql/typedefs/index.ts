@@ -15,6 +15,8 @@ const typeDefs = gql`
     publicKey: String
     termsAccepted: Boolean
     paymentMethods: [PaymentMethod]
+    balance: Float
+    availableForWithdrawal: Float
     points: Int
   }
 
@@ -53,6 +55,16 @@ const typeDefs = gql`
     canceledAt: Date
     disputedBy: String
     hasScreenshots: Boolean
+  }
+
+  type Transaction {
+    id: ID!
+    blockchain: String
+    amount: Float
+    size: Float
+    currency: String
+    tx: String
+    createdAt: Date
   }
 
   type LoginResponse {
@@ -94,6 +106,10 @@ const typeDefs = gql`
     score: Float
   }
 
+  type SaleMatch {
+    publicKey: String
+  }
+
   input SaleFilters {
     isDisputed: Boolean
   }
@@ -106,6 +122,7 @@ const typeDefs = gql`
     buyerSales: [Sale]
     getUserReputation(publicKey: String): UserReputation
     getActivitiesStatus: ScoreResponse
+    transactions: [Transaction]
   }
 
   type Mutation {
@@ -177,6 +194,13 @@ const typeDefs = gql`
     deletePaymentMethod(id: String!): PaymentMethod
 
     markDisputed(saleId: String!): Sale!
+    createTransaction(
+      blockchain: String!
+      amount: Float!
+      currency: String!
+      tx: String!
+    ): Transaction
+    matchSeller(amount: Float!): SaleMatch
   }
 
   ${projectTypedefs}

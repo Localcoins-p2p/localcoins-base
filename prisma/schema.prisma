@@ -21,6 +21,9 @@ model User {
   isPhoneVerified Boolean @default(false)
   pwHash          String? @default("")
 
+  balance                 Float?  @default(0)
+  availableForWithdrawal  Float?  @default(0)
+
   acceptedPaymentMethods String[]
   publicKey              String   @unique
   nonce                  String?
@@ -35,6 +38,7 @@ model User {
   SaleBuyer      Sale[]          @relation("SellerRelation")
   SaleSeller     Sale[]          @relation("BuyerRelation")
   paymentMethods PaymentMethod[]
+  transactions   Transaction[]
 }
 
 model Screenshot {
@@ -106,6 +110,23 @@ model OnChainTransactionsHistory {
 
   blockchain String
   data       Json
+
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId    String @db.ObjectId
+  user      User   @relation(fields: [userId], references: [id])
+
+  blockchain String
+  data       Json?
+
+  amount     Float
+  size       Float
+  currency   String
+  tx         String
 
   createdAt DateTime @default(now())
 }

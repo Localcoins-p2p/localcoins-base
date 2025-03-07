@@ -15,6 +15,8 @@ export const GET_USER = gql`
       country
       points
       isAdmin
+      balance
+      availableForWithdrawal
       paymentMethods {
         accountName
         accountNumber

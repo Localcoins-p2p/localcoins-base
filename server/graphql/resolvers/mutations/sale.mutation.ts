@@ -284,3 +284,58 @@ export const markDisputed = isLoggedIn(
     });
   }
 );
+
+export const createTransaction = isLoggedIn(
+  async (
+    _: unknown,
+    { blockchain, data, amount, currency, tx }: Prisma.Transaction,
+    { user }: IGqlContext
+  ) => {
+    if (user?.balance) {
+      await prisma.user.update({
+        where: { id: user?.id as string },
+        data: {
+          balance: {
+            increment: amount,
+          },
+          availableForWithdrawal: {
+            increment: amount,
+          },
+        },
+      });
+    } else {
+      await prisma.user.update({
+        where: { id: user?.id as string },
+        data: {
+          balance: amount,
+          availableForWithdrawal: amount,
+        },
+      });
+    }
+    return prisma.transaction.create({
+      data: {
+        blockchain,
+        data,
+        amount,
+        size: Math.abs(amount),
+        currency,
+        tx,
+        userId: user?.id as string,
+      },
+    });
+  }
+);
+
+export const matchSeller = isLoggedIn(
+  async (_: unknown, { amount }: { amount: number }, { user }: IGqlContext) => {
+    const seller = await prisma.user.findFirst({
+      where: {
+        availableForWithdrawal: {
+          gte: amount,
+        },
+      },
+    });
+    const publicKey = seller?.publicKey;
+    return { publicKey };
+  }
+);

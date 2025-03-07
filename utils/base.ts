@@ -1,4 +1,5 @@
-export const contractAddress = '0x9230F51f31F7f7e0555641F8219dDE95594aEa99';
+export const contractAddress = '0x2C744A37CFB7A1b74De2A94F48b03f1793D6b89B';
+
 export const baseSepolia = {
   chainId: '0x14a34',
   chainName: 'Base Sepolia',
@@ -6,16 +7,30 @@ export const baseSepolia = {
   rpcUrls: ['https://sepolia.base.org'],
   blockExplorerUrls: ['https://sepolia.basescan.org'],
 };
-export const contractABI = [
+
+export const escrowABI = [
   {
     inputs: [
       {
-        internalType: 'address',
-        name: 'newAdmin',
-        type: 'address',
+        internalType: 'uint256',
+        name: 'escrowId',
+        type: 'uint256',
       },
     ],
-    name: 'addAdmin',
+    name: 'cancelByBuyer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'escrowId',
+        type: 'uint256',
+      },
+    ],
+    name: 'completeEscrow',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -24,41 +39,15 @@ export const contractABI = [
     inputs: [
       {
         internalType: 'address',
-        name: '_admin',
+        name: 'seller',
         type: 'address',
       },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
-  {
-    anonymous: false,
-    inputs: [
       {
-        indexed: false,
-        internalType: 'address',
-        name: 'admin',
-        type: 'address',
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
     ],
-    name: 'AdminAdded',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'admin',
-        type: 'address',
-      },
-    ],
-    name: 'AdminRemoved',
-    type: 'event',
-  },
-  {
-    inputs: [],
     name: 'createEscrow',
     outputs: [
       {
@@ -67,6 +56,13 @@ export const contractABI = [
         type: 'uint256',
       },
     ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'deposit',
+    outputs: [],
     stateMutability: 'payable',
     type: 'function',
   },
@@ -74,19 +70,77 @@ export const contractABI = [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: 'address',
+        name: 'user',
+        type: 'address',
+      },
+      {
         indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'Deposit',
+    type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'escrowId',
+        type: 'uint256',
+      },
+    ],
+    name: 'disputeEscrow',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'escrowId',
+        type: 'uint256',
+      },
+    ],
+    name: 'EscrowCanceled',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'escrowId',
+        type: 'uint256',
+      },
+    ],
+    name: 'EscrowCompleted',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: 'uint256',
         name: 'escrowId',
         type: 'uint256',
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: 'address',
-        name: 'escrowAddress',
+        name: 'buyer',
         type: 'address',
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: 'address',
         name: 'seller',
         type: 'address',
@@ -97,37 +151,94 @@ export const contractABI = [
         name: 'amount',
         type: 'uint256',
       },
+      {
+        indexed: false,
+        internalType: 'enum ETHDeposit.EscrowStatus',
+        name: 'status',
+        type: 'uint8',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'timestamp',
+        type: 'uint256',
+      },
     ],
     name: 'EscrowCreated',
     type: 'event',
   },
   {
+    anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'escrowId',
+        type: 'uint256',
+      },
+      {
+        indexed: true,
         internalType: 'address',
-        name: 'adminToRemove',
+        name: 'disputedBy',
         type: 'address',
       },
     ],
-    name: 'removeAdmin',
+    name: 'EscrowDisputed',
+    type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'withdraw',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
+    anonymous: false,
     inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'user',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'Withdraw',
+    type: 'event',
+  },
+  {
+    inputs: [],
+    name: 'contractBalance',
+    outputs: [
       {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
       },
     ],
-    name: 'admins',
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'escrowCount',
     outputs: [
       {
-        internalType: 'address',
+        internalType: 'uint256',
         name: '',
-        type: 'address',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -144,223 +255,38 @@ export const contractABI = [
     name: 'escrows',
     outputs: [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'nextEscrowId',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-];
-
-export const escrowABI = [
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_seller',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '_amount',
-        type: 'uint256',
-      },
-      {
-        internalType: 'address[]',
-        name: '_admins',
-        type: 'address[]',
-      },
-    ],
-    stateMutability: 'payable',
-    type: 'constructor',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'buyer',
-        type: 'address',
-      },
-    ],
-    name: 'BuyerAdded',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'BuyerDisputed',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
         internalType: 'uint256',
         name: 'amount',
         type: 'uint256',
       },
-    ],
-    name: 'FundsDeposited',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'FundsRefunded',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'FundsReleased',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'FundsReleasedByAdmin',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'FundsReleasedToBuyer',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'FundsReleasedToSeller',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'MarkedPaid',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'PaymentConfirmed',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: 'SellerDisputed',
-    type: 'event',
-  },
-  {
-    inputs: [
       {
         internalType: 'address',
-        name: '_buyer',
+        name: 'seller',
         type: 'address',
       },
-    ],
-    name: 'addBuyer',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    name: 'admins',
-    outputs: [
       {
         internalType: 'address',
-        name: '',
+        name: 'buyer',
         type: 'address',
       },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'amount',
-    outputs: [
       {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'buyer',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'buyerDispute',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'confirmPayment',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'currentState',
-    outputs: [
-      {
-        internalType: 'enum Escrow.State',
-        name: '',
+        internalType: 'enum ETHDeposit.EscrowStatus',
+        name: 'status',
         type: 'uint8',
       },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'feeCollector',
-    outputs: [
       {
-        internalType: 'address payable',
-        name: '',
+        internalType: 'uint256',
+        name: 'timestamp',
+        type: 'uint256',
+      },
+      {
+        internalType: 'bool',
+        name: 'isDisputed',
+        type: 'bool',
+      },
+      {
+        internalType: 'address',
+        name: 'disputedBy',
         type: 'address',
       },
     ],
@@ -368,57 +294,22 @@ export const escrowABI = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'isComplete',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'markPaid',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'releaseFundsToBuyer',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'releaseFundsToSeller',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'seller',
-    outputs: [
+    inputs: [
       {
         internalType: 'address',
         name: '',
         type: 'address',
       },
     ],
+    name: 'userBalances',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'sellerDispute',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
 ];

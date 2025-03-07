@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { contractABI, contractAddress, escrowABI } from './base';
+import { contractAddress, escrowABI } from './base';
 import Web3Modal from 'web3modal';
 
 export const getConnection = async () => {
@@ -16,7 +16,7 @@ export const fetchAllEscrows = async () => {
     const { signer } = await getConnection();
     const escrowFactoryContract = new ethers.Contract(
       contractAddress,
-      contractABI,
+      {} as any,
       signer
     );
 
@@ -34,7 +34,7 @@ export const fetchAllEscrows = async () => {
   }
 };
 
-export const createEscrow = async (amount: string) => {
+export const createEscrowLC = async (amount: string) => {
   if (!amount || Number(amount) <= 0) {
     return { err: 'Please enter a valid amount' };
   }
@@ -47,7 +47,7 @@ export const createEscrow = async (amount: string) => {
 
     const escrowFactoryContract = new ethers.Contract(
       contractAddress,
-      contractABI,
+      {} as any,
       signer
     );
 
@@ -291,4 +291,53 @@ export const releasePaymentToBuyer = async (escrowId: string) => {
     console.log(err);
     return { error: 'Failed to confirm payment' };
   }
+};
+
+export const deposit = async (amount: string) => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const escrowContract = new ethers.Contract(
+    contractAddress,
+    escrowABI,
+    signer
+  );
+  const tx = await escrowContract.deposit({
+    value: ethers.utils.parseEther(amount),
+  });
+  const receipt = await tx.wait();
+  return {
+    receipt,
+    tx,
+  };
+};
+
+export const createEscrow = async (seller: string, amount: string) => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const escrowContract = new ethers.Contract(
+    contractAddress,
+    escrowABI,
+    signer
+  );
+  const tx = await escrowContract.createEscrow(
+    seller,
+    parseInt('' + parseFloat(amount) * 1e18)
+  );
+
+  const receipt = await tx.wait();
+
+  const event = receipt.events?.find((e: any) => e.event === 'EscrowCreated');
+  let escrowId;
+  if (event) {
+    escrowId = event.args?.[0].toNumber();
+    escrowId;
+  } else {
+    console.error('EscrowCreated event not found in receipt.');
+  }
+
+  return {
+    receipt,
+    tx,
+    escrowId,
+  };
 };

@@ -56,3 +56,13 @@ export const getActivitiesStatus = isLoggedIn(
     return { score };
   }
 );
+
+export const transactions = isLoggedIn(
+  async (_: unknown, __: unknown, { user }: IGqlContext) => {
+    return prisma.transaction.findMany({
+      where: {
+        userId: user?.id as string,
+      },
+    });
+  }
+);
