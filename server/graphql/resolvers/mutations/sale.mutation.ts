@@ -291,6 +291,27 @@ export const createTransaction = isLoggedIn(
     { blockchain, data, amount, currency, tx }: Prisma.Transaction,
     { user }: IGqlContext
   ) => {
+    if (user?.balance) {
+      await prisma.user.update({
+        where: { id: user?.id as string },
+        data: {
+          balance: {
+            increment: amount,
+          },
+          availableForWithdrawal: {
+            increment: amount,
+          },
+        },
+      });
+    } else {
+      await prisma.user.update({
+        where: { id: user?.id as string },
+        data: {
+          balance: amount,
+          availableForWithdrawal: amount,
+        },
+      });
+    }
     return prisma.transaction.create({
       data: {
         blockchain,

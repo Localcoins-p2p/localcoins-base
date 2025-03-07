@@ -15,6 +15,8 @@ const typeDefs = gql`
     publicKey: String
     termsAccepted: Boolean
     paymentMethods: [PaymentMethod]
+    balance: Float
+    availableForWithdrawal: Float
     points: Int
   }
 

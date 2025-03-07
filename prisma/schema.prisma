@@ -21,6 +21,9 @@ model User {
   isPhoneVerified Boolean @default(false)
   pwHash          String? @default("")
 
+  balance                 Float?  @default(0)
+  availableForWithdrawal  Float?  @default(0)
+
   acceptedPaymentMethods String[]
   publicKey              String   @unique
   nonce                  String?
