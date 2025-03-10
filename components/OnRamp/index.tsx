@@ -31,6 +31,21 @@ const OnRamp = () => {
   });
   const [{ fetching: creatingSale }, createSale] = useMutation(CREATE_SALE);
 
+  const getCryptoPrice = async (currency: string) => {
+    try {
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=php`
+      );
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      return { php: data?.[currency]?.php };
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  };
+
   const handleOnRamp = async () => {
     try {
       const result = await mutateRampAmount({
@@ -44,9 +59,11 @@ const OnRamp = () => {
       if (result.data?.matchSeller?.publicKey) {
         const sellerKey = result.data?.matchSeller?.publicKey;
         await createEscrow(sellerKey, amountTo.amountToReceive + '');
+        // security issue: take unit price from backend
+        const prices = await getCryptoPrice('ethereum');
         createSale({
           amount: amountTo.amountToReceive,
-          unitPrice: 1,
+          unitPrice: prices?.php,
           isFloating: false,
           profitPercentage: 0,
           screenshotMethods: [],
