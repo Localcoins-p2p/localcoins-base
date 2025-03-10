@@ -22,6 +22,7 @@ const OnRamp = () => {
     useState('php');
   const [selectedPaymentMehodToRecieve, setSelectedPaymentMehodToRecieve] =
     useState('php');
+  const [isChecked, setIsChecked] = useState(false);
   const [isNewRamp, setIsNewRamp] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [amountTo, setAmountTo] = useState({
@@ -30,6 +31,11 @@ const OnRamp = () => {
   });
 
   const handleOnRamp = async () => {
+    if (!isChecked) {
+      toast.error('Please agree to the terms and conditions.');
+      return;
+    }
+    
     try {
       const result = await mutateRampAmount({
         amount: amountTo.amountToReceive,
@@ -39,6 +45,7 @@ const OnRamp = () => {
         toast.error('Error occurred while on-ramping.');
       } else {
         toast.success('Successully on-ramped.');
+        setIsNewRamp(true);
       }
     } catch (error) {
       console.log('ERROR', error);
@@ -69,7 +76,6 @@ const OnRamp = () => {
     { value: 'PHP', label: 'PHP', image: '/rampz/php.png' },
     { value: 'USDC', label: 'USDC', image: '/rampz/usdc.png' },
   ];
-  console.log(amountTo.amountToReceive, 'pendingAmount in');
 
   return (
     <>
@@ -196,7 +202,11 @@ const OnRamp = () => {
                 </div>
               </ShadowBox>
               <div className="flex items-center gap-2 py-2">
-                <input type="checkbox" />
+              <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={(e) => setIsChecked(e.target.checked)}
+                />
                 <p>
                   I agree with{' '}
                   <span className="underline">term & conditions</span>
