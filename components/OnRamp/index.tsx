@@ -7,6 +7,8 @@ import { ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { gql, useMutation } from 'urql';
 import toast from 'react-hot-toast';
 import { createEscrow } from '@/utils/base-calls';
+import { CREATE_SALE } from '../Elements/FilterPanel';
+import { BLOCKCHAIN_BASE, CURRENCY_ETH } from '@/constants';
 
 export const RAMP_AMOUNT = gql`
   mutation Mutation($amount: Float!) {
@@ -27,11 +29,12 @@ const OnRamp = () => {
     amountToSend: 0,
     amountToReceive: 0,
   });
+  const [{ fetching: creatingSale }, createSale] = useMutation(CREATE_SALE);
 
   const handleOnRamp = async () => {
     try {
       const result = await mutateRampAmount({
-        amount: amountTo.amountToReceive, // amountToReceive wali amount send karein
+        amount: amountTo.amountToReceive,
       });
 
       if (result.error) {
@@ -41,6 +44,18 @@ const OnRamp = () => {
       if (result.data?.matchSeller?.publicKey) {
         const sellerKey = result.data?.matchSeller?.publicKey;
         await createEscrow(sellerKey, amountTo.amountToReceive + '');
+        createSale({
+          amount: amountTo.amountToReceive,
+          unitPrice: 1,
+          isFloating: false,
+          profitPercentage: 0,
+          screenshotMethods: [],
+          onChainSaleId: 0,
+          tx: '',
+          blockchain: BLOCKCHAIN_BASE,
+          currency: CURRENCY_ETH,
+          sellerPublicKey: sellerKey,
+        });
       }
     } catch (error) {
       console.log('ERROR', error);
