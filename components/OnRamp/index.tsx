@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Dropdown from '../Elements/Dropdown';
 import ShadowBox from '../Elements/ShadowBox';
 import { ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
@@ -21,7 +21,7 @@ const OnRamp = () => {
   const [selectedPaymentMehodToSend, setSelectedPaymentMehodToSend] =
     useState('php');
   const [selectedPaymentMehodToRecieve, setSelectedPaymentMehodToRecieve] =
-    useState('php');
+    useState('ETH');
   const [isChecked, setIsChecked] = useState(false);
   const [isNewRamp, setIsNewRamp] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -30,12 +30,47 @@ const OnRamp = () => {
     amountToReceive: 0,
   });
 
+  const [conversionRate, setConversionRate] = useState<number | null>(null); // ETH to PHP conversion rate
+
+  // Fetch the ETH-to-PHP conversion rate when the component mounts
+  useEffect(() => {
+    const fetchConversionRate = async () => {
+      try {
+        const response = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=php'
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch conversion rate.');
+        }
+        const data = await response.json();
+        const rate = data.ethereum.php; // ETH to PHP rate
+        setConversionRate(rate);
+      } catch (error) {
+        console.error('Error fetching conversion rate:', error);
+        toast.error('Failed to fetch conversion rate. Please try again.');
+      }
+    };
+
+    fetchConversionRate();
+  }, []);
+
+  // Convert PHP to ETH when the "You send" field changes
+  useEffect(() => {
+    if (conversionRate !== null) {
+      const ethAmount = amountTo.amountToSend / conversionRate;
+      setAmountTo((prev) => ({
+        ...prev,
+        amountToReceive: ethAmount,
+      }));
+    }
+  }, [amountTo.amountToSend, conversionRate]);
+
   const handleOnRamp = async () => {
     if (!isChecked) {
       toast.error('Please agree to the terms and conditions.');
       return;
     }
-    
+
     try {
       const result = await mutateRampAmount({
         amount: amountTo.amountToReceive,
@@ -70,11 +105,9 @@ const OnRamp = () => {
   ];
   const paymentMethodSend = [
     { value: 'PHP', label: 'PHP', image: '/rampz/php.png' },
-    { value: 'USDC', label: 'USDC', image: '/rampz/usdc.png' },
   ];
   const paymentMethodRecieve = [
-    { value: 'PHP', label: 'PHP', image: '/rampz/php.png' },
-    { value: 'USDC', label: 'USDC', image: '/rampz/usdc.png' },
+    { value: 'ETH', label: 'ETH', image: '/rampz/eth.png' },
   ];
 
   return (
@@ -90,10 +123,10 @@ const OnRamp = () => {
         />
       ) : (
         <div className="flex items-center justify-center min-h-screen">
-          <ShadowBox className="w-[444px] bg-secondary bg-opacity-70 p-4 rounded-lg">
-            <ShadowBox className="bg-[#D2E1D9] p-4 rounded-lg">
+          <ShadowBox className="w-[444px] bg-secondary bg-opacity-70 p-4 ">
+            <ShadowBox className="bg-[#D2E1D9] p-4 ">
               <h3 className="text-primary text-custom-font-16 pb-4">On ramp</h3>
-              <ShadowBox className="flex flex-col gap-4 bg-secondary p-4 rounded-lg">
+              <ShadowBox className="flex flex-col gap-4 bg-secondary p-4 ">
                 <ShadowBox className="rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="">
@@ -118,11 +151,18 @@ const OnRamp = () => {
                         value={amountTo.amountToSend}
                         onChange={(e) => {
                           const newAmountToSend = Number(e.target.value);
-                          setAmountTo({
+                          setAmountTo((prev) => ({
+                            ...prev,
                             amountToSend: newAmountToSend,
-                            amountToReceive: newAmountToSend * 2, // amountToReceive ko double karein
-                          });
+                          }));
                         }}
+                        // onChange={(e) => {
+                        //   const newAmountToSend = Number(e.target.value);
+                        //   setAmountTo({
+                        //     amountToSend: newAmountToSend,
+                        //     amountToReceive: newAmountToSend * 2, // amountToReceive ko double karein
+                        //   });
+                        // }}
                         className="bg-transparent text-white focus:outline-none"
                       />
                     </div>
@@ -142,14 +182,15 @@ const OnRamp = () => {
                       <p className="text-cool-grey text-sm">You receive</p>
                       <input
                         type="number"
-                        value={amountTo.amountToReceive}
-                        onChange={(e) => {
-                          const newAmountToReceive = Number(e.target.value);
-                          setAmountTo({
-                            amountToSend: 0, // amountToSend ko zero kar dein
-                            amountToReceive: newAmountToReceive,
-                          });
-                        }}
+                        value={amountTo.amountToReceive.toFixed(7)}
+                        // onChange={(e) => {
+                        //   const newAmountToReceive = Number(e.target.value);
+                        //   setAmountTo({
+                        //     amountToSend: 0, // amountToSend ko zero kar dein
+                        //     amountToReceive: newAmountToReceive,
+                        //   });
+                        // }}
+                        readOnly
                         className="bg-transparent text-white focus:outline-none"
                       />
                     </div>
@@ -190,19 +231,19 @@ const OnRamp = () => {
                   {isExpanded && (
                     <div className="text-cool-grey font-normal text-xs border-t border-cool-grey pt-2">
                       <div className="flex justify-between ">
-                        <span className="">USDC Price</span>
-                        <span>55.55 PHP/USDC ($1.00)</span>
+                        <span className="">ETH Price</span>
+                        <span>{amountTo.amountToReceive}</span>
                       </div>
                       <div className="flex justify-between ">
                         <span className="">Platform Fees</span>
-                        <span>1%</span>
+                        <span>0%</span>
                       </div>
                     </div>
                   )}
                 </div>
               </ShadowBox>
               <div className="flex items-center gap-2 py-2">
-              <input
+                <input
                   type="checkbox"
                   checked={isChecked}
                   onChange={(e) => setIsChecked(e.target.checked)}
@@ -215,7 +256,11 @@ const OnRamp = () => {
               <button
                 onClick={handleOnRamp} // onClick handler add karein
                 className="bg-primary hover:bg-secondary hover:text-white disabled:bg-gray-500 disabled:cursor-not-allowed disabled:hover:text-secondary px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200"
-                disabled={fetchingRampAmount || amountTo.amountToReceive <= 0} // Disable button during fetching
+                disabled={
+                  fetchingRampAmount ||
+                  amountTo.amountToReceive <= 0 ||
+                  !isChecked
+                } // Disable button during fetching
               >
                 {fetchingRampAmount ? 'Processing...' : 'On ramp'}
               </button>
