@@ -31,6 +31,9 @@ const OnRamp = () => {
   });
 
   const [conversionRate, setConversionRate] = useState<number | null>(null); // ETH to PHP conversion rate
+  const [lastUpdatedField, setLastUpdatedField] = useState<'send' | 'receive'>(
+    'send'
+  ); // Track which field was last updated
 
   // Fetch the ETH-to-PHP conversion rate when the component mounts
   useEffect(() => {
@@ -54,16 +57,31 @@ const OnRamp = () => {
     fetchConversionRate();
   }, []);
 
-  // Convert PHP to ETH when the "You send" field changes
+  // Convert PHP to ETH or ETH to PHP based on the last updated field
   useEffect(() => {
     if (conversionRate !== null) {
-      const ethAmount = amountTo.amountToSend / conversionRate;
-      setAmountTo((prev) => ({
-        ...prev,
-        amountToReceive: ethAmount,
-      }));
+      if (lastUpdatedField === 'send') {
+        // Convert PHP to ETH
+        const ethAmount = amountTo.amountToSend / conversionRate;
+        setAmountTo((prev) => ({
+          ...prev,
+          amountToReceive: ethAmount,
+        }));
+      } else {
+        // Convert ETH to PHP
+        const phpAmount = amountTo.amountToReceive * conversionRate;
+        setAmountTo((prev) => ({
+          ...prev,
+          amountToSend: phpAmount,
+        }));
+      }
     }
-  }, [amountTo.amountToSend, conversionRate]);
+  }, [
+    amountTo.amountToSend,
+    amountTo.amountToReceive,
+    conversionRate,
+    lastUpdatedField,
+  ]);
 
   const handleOnRamp = async () => {
     if (!isChecked) {
@@ -79,7 +97,7 @@ const OnRamp = () => {
       if (result.error) {
         toast.error('Error occurred while on-ramping.');
       } else {
-        toast.success('Successully on-ramped.');
+        toast.success('Successfully on-ramped.');
         setIsNewRamp(true);
       }
     } catch (error) {
@@ -155,14 +173,8 @@ const OnRamp = () => {
                             ...prev,
                             amountToSend: newAmountToSend,
                           }));
+                          setLastUpdatedField('send');
                         }}
-                        // onChange={(e) => {
-                        //   const newAmountToSend = Number(e.target.value);
-                        //   setAmountTo({
-                        //     amountToSend: newAmountToSend,
-                        //     amountToReceive: newAmountToSend * 2, // amountToReceive ko double karein
-                        //   });
-                        // }}
                         className="bg-transparent text-white focus:outline-none"
                       />
                     </div>
@@ -183,14 +195,14 @@ const OnRamp = () => {
                       <input
                         type="number"
                         value={amountTo.amountToReceive.toFixed(7)}
-                        // onChange={(e) => {
-                        //   const newAmountToReceive = Number(e.target.value);
-                        //   setAmountTo({
-                        //     amountToSend: 0, // amountToSend ko zero kar dein
-                        //     amountToReceive: newAmountToReceive,
-                        //   });
-                        // }}
-                        readOnly
+                        onChange={(e) => {
+                          const newAmountToReceive = Number(e.target.value);
+                          setAmountTo((prev) => ({
+                            ...prev,
+                            amountToReceive: newAmountToReceive,
+                          }));
+                          setLastUpdatedField('receive');
+                        }}
                         className="bg-transparent text-white focus:outline-none"
                       />
                     </div>

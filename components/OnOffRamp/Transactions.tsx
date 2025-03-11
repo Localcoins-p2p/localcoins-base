@@ -94,7 +94,7 @@ const Transactions = () => {
                             </th>
                             <th className="px-4 py-4 text-left">Amount</th>
                             <th className="px-4 py-4 text-left">Quantity</th>
-                            <th className="px-4 py-4 text-left">Status</th>
+                            {/* <th className="px-4 py-4 text-left">Status</th> */}
                             <th className="px-4 py-4 text-left">Order No</th>
                           </tr>
                         </thead>
@@ -117,9 +117,9 @@ const Transactions = () => {
                                   <td className="px-4 py-4 text-left font-semibold">
                                     {txn.size}
                                   </td>
-                                  <td className="px-4 py-4 text-left font-semibold">
+                                  {/* <td className="px-4 py-4 text-left font-semibold">
                                     Unfilled
-                                  </td>
+                                  </td> */}
                                   <td className="px-4 py-4 text-left font-semibold">
                                     {txn.id}
                                   </td>
@@ -131,7 +131,7 @@ const Transactions = () => {
                       </table>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center w-full ">
+                    <div className="flex items-center justify-center w-full h-[300px]">
                       <div className="flex flex-col items-center gap-2 ">
                         <Image
                           src={'/rampz/search-data.png'}
