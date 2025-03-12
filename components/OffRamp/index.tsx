@@ -6,7 +6,43 @@ import Image from 'next/image';
 import NewOffRamp from './NewOffRamp';
 import { gql, useQuery } from 'urql';
 import Sales from '../OnOffRamp/Sales';
+import Link from 'next/link';
+import BuyButton from '../Elements/BuyButton';
+import SaleDetail from '../OnOffRamp/SaleDetail';
 
+export const GET_SALES = gql`
+  query Sales($salesId: String, $filters: SaleFilters, $skip: Int, $take: Int) {
+    sales(id: $salesId, filters: $filters, skip: $skip, take: $take) {
+      count
+      sales {
+        amount
+        blockchain
+        buyer {
+          id
+          publicKey
+        }
+        createdAt
+        id
+        tx
+        onChainSaleId
+        currency
+        seller {
+          name
+          publicKey
+          id
+          paymentMethods {
+            id
+            name
+            accountNumber
+            accountName
+          }
+        }
+        screenshotMehtods
+        unitPrice
+      }
+    }
+  }
+`;
 export const BUYER_SALES = gql`
   query BuyerSales {
     buyerSales {
@@ -158,6 +194,9 @@ const OffRamp = () => {
                                       <th className="px-4 py-4 text-left">
                                         Status
                                       </th>
+                                      <th className="px-4 py-4 text-left">
+                                        Action
+                                      </th>
                                     </tr>
                                   </thead>
                                   <tbody className="bg-primary divide-y divide-black whitespace-nowrap">
@@ -191,6 +230,15 @@ const OffRamp = () => {
                                         </td>
                                         <td className="px-4 py-4 text-left font-semibold">
                                           {getStatus(txn)}
+                                        </td>
+                                        <td className="px-4 py-4 text-left font-semibold">
+                                          {/* <Link
+                                            href={`/my-order?sale=${txn.id}`}
+                                          > */}
+                                          <button className="bg-secondary text-white px-4 py-2 rounded-lg">
+                                            Open
+                                          </button>
+                                          {/* </Link> */}
                                         </td>
                                       </tr>
                                     ))}
@@ -228,6 +276,7 @@ const OffRamp = () => {
       )}
 
       <Sales />
+      <SaleDetail />
     </>
   );
 };
