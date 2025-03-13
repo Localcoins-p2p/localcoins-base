@@ -8,41 +8,7 @@ import { gql, useQuery } from 'urql';
 import Sales from '../OnOffRamp/Sales';
 import Link from 'next/link';
 import BuyButton from '../Elements/BuyButton';
-import SaleDetail from '../OnOffRamp/SaleDetail';
 
-export const GET_SALES = gql`
-  query Sales($salesId: String, $filters: SaleFilters, $skip: Int, $take: Int) {
-    sales(id: $salesId, filters: $filters, skip: $skip, take: $take) {
-      count
-      sales {
-        amount
-        blockchain
-        buyer {
-          id
-          publicKey
-        }
-        createdAt
-        id
-        tx
-        onChainSaleId
-        currency
-        seller {
-          name
-          publicKey
-          id
-          paymentMethods {
-            id
-            name
-            accountNumber
-            accountName
-          }
-        }
-        screenshotMehtods
-        unitPrice
-      }
-    }
-  }
-`;
 export const BUYER_SALES = gql`
   query BuyerSales {
     buyerSales {
@@ -98,7 +64,7 @@ export const SELLER_SALES = gql`
 `;
 
 const OffRamp = () => {
-  const [activeTab, setActiveTab] = useState('saleOrder');
+  const [activeTab, setActiveTab] = useState('seller');
   const [newOffRampState, setNewOffRampState] = useState<boolean>(false);
 
   const [{ data: SellerSales }] = useQuery({ query: SELLER_SALES });
@@ -134,21 +100,19 @@ const OffRamp = () => {
                     <div className="flex items-center gap-2">
                       <button
                         className={`px-2 py-1 rounded-md text-white border border-primary font-normal text-xs leading-4 ${
-                          activeTab === 'saleOrder'
+                          activeTab === 'seller'
                             ? 'bg-primary '
                             : 'border-white'
                         }`}
-                        onClick={() => setActiveTab('saleOrder')}
+                        onClick={() => setActiveTab('seller')}
                       >
                         Sales Order
                       </button>
                       <button
                         className={`px-2 py-1 rounded-md border border-primary text-white font-normal text-xs leading-4 ${
-                          activeTab === 'purchaseOrder'
-                            ? 'bg-primary '
-                            : 'border-white'
+                          activeTab === 'buyer' ? 'bg-primary ' : 'border-white'
                         }`}
-                        onClick={() => setActiveTab('purchaseOrder')}
+                        onClick={() => setActiveTab('buyer')}
                       >
                         Purchase Order
                       </button>
@@ -157,8 +121,8 @@ const OffRamp = () => {
 
                   <div className="mt-4">
                     {[
-                      { type: 'saleOrder', data: SellerSales?.sellerSales },
-                      { type: 'purchaseOrder', data: BuyerSales?.buyerSales },
+                      { type: 'seller', data: SellerSales?.sellerSales },
+                      { type: 'buyer', data: BuyerSales?.buyerSales },
                     ].map(
                       ({ type, data }) =>
                         activeTab === type && (
@@ -169,9 +133,7 @@ const OffRamp = () => {
                                   <thead className="whitespace-nowrap">
                                     <tr className="bg-primary text-xs font-normal leading-4">
                                       <th className="px-4 py-4 text-left">
-                                        {type === 'saleOrder'
-                                          ? 'Buyer'
-                                          : 'Seller'}
+                                        {type === 'seller' ? 'Buyer' : 'Seller'}
                                       </th>
                                       <th className="px-4 py-4 text-left">
                                         Payment Method
@@ -181,18 +143,6 @@ const OffRamp = () => {
                                       </th>
                                       <th className="px-4 py-4 text-left">
                                         Currency
-                                      </th>
-                                      <th className="px-4 py-4 text-left">
-                                        Transaction Hash
-                                      </th>
-                                      <th className="px-4 py-4 text-left">
-                                        Unit Price
-                                      </th>
-                                      <th className="px-4 py-4 text-left">
-                                        Profit %
-                                      </th>
-                                      <th className="px-4 py-4 text-left">
-                                        Status
                                       </th>
                                       <th className="px-4 py-4 text-left">
                                         Action
@@ -206,7 +156,7 @@ const OffRamp = () => {
                                         className="text-xs font-bold leading-4"
                                       >
                                         <td className="px-4 py-4 text-left font-semibold">
-                                          {type === 'saleOrder'
+                                          {type === 'seller'
                                             ? txn.buyer?.name
                                             : txn.seller?.name}
                                         </td>
@@ -220,25 +170,13 @@ const OffRamp = () => {
                                           {txn.currency}
                                         </td>
                                         <td className="px-4 py-4 text-left font-semibold">
-                                          {txn.tx}
-                                        </td>
-                                        <td className="px-4 py-4 text-left font-semibold">
-                                          {txn.unitPrice}
-                                        </td>
-                                        <td className="px-4 py-4 text-left font-semibold">
-                                          {txn.profitPercentage}
-                                        </td>
-                                        <td className="px-4 py-4 text-left font-semibold">
-                                          {getStatus(txn)}
-                                        </td>
-                                        <td className="px-4 py-4 text-left font-semibold">
-                                          {/* <Link
-                                            href={`/my-order?sale=${txn.id}`}
-                                          > */}
-                                          <button className="bg-secondary text-white px-4 py-2 rounded-lg">
-                                            Open
-                                          </button>
-                                          {/* </Link> */}
+                                          <Link
+                                            href={`/sale-detail?id=${txn.id}`}
+                                          >
+                                            <button className="bg-secondary text-white px-4 py-2 rounded-lg">
+                                              Open
+                                            </button>
+                                          </Link>
                                         </td>
                                       </tr>
                                     ))}
@@ -276,7 +214,6 @@ const OffRamp = () => {
       )}
 
       <Sales />
-      <SaleDetail />
     </>
   );
 };
