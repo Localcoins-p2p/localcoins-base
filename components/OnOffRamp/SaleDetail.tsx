@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import {
   ArrowLeft,
   Layers,
@@ -10,6 +10,10 @@ import {
   User,
   DollarSign,
   CreditCard,
+  PlusIcon,
+  BrickWall,
+  ChevronDown,
+  Eye,
 } from 'lucide-react';
 
 import Image from 'next/image';
@@ -18,7 +22,28 @@ import ShadowBox from '../Elements/ShadowBox';
 import { gql, useMutation, useQuery } from 'urql';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppContext } from '@/utils/context';
+import Select from 'react-select';
 import { addRemoveBuyerMutation } from '../Elements/BuyButton';
+import saveImages from '@/utils/saveImages';
+import { getFromCurrency, getToCurrencyv2 } from '@/utils/getCurrency';
+import customStyles from '../Elements/reactSelectStyles';
+
+import { getMasterAddress, SALE_SEED } from '@/utils/program';
+import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+import { BN } from '@project-serum/anchor';
+import useSolana from '@/utils/useSolana';
+import Loading from '../Elements/Loading';
+import {
+  confirmPayment,
+  markPaid,
+  raiseBuyerDispute,
+  raiseSellerDispute,
+  releasePaymentToSeller,
+} from '@/utils/base-calls';
+import AppLoading from '../Elements/AppLoading';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import CryptoReleaseTime from './CryptoReleaseTime';
 
 export const GET_SALE = gql`
   query Sales($salesId: String) {
@@ -73,6 +98,24 @@ const ADD_SCREENSHOT = gql`
     }
   }
 `;
+export const MATCH_SELLER_AND_SCREENSHOT_MUTATION = gql`
+  mutation Mutation(
+    $saleId: String!
+    $imageUrl: String!
+    $method: String!
+    $referenceId: String!
+  ) {
+    addScreenshot(
+      saleId: $saleId
+      imageUrl: $imageUrl
+      method: $method
+      referenceId: $referenceId
+    ) {
+      id
+      imageUrl
+    }
+  }
+`;
 
 const IS_REFERENCE_ID_CORRECT = gql`
   mutation IsReferenceIdCorrect($saleId: String!, $referenceId: String!) {
@@ -116,115 +159,6 @@ const MARK_DISPUTED = gql`
   }
 `;
 
-// Mock data for sale details
-const mockSaleDetails = {
-  s1: {
-    id: 's1',
-    amount: 0.00001,
-    blockchain: 'base',
-    currency: 'eth',
-    tx: '0x12345abcde67890fghij12345abcde67890fghij',
-    unitPrice: 121624,
-    profitPercentage: 0,
-    createdAt: new Date(2023, 4, 15).toISOString(),
-    paidAt: new Date(2023, 4, 15, 2, 30).toISOString(),
-    finishedAt: null,
-    canceledAt: null,
-    buyer: {
-      name: 'Ali Nauroze',
-      publicKey: '0x1abc...f456',
-      id: 'buyer1',
-    },
-    seller: {
-      name: 'Your Account',
-      publicKey: '0x7def...890a',
-      id: 'seller1',
-      paymentMethods: [
-        {
-          id: 'pm1',
-          name: 'Bank Transfer',
-          accountNumber: '********1234',
-          accountName: 'John Doe',
-        },
-      ],
-    },
-    onChainSaleId: 'on-chain-123',
-    screenshots: [
-      { imageUrl: '/lovable-uploads/9e0f2821-983d-47db-8d87-cbb3f07d600c.png' },
-    ],
-  },
-  s2: {
-    id: 's2',
-    amount: 0.05,
-    blockchain: 'ethereum',
-    currency: 'eth',
-    tx: '0x67890fghij12345abcde67890fghij12345abcde',
-    unitPrice: 132750,
-    profitPercentage: 2.5,
-    createdAt: new Date(2023, 4, 10).toISOString(),
-    paidAt: new Date(2023, 4, 10, 1, 45).toISOString(),
-    finishedAt: new Date(2023, 4, 10, 3, 15).toISOString(),
-    canceledAt: null,
-    buyer: {
-      name: 'Sarah Chen',
-      publicKey: '0x2bcd...e567',
-      id: 'buyer2',
-    },
-    seller: {
-      name: 'Your Account',
-      publicKey: '0x7def...890a',
-      id: 'seller1',
-      paymentMethods: [
-        {
-          id: 'pm1',
-          name: 'Bank Transfer',
-          accountNumber: '********1234',
-          accountName: 'John Doe',
-        },
-      ],
-    },
-    onChainSaleId: 'on-chain-456',
-    screenshots: [
-      { imageUrl: '/lovable-uploads/6553a4e4-15bf-4590-9285-9d9feea14485.png' },
-    ],
-  },
-  b1: {
-    id: 'b1',
-    amount: 0.02,
-    blockchain: 'polygon',
-    currency: 'matic',
-    tx: '0xabcde12345fghij67890abcde12345fghij67890',
-    unitPrice: 98450,
-    profitPercentage: 1.2,
-    createdAt: new Date(2023, 4, 14).toISOString(),
-    paidAt: new Date(2023, 4, 14, 4, 20).toISOString(),
-    finishedAt: null,
-    canceledAt: null,
-    seller: {
-      name: 'Marcus Johnson',
-      publicKey: '0x3cde...f678',
-      id: 'seller2',
-      paymentMethods: [
-        {
-          id: 'pm2',
-          name: 'PayPal',
-          accountNumber: 'marcus@example.com',
-          accountName: 'Marcus Johnson',
-        },
-      ],
-    },
-    buyer: {
-      name: 'Your Account',
-      publicKey: '0x8efg...901b',
-      id: 'buyer3',
-    },
-    onChainSaleId: 'on-chain-789',
-    screenshots: [
-      { imageUrl: '/lovable-uploads/9e0f2821-983d-47db-8d87-cbb3f07d600c.png' },
-    ],
-  },
-};
-
 const SaleDetail = () => {
   const searchParams = useSearchParams();
   const salesId = searchParams.get('id');
@@ -237,6 +171,7 @@ const SaleDetail = () => {
     variables: { salesId },
     pause: !salesId,
   });
+  console.log(sale, 'sale by wajid');
   const [{}, checkIsReferenceIdCorrect] = useMutation(IS_REFERENCE_ID_CORRECT);
   const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
   const [{ fetching: fetchingRemoveBuyer }, removeBuyer] = useMutation(
@@ -247,6 +182,14 @@ const SaleDetail = () => {
     useMutation(MARK_DISPUTED);
   const [{ fetching: canceling }, cancelSale] = useMutation(CANCEL_SALE);
   const [{}, markPaidMutation] = useMutation(MARK_PAID);
+  const [{}, markFinished] = useMutation(MARK_FINISHED);
+  const [selectedPaymentMethodIndex, setSelectedPaymentMethodIndex] =
+    useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const { connection, program, programId, publicKey, sendTransaction } =
+    useSolana();
+  const [referenceNumber, setReferenceNumber] = useState('');
 
   const paymentMethods = sale?.seller?.paymentMethods || [];
 
@@ -254,6 +197,18 @@ const SaleDetail = () => {
   const {
     context: { user },
   } = useContext(AppContext);
+
+  const toCurrency = useMemo(() => {
+    if (sale && sale.currency) {
+      return getToCurrencyv2(sale.currency) as { name: string; x: number };
+    }
+
+    if (sale && !sale.currency) {
+      return getToCurrencyv2('SOL') as { name: string; x: number };
+    }
+
+    return { name: '', x: 1 };
+  }, [sale]);
 
   useEffect(() => {
     setSale(_sale);
@@ -267,8 +222,12 @@ const SaleDetail = () => {
 
   const firstTimeLoading = !sale && fetching;
 
-  const isSeller = user?.id === sale?.seller?.id;
+  // const isSeller = user?.id === sale?.seller?.id;
+  const isSeller = false;
   const isBuyer = user?.id === sale?.buyer?.id;
+
+  console.log(isSeller, 'isSeller');
+  console.log(isBuyer, 'isBuyer');
 
   const counterparty = isSeller ? sale?.buyer : sale?.seller; // 'seller' or 'buyer'
 
@@ -311,6 +270,386 @@ const SaleDetail = () => {
     toast.success(`${label} copied to clipboard`);
   };
 
+  // upload screenShort
+  const [
+    {
+      fetching: fetchingMatchSeller,
+      error: errorMatchSeller,
+      data: dataMatchSeller,
+    },
+    mutateMatchSeller,
+  ] = useMutation(MATCH_SELLER_AND_SCREENSHOT_MUTATION);
+  const [file, setFile] = useState<File | null>(null);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!file) {
+      toast.error('Please upload a proof of payment.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      const base64Image = reader.result as string;
+
+      try {
+        // Upload image to Vercel Blob and get URL
+        const [imageUrl] = await saveImages([base64Image]);
+
+        if (!imageUrl) {
+          toast.error('Failed to upload image.');
+          return;
+        }
+
+        // Send the uploaded image URL to the backend
+        const result = await mutateMatchSeller({
+          saleId: salesId, // Replace with actual saleId
+          imageUrl, // Use uploaded image URL
+          method: '66fb0f0fc2a69f59952e04ed', // Replace with actual method
+          referenceId: referenceNumber, // Replace with actual referenceId
+        });
+
+        if (result.error) {
+          toast.error('Proof not submitted.');
+          console.error('Error Proof not submitted:', result.error);
+        } else {
+          toast.success('Proof submitted successfully!');
+        }
+      } catch (error) {
+        console.error('Error occurred while submitting the proof', error);
+        toast.error('Error occurred while submitting the proof.');
+      }
+    };
+
+    reader.onerror = () => {
+      toast.error('Failed to read the file.');
+    };
+  };
+
+  const takeReferenceNumber = async (image: string) => {
+    confirmAlert({
+      title: 'Enter the reference number',
+      message:
+        'Please enter the reference number. Make sure you are transferring the funds to the correct account and same bank',
+      buttons: [
+        {
+          label: 'Submit',
+          onClick: async () => {
+            if (referenceNumber === '') {
+              toast.error('Please enter a valid reference number');
+              return;
+            }
+            await handleAddScreenshot(image, '');
+          },
+        },
+      ],
+      customUI: ({ onClose }) => {
+        return (
+          <div className="rounded-xl p-4 p-1 bg-primary text-white w-[75vw] md:w-[400px]">
+            <h1 className="font-bold text-xl">Enter the reference number</h1>
+            <p className="text-sm opacity-90">
+              Please enter the reference number. Make sure you are transferring
+              the funds to the correct account and same bank
+            </p>
+
+            <input
+              type="text"
+              className="w-full p-2 mt-2 rounded-md"
+              placeholder="Reference Number"
+              onChange={(e) => setReferenceNumber(e.target.value)}
+            />
+            <div className="flex justify-between mt-2">
+              <button className="text-white" onClick={onClose}>
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  await handleAddScreenshot(image, '');
+                  onClose();
+                }}
+                className="float-right p-2 font-medium rounded-md bg-white text-black"
+              >
+                Add Screenshot
+              </button>
+            </div>
+          </div>
+        );
+      },
+    });
+  };
+
+  const confirmPaymentReceived = async () => {
+    confirmAlert({
+      title: 'Confirm Payment Received',
+      message:
+        'Are you sure you want to confirm payment received? If received, kindly enter the reference id of the payment. We ask for payments to ensure that the seller receives the payment and avoid any mistake.',
+      customUI: ({ onClose }) => {
+        return (
+          <div className="rounded-xl p-4 p-1 bg-black text-white w-[75vw] md:w-[400px]">
+            <h1 className="font-bold text-xl">Confirm Payment Received</h1>
+            <p className="text-sm opacity-90">
+              Are you sure you want to confirm payment received? If received,
+              kindly enter the reference id of the payment. We ask for payments
+              to ensure that the seller receives the payment and avoid any
+              mistake.
+            </p>
+
+            <input
+              type="text"
+              className="w-full p-2 mt-2 rounded-md"
+              placeholder="Reference Number"
+              onChange={(e) => setReferenceNumber(e.target.value)}
+            />
+            <div className="flex justify-between mt-2">
+              <button className="text-white" onClick={onClose}>
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  await handlePaymentReceived();
+                  onClose();
+                }}
+                className="float-right p-2 font-medium rounded-md bg-white text-black"
+              >
+                Confirm Payment
+              </button>
+            </div>
+          </div>
+        );
+      },
+    });
+  };
+
+  const handleAddScreenshot = async (imageUrl: string, method: string) => {
+    try {
+      if (toCurrency.name === 'ETH') {
+        await markPaid(sale.onChainSaleId);
+      }
+      if (imageUrl.indexOf('vercel') === -1) {
+        await addScreenshotMutation({
+          saleId: sale.id,
+          imageUrl,
+          referenceId: referenceNumber,
+          method: '66fb0f0fc2a69f59952e04ed',
+        });
+      }
+      toast.success('Screenshot added successfully');
+    } catch (error) {
+      toast.error('Failed to add screenshot');
+    }
+  };
+
+  // console.log("handleAddScreenshot",handleAddScreenshot)
+
+  const handlePaymentReceived = async () => {
+    try {
+      const isReferenceIdCorrect = await checkIsReferenceIdCorrect({
+        saleId: sale.id,
+        referenceId: referenceNumber,
+      });
+      if (
+        isReferenceIdCorrect?.data?.isReferenceIdCorrect?.status === 'WRONG'
+      ) {
+        toast.error('Reference number is incorrect');
+        return;
+      }
+      if (toCurrency.name === 'ETH') {
+        await confirmPayment(sale?.onChainSaleId);
+        await markPaidMutation({
+          saleId: sale?.id,
+          refenceId: referenceNumber,
+        });
+        await markFinished({ saleId: sale?.id });
+      } else {
+        const masterPda = await getMasterAddress();
+        const onChainSaleId = new BN(sale.onChainSaleId);
+        const [salePda, saleBump] = await PublicKey.findProgramAddress(
+          [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+          programId
+        );
+        const authority = publicKey;
+        const transaction = new Transaction().add(
+          (program as any).instruction.markPaid(onChainSaleId, {
+            accounts: {
+              sale: salePda,
+              master: masterPda,
+              authority: authority as PublicKey,
+              systemProgram: SystemProgram.programId,
+            },
+          })
+        );
+        const txHash = await sendTransaction(transaction, connection);
+        await markPaidMutation({
+          saleId: sale?.id,
+          referenceId: referenceNumber,
+        });
+      }
+    } catch (err) {
+    } finally {
+    }
+  };
+
+  const handleClaimPayment = async () => {
+    try {
+      const masterPda = await getMasterAddress();
+      const onChainSaleId = new BN(sale.onChainSaleId);
+      const [salePda, saleBump] = await PublicKey.findProgramAddress(
+        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+        programId
+      );
+      const authority = publicKey;
+      const transaction = new Transaction().add(
+        (program as any).instruction.claimPayment(onChainSaleId, {
+          accounts: {
+            sale: salePda,
+            master: masterPda,
+            authority: authority as PublicKey,
+            systemProgram: SystemProgram.programId,
+          },
+        })
+      );
+      const txHash = await sendTransaction(transaction, connection);
+      await markFinished({ markSaleFinishedId: sale?.id });
+      toast.success('Amount received');
+    } catch (err) {
+    } finally {
+    }
+  };
+
+  const handleBuyerCancel = async () => {
+    try {
+      const masterPda = await getMasterAddress();
+      const onChainSaleId = new BN(sale.onChainSaleId);
+      const [salePda, saleBump] = await PublicKey.findProgramAddress(
+        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+        programId
+      );
+      const authority = publicKey;
+      const transaction = new Transaction().add(
+        (program as any).instruction.removeBuyer(onChainSaleId, {
+          accounts: {
+            sale: salePda,
+            master: masterPda,
+            authority: authority as PublicKey,
+            systemProgram: SystemProgram.programId,
+          },
+        })
+      );
+      const txHash = await sendTransaction(transaction, connection);
+      await removeBuyer({
+        id: sale.id,
+        command: 'REMOVE',
+      });
+      toast.success('Purchase canceled');
+    } catch (err) {
+    } finally {
+    }
+  };
+
+  const handleSellerCancel = async () => {
+    try {
+      const masterPda = await getMasterAddress();
+      const onChainSaleId = new BN(sale.onChainSaleId);
+      const [salePda, saleBump] = await PublicKey.findProgramAddress(
+        [Buffer.from(SALE_SEED), onChainSaleId.toArrayLike(Buffer, 'le', 4)],
+        programId
+      );
+      const authority = publicKey;
+
+      if (sale.buyer) {
+        return toast.error('Buyer is already connected to this sale');
+      }
+
+      const transaction = new Transaction().add(
+        (program as any).instruction.cancelSale(onChainSaleId, {
+          accounts: {
+            sale: salePda,
+            master: masterPda,
+            authority: authority as PublicKey,
+            systemProgram: SystemProgram.programId,
+          },
+        })
+      );
+      const txHash = await sendTransaction(transaction, connection);
+      const response = await cancelSale({
+        cancelSaleId: sale.id,
+      });
+      // console.log('Response', response);
+      toast.success('Sale canceled');
+    } catch (err) {
+      console.log(err);
+    } finally {
+    }
+  };
+
+  const handleSellerDispute = async () => {
+    try {
+      setDisputeLoading(true);
+      if (true) {
+        await raiseSellerDispute(sale?.onChainSaleId);
+        await markDisputedMutation({ saleId: sale?.id });
+      }
+    } catch (err) {
+    } finally {
+      setDisputeLoading(false);
+      toast.success('Marked disputed. Admins will check this sale order');
+    }
+  };
+
+  const handleBuyerDispute = async () => {
+    try {
+      setDisputeLoading(true);
+      if (true) {
+        await raiseBuyerDispute(sale?.onChainSaleId);
+        await markDisputedMutation({ saleId: sale?.id });
+      }
+    } catch (err) {
+    } finally {
+      setDisputeLoading(false);
+      toast.success('Marked disputed. Admins will check this sale order');
+    }
+  };
+
+  const handleReleaseFundsToSeller = async () => {
+    try {
+      setDisputeLoading(true);
+      if (true) {
+        // console.log('>>>Sale', sale);
+        await releasePaymentToSeller(sale?.onChainSaleId);
+        //await markDisputedMutation({ saleId: sale?.id });
+      }
+    } catch (err) {
+      console.log('ERROR', err);
+    } finally {
+      setDisputeLoading(false);
+      toast.success('Funds released to seller');
+    }
+  };
+
+  const options = paymentMethods.map((method: any) => ({
+    value: method.name,
+    label: method.name,
+  }));
+
+  const handleChangeClick = () => {
+    setDropdownVisible(!isDropdownVisible);
+  };
+
+  const handleChangePaymentMethod = (selectedOption: any) => {
+    const selectedIndex = paymentMethods.findIndex(
+      (method: any) => method.name === selectedOption.value
+    );
+    setSelectedPaymentMethodIndex(selectedIndex);
+    // setDropdownVisible(false);
+  };
+
+  const markingDisputed = _markingDisputed || disputeLoading;
+
   if (firstTimeLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-primary">
@@ -331,27 +670,34 @@ const SaleDetail = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <ShadowBox className="bg-secondary bg-opacity-70 w-[722px] p-4">
-        <ShadowBox className="bg-[#D2E1D9] flex flex-col gap-4 p-4">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-secondary transition-colors"
-          >
-            <ArrowLeft size={16} />
-            <span>Back</span>
-          </button>
+    <>
+      <div className="flex items-center justify-center min-h-screen">
+        <ShadowBox className="bg-secondary bg-opacity-70 w-[722px] p-4">
+          <ShadowBox className="bg-[#D2E1D9] flex flex-col gap-4 p-4">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-2 text-secondary transition-colors"
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
 
-          <ShadowBox className="bg-secondary flex flex-col md:flex-row gap-4 p-4 ">
-            {/* Left side - Sale info */}
-            <div className="flex-1 flex flex-col gap-4 max-w-[19rem] ">
-              <ShadowBox className="flex items-center justify-between  text-secondary bg-primary">
+            <ShadowBox className="bg-secondary flex flex-col gap-4 p-4 ">
+              {/* <CryptoReleaseTime
+                title={
+                  isSeller
+                    ? 'Please Release Crypto'
+                    : isBuyer
+                    ? 'Your crypto will be released in'
+                    : 'Released crypto in'
+                }
+                className="bg-primary"
+              /> */}
+              {/* <ShadowBox className="flex items-center justify-between  text-secondary bg-primary rounded-lg">
                 <div>
                   <div className="text-xs uppercase mb-1">Transaction ID</div>
                   <div className="flex items-center gap-2">
-                    <h1 className="text-xl font-medium ">
-                      {sale?.id || 'N/A'}
-                    </h1>
+                    <h1 className=" font-medium ">{sale?.id || 'N/A'}</h1>
                     <button
                       onClick={() =>
                         copyToClipboard(sale?.id || '', 'Transaction ID')
@@ -369,171 +715,454 @@ const SaleDetail = () => {
                 >
                   {getStatus(sale)?.label || 'Unknown'}
                 </span>
-              </ShadowBox>
+              </ShadowBox> */}
 
-              <ShadowBox className="bg-primary text-secondary p-4 ">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <div className="text-xs  uppercase ">Amount</div>
-                    <div className="flex items-center gap-2">
-                      <DollarSign size={16} className="" />
-                      <span className=" font-medium">
-                        {sale?.amount || 'N/A'}{' '}
-                        {sale?.currency?.toUpperCase() || ''}
-                      </span>
-                    </div>
-                  </div>
+              <div className="flex gap-4">
+                {/* Left side - Sale info */}
+                <div className="flex-1 flex flex-col gap-4 max-w-[19rem] ">
+                  <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="text-xs flex-col gap-1">
+                        <div className=" uppercase ">Fiat Amount</div>
+                        <div className="flex items-center gap-2">
+                          <DollarSign size={16} className="" />
+                          <span className=" font-medium">
+                            {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
+                            {getFromCurrency().name}
+                          </span>
+                        </div>
+                      </div>
 
-                  <div>
-                    <div className="text-xs uppercase ">Unit Price</div>
-                    <div className="flex items-center gap-2">
-                      <CreditCard size={16} className="" />
-                      <span className=" font-medium">
-                        ${sale?.unitPrice?.toLocaleString() || 'N/A'}
-                      </span>
-                    </div>
-                  </div>
+                      <div className="text-xs flex-col gap-1">
+                        <div className=" uppercase ">Unit Price</div>
+                        <div className="flex items-center gap-2">
+                          <CreditCard size={16} className="" />
+                          <span className=" font-medium">
+                            {sale?.unitPrice} {getFromCurrency().name}
+                          </span>
+                        </div>
+                      </div>
 
-                  <div>
-                    <div className="text-xs uppercase ">Blockchain</div>
-                    <div className="flex items-center gap-2">
-                      <Layers size={16} className="" />
-                      <span className=" font-medium capitalize">
-                        {sale?.blockchain || 'N/A'}
-                      </span>
+                      <div className="text-xs flex-col gap-1">
+                        <div className=" uppercase ">Payment Method</div>
+                        <div className="flex items-center gap-2">
+                          <Layers size={16} className="" />
+                          <span className=" font-medium capitalize">
+                            {sale?.blockchain || 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-xs flex flex-col gap-1">
+                        <div className=" uppercase ">Receive Quantity</div>
+                        <div className="flex items-center gap-2">
+                          <BrickWall size={16} className="" />
+                          <span className=" font-medium capitalize">
+                            {/* {sale?.amount / toCurrency?.x} {toCurrency?.name} */}
+                            {sale?.amount} {toCurrency?.name}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </ShadowBox>
 
-                  <div>
-                    <div className="text-xs  uppercase ">Created At</div>
-                    <div className="flex items-center gap-2">
-                      <Clock size={16} className="" />
-                      <span className="font-medium">
-                        {sale?.createdAt
-                          ? new Date(sale.createdAt).toLocaleDateString()
-                          : 'N/A'}{' '}
-                        {sale?.createdAt
-                          ? new Date(sale.createdAt).toLocaleTimeString()
-                          : ''}
-                      </span>
-                    </div>
+                  <div className="flex flex-col gap-4">
+                    {isSeller && (
+                      <div className="flex flex-col gap-1 text-xs text-white">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-primary rounded-full" />
+                          <h2 className=" font-medium">
+                            {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
+                            PHP transfer to{' '}
+                            {paymentMethods[selectedPaymentMethodIndex]?.name}
+                          </h2>
+                        </div>
+
+                        <p className="">
+                          Funds will be transfered to one of the payment methods
+                          below.
+                        </p>
+                      </div>
+                    )}
+                    {isBuyer && (
+                      <div className="flex flex-col gap-1 text-xs text-white">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-primary rounded-full" />
+                          <h2 className=" font-medium">
+                            Open{' '}
+                            {paymentMethods[selectedPaymentMethodIndex]?.name}{' '}
+                            to transfer{' '}
+                            {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
+                            PHP
+                          </h2>
+                        </div>
+                        <p className="">
+                          Transfer the funds to the seller&apos;s account
+                          provided below.
+                        </p>
+                      </div>
+                    )}
+                    <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
+                      <div className="space-y-3">
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <div className="flex flex-col gap-1 text-xs">
+                              <p>Payment Method Name</p>
+                              <span className="">
+                                {paymentMethods[selectedPaymentMethodIndex]
+                                  ?.name || 'N/A'}
+                              </span>
+                            </div>
+
+                            {isDropdownVisible ? (
+                              <div className="flex items-center border justify-center border-[#4D4D4D] rounded-[5px] px-1 ">
+                                <Select
+                                  className="w-[100px]"
+                                  options={options}
+                                  styles={customStyles}
+                                  isSearchable={false}
+                                  components={{
+                                    DropdownIndicator: () => (
+                                      <ChevronDown
+                                        size={14}
+                                        className="text-secondary"
+                                      />
+                                    ),
+                                  }}
+                                  onChange={handleChangePaymentMethod}
+                                />
+                              </div>
+                            ) : (
+                              <button
+                                className="text-secondary"
+                                onClick={handleChangeClick}
+                              >
+                                Change
+                              </button>
+                            )}
+                          </div>
+                          <div className="text-xs  uppercase ">
+                            Account Name
+                          </div>
+                          <div className="text-xs ">
+                            {paymentMethods[selectedPaymentMethodIndex]
+                              ?.accountName || 'N/A'}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="text-xs  uppercase ">
+                            Account Number
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-xs ">
+                              {paymentMethods[selectedPaymentMethodIndex]
+                                ?.accountNumber || 'N/A'}
+                            </div>
+                            <button
+                              onClick={() =>
+                                copyToClipboard(
+                                  paymentMethods?.accountNumber || '',
+                                  'Account Number'
+                                )
+                              }
+                              className=" hover:text-white transition-all"
+                            >
+                              <Copy size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </ShadowBox>
                   </div>
                 </div>
-              </ShadowBox>
 
-              <ShadowBox className="bg-primary text-secondary p-4">
-                <p className="text-xs uppercase ">Transaction Hash</p>
-                <div>
-                  <div className="flex items-center justify-between">
-                    <div className="font-mono text-sm truncate max-w-[300px]">
-                      {sale?.tx || 'N/A'}
+                {/* Right side - Payment proof */}
+                <div className="flex-1 flex flex-col gap-4 max-w-[19rem] ">
+                  <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
+                    <p className="text-xs uppercase ">Transaction Hash</p>
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <div className="font-mono text-sm truncate max-w-[300px]">
+                          {sale?.tx || 'N/A'}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              copyToClipboard(
+                                sale?.tx || '',
+                                'Transaction Hash'
+                              )
+                            }
+                            className=" hover:text-white transition-all"
+                          >
+                            <Copy size={14} />
+                          </button>
+                          <a
+                            href={`https://etherscan.io/tx/${sale?.tx}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className=" hover:text-white transition-all"
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          copyToClipboard(sale?.tx || '', 'Transaction Hash')
-                        }
-                        className=" hover:text-white transition-all"
-                      >
-                        <Copy size={14} />
-                      </button>
-                      <a
-                        href={`https://etherscan.io/tx/${sale?.tx}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className=" hover:text-white transition-all"
-                      >
-                        <ExternalLink size={14} />
-                      </a>
+                  </ShadowBox>
+
+                  <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
+                    <div className="text-xs  uppercase mb-0.5">
+                      Counterparty
                     </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full border border-secondary flex items-center justify-center">
+                        <User size={18} className="" />
+                      </div>
+                      <div>
+                        <div className="font-medium">
+                          {counterparty?.name || 'N/A'}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs font-mono ">
+                          <p className="max-w-[170px] overflow-hidden truncate">
+                            {counterparty?.publicKey || 'N/A'}{' '}
+                          </p>
+                          <button
+                            onClick={() =>
+                              copyToClipboard(
+                                counterparty?.publicKey || '',
+                                'Counterparty Public Key'
+                              )
+                            }
+                            className="hover:text-white transition-all"
+                          >
+                            <Copy size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </ShadowBox>
+
+                  <div className="flex flex-col gap-3">
+                    <h2 className="font-medium text-white ">Payment Proof</h2>
+
+                    {sale?.screenshots && sale?.screenshots?.length > 0 ? (
+                      <>
+                        <h2 className="text-xs text-white">
+                          Check the proof sent from the buyer.
+                        </h2>
+                        <div
+                          className="relative w-full h-[180px] rounded-lg  cursor-pointer"
+                          onClick={() => setIsModalOpen(true)}
+                        >
+                          <Image
+                            src="/rampz/eth.png"
+                            alt="ETH"
+                            width={100}
+                            height={180}
+                            className="object-fill w-full h-full rounded-lg"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center text-white gap-3">
+                            <Eye className="w-6 h-6 " />
+                            <h3 className="text-base font-medium leading-[100%]">
+                              {' '}
+                              See Proof
+                            </h3>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <h2 className="text-xs text-white">
+                          Upload the image and notify the seller
+                        </h2>
+                        <label
+                          htmlFor="proof-upload"
+                          className="relative bg-primary  text-white rounded-lg h-[180px] w-full flex items-center justify-center cursor-pointer transition-colors"
+                        >
+                          <div className="absolute inset-0 flex items-center justify-center text-white gap-3">
+                            <PlusIcon />
+                            <span className="font-medium">Upload Proof</span>
+                          </div>
+                          <input
+                            id="proof-upload"
+                            type="file"
+                            className="hidden"
+                            onChange={handleFileChange}
+                            accept="image/*"
+                          />
+                          {file && ( // Display the selected image if available
+                            <Image
+                              src={URL.createObjectURL(file)} // Create a URL for the selected file
+                              alt="Selected Proof"
+                              width={169} // Set width to fit the button
+                              height={169} // Set height to fit the button
+                              className="object-fill w-full h-full rounded-lg" // Style the image
+                            />
+                          )}
+                          {/* Display selected file name if any */}
+                          {file && (
+                            <div className="absolute bottom-2 px-2 text-sm text-secondary max-w-sm truncate">
+                              {file.name}
+                            </div>
+                          )}
+                        </label>
+                      </>
+                    )}
                   </div>
                 </div>
-              </ShadowBox>
+              </div>
 
-              <ShadowBox className="bg-primary text-secondary p-4">
-                <div className="text-xs  uppercase ">Counterparty</div>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full border border-secondary flex items-center justify-center">
-                    <User size={18} className="" />
-                  </div>
-                  <div>
-                    <div className="font-medium">
-                      {counterparty?.name || 'N/A'}
-                    </div>
-                    <div className=" text-sm font-mono">
-                      {counterparty?.publicKey || 'N/A'}
-                    </div>
-                  </div>
-                </div>
-              </ShadowBox>
-            </div>
-
-            {/* Right side - Payment proof */}
-            <div className="flex-1 flex flex-col gap-4 max-w-[19rem] ">
-              <h2 className="text-lg font-medium text-white ">Payment Proof</h2>
-
-              {sale?.screenshots && sale?.screenshots?.length > 0 ? (
-                <ShadowBox className=" p-4 bg-white flex items-center justify-center w-60 h-32 overflow-hidden">
-                  <Image
-                    src={sale?.screenshots[0]?.imageUrl}
-                    alt="Payment proof"
-                    className={`w-full h-auto  object-cover rounded-2xl`}
-                    width={500}
-                    height={500}
-                  />
-                </ShadowBox>
-              ) : (
-                <ShadowBox className=" p-4 rounded-2xl bg-primary text-secondary flex items-center justify-center w-[19rem] h-32 overflow-hidden">
-                  <p>No payment proof available</p>
-                </ShadowBox>
-              )}
+              <div className="flex items-center gap-2 ">
+                <div className="w-3 h-3 bg-primary rounded-full" />
+                <p className="text-white">
+                  {isSeller ? 'Check your accounts' : 'Notify Seller'}
+                </p>
+              </div>
 
               <div className="flex flex-col gap-4">
-                <h2 className="text-lg font-medium text-white">
-                  Payment Method
-                </h2>
-                <ShadowBox className="bg-primary text-secondary p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-white font-medium">
-                      {paymentMethods?.name || 'N/A'}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <div className="text-xs  uppercase ">Account Name</div>
-                      <div className="">
-                        {paymentMethods?.accountName || 'N/A'}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="text-xs  uppercase ">Account Number</div>
-                      <div className="flex items-center gap-2">
-                        <div className="">
-                          {paymentMethods?.accountNumber || 'N/A'}
-                        </div>
+                <p className="text-white text-xs">
+                  {isSeller &&
+                    'Please check your account to confirm the payment. Once the buyer has uploaded the screenshot, you will see Confirm Payment button. Click on that button and enter reference id.'}
+                  {isBuyer &&
+                    'After payment, remember to click the &apos;Transferred, Notify Seller&apos; button to facilitate the crypto release by the seller.'}
+                </p>
+                {showConfirmPaymentSentButton && (
+                  <div className="flex justify-between ">
+                    <button
+                      className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 pr-10 flex gap-2 rounded-lg transition-colors"
+                      onClick={() => {
+                        takeReferenceNumber(image);
+                      }}
+                    >
+                      {/* <div>
+                                {loading ? (
+                                  <Loading width="5" height="5" color="#333" />
+                                ) : (
+                                  <div className="w-5 h-5" />
+                                )}
+                              </div> */}
+                      <span>Transfered, Notify Seller</span>
+                    </button>
+                    <div className="flex justify-between  gap-4">
+                      {showBuyerDisputeButton && (
                         <button
-                          onClick={() =>
-                            copyToClipboard(
-                              paymentMethods?.accountNumber || '',
-                              'Account Number'
-                            )
-                          }
-                          className=" hover:text-white transition-all"
+                          className=" bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 rounded-lg transition-colors"
+                          onClick={handleBuyerDispute}
                         >
-                          <Copy size={14} />
+                          Dispute
                         </button>
-                      </div>
+                      )}
+                      <button
+                        className="bg-red-500 hover:bg-red-600 text-white  py-2 px-4 rounded-lg transition-colors"
+                        onClick={handleBuyerCancel}
+                      >
+                        Cancel
+                      </button>
                     </div>
                   </div>
-                </ShadowBox>
+                )}
+                {showConfirmPaymentReceivedButton && (
+                  <div className="flex flex-wrap justify-between gap-4">
+                    {hideConfirmButtonShowDisputes ? (
+                      <p className="text-white text-xs max-w-sm">
+                        Waiting for buyer to send you payment screenshot. Once
+                        you receive the payment, you will see the confirm button
+                        here.
+                      </p>
+                    ) : (
+                      <button
+                        className="bg-primary hover:bg-primary/90 text-secondary hover:text-white py-2 px-4 rounded-lg flex gap-2 transition-colors"
+                        onClick={confirmPaymentReceived}
+                      >
+                        <div>
+                          {fetching ? (
+                            <Loading width="5" height="5" color="#333" />
+                          ) : (
+                            <div className="w-5 h-5" />
+                          )}
+                        </div>
+                        <span>Confirm Payment Received</span>
+                      </button>
+                    )}
+                    <div className="flex gap-4">
+                      {showSellerDisputeButton && (
+                        <button
+                          className=" bg-primary hover:bg-primary/90 text-secondary hover:text-white py-2 px-4 rounded-lg  transition-colors"
+                          onClick={handleSellerDispute}
+                        >
+                          Dispute
+                        </button>
+                      )}
+                      <button
+                        className="bg-red-500 hover:bg-red-600 text-white  py-2 px-4 rounded-lg transition-colors"
+                        onClick={handleSellerCancel}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {showClaimPaymentButton && (
+                  <div className="flex justify-between ">
+                    <button
+                      className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 pr-10 flex gap-2 rounded-lg transition-colors"
+                      onClick={handleClaimPayment}
+                    >
+                      {/* <div>
+                                {loading ? (
+                                  <Loading width="5" height="5" color="#333" />
+                                ) : (
+                                  <div className="w-5 h-5" />
+                                )}
+                              </div> */}
+                      <span>Claim Payment</span>
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
+
+              {user?.isAdmin && sale?.isDisputed && (
+                <div className="flex gap-4">
+                  <button
+                    className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 rounded-lg transition-colors"
+                    onClick={handleReleaseFundsToSeller}
+                  >
+                    Release Payment to Seller
+                  </button>
+                  <button
+                    className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4  rounded-lg transition-colors"
+                    onClick={handleClaimPayment}
+                  >
+                    Release Payment to Buyer
+                  </button>
+                </div>
+              )}
+            </ShadowBox>
           </ShadowBox>
         </ShadowBox>
-      </ShadowBox>
-    </div>
+      </div>
+      {markingDisputed && <AppLoading />}
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+          <div className="relative">
+            <Image
+              src="/rampz/eth.png"
+              alt="ETH"
+              width={500} // Adjust width for full screen
+              height={500} // Adjust height for full screen
+              className="object-cover rounded-lg"
+            />
+            <button
+              className="absolute top-2 right-2 text-white text-2xl"
+              onClick={() => setIsModalOpen(false)} // Close modal
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
