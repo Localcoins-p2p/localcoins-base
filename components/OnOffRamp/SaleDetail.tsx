@@ -165,6 +165,7 @@ const SaleDetail = () => {
   const [sale, setSale] = useState<any>();
   const [image, setImage] = useState('');
   const [referenceId, setReferenceId] = useState();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // console.log("img",image)
   const [{ fetching, data, error: getSaleError }, fetchSale] = useQuery({
     query: GET_SALE,
@@ -173,7 +174,8 @@ const SaleDetail = () => {
   });
   console.log(sale, 'sale by wajid');
   const [{}, checkIsReferenceIdCorrect] = useMutation(IS_REFERENCE_ID_CORRECT);
-  const [{}, addScreenshotMutation] = useMutation(ADD_SCREENSHOT);
+  const [{ fetching: addScreenshotFetching }, addScreenshotMutation] =
+    useMutation(ADD_SCREENSHOT);
   const [{ fetching: fetchingRemoveBuyer }, removeBuyer] = useMutation(
     addRemoveBuyerMutation
   );
@@ -190,6 +192,7 @@ const SaleDetail = () => {
   const { connection, program, programId, publicKey, sendTransaction } =
     useSolana();
   const [referenceNumber, setReferenceNumber] = useState('');
+  console.log(referenceNumber, 'referenceNumber');
 
   const paymentMethods = sale?.seller?.paymentMethods || [];
 
@@ -222,9 +225,9 @@ const SaleDetail = () => {
 
   const firstTimeLoading = !sale && fetching;
 
-  // const isSeller = user?.id === sale?.seller?.id;
-  const isSeller = false;
-  const isBuyer = user?.id === sale?.buyer?.id;
+  const isSeller = user?.id === sale?.seller?.id;
+  const isBuyer = false;
+  // const isBuyer = user?.id === sale?.buyer?.id;
 
   console.log(isSeller, 'isSeller');
   console.log(isBuyer, 'isBuyer');
@@ -279,109 +282,130 @@ const SaleDetail = () => {
     },
     mutateMatchSeller,
   ] = useMutation(MATCH_SELLER_AND_SCREENSHOT_MUTATION);
-  const [file, setFile] = useState<File | null>(null);
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     setFile(e.target.files[0]);
+  //   }
+  // };
 
-  const handleSubmit = async () => {
-    if (!file) {
-      toast.error('Please upload a proof of payment.');
-      return;
-    }
+  // const handleSubmit = async () => {
+  //   if (!file) {
+  //     toast.error('Please upload a proof of payment.');
+  //     return;
+  //   }
+
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onloadend = async () => {
+  //     const base64Image = reader.result as string;
+
+  //     try {
+  //       // Upload image to Vercel Blob and get URL
+  //       const [imageUrl] = await saveImages([base64Image]);
+
+  //       if (!imageUrl) {
+  //         toast.error('Failed to upload image.');
+  //         return;
+  //       }
+
+  //       // Send the uploaded image URL to the backend
+  //       const result = await mutateMatchSeller({
+  //         saleId: salesId, // Replace with actual saleId
+  //         imageUrl, // Use uploaded image URL
+  //         method: '66fb0f0fc2a69f59952e04ed', // Replace with actual method
+  //         referenceId: referenceNumber, // Replace with actual referenceId
+  //       });
+
+  //       if (result.error) {
+  //         toast.error('Proof not submitted.');
+  //         console.error('Error Proof not submitted:', result.error);
+  //       } else {
+  //         toast.success('Proof submitted successfully!');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error occurred while submitting the proof', error);
+  //       toast.error('Error occurred while submitting the proof.');
+  //     }
+  //   };
+
+  //   reader.onerror = () => {
+  //     toast.error('Failed to read the file.');
+  //   };
+  // };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
 
     const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = async () => {
-      const base64Image = reader.result as string;
-
-      try {
-        // Upload image to Vercel Blob and get URL
-        const [imageUrl] = await saveImages([base64Image]);
-
-        if (!imageUrl) {
-          toast.error('Failed to upload image.');
-          return;
-        }
-
-        // Send the uploaded image URL to the backend
-        const result = await mutateMatchSeller({
-          saleId: salesId, // Replace with actual saleId
-          imageUrl, // Use uploaded image URL
-          method: '66fb0f0fc2a69f59952e04ed', // Replace with actual method
-          referenceId: referenceNumber, // Replace with actual referenceId
-        });
-
-        if (result.error) {
-          toast.error('Proof not submitted.');
-          console.error('Error Proof not submitted:', result.error);
-        } else {
-          toast.success('Proof submitted successfully!');
-        }
-      } catch (error) {
-        console.error('Error occurred while submitting the proof', error);
-        toast.error('Error occurred while submitting the proof.');
-      }
+    reader.onload = (e) => {
+      const base64String = (e.target as any).result;
+      setImage(base64String);
     };
-
-    reader.onerror = () => {
-      toast.error('Failed to read the file.');
-    };
+    reader.readAsDataURL(file as File);
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
+    }
   };
 
-  const takeReferenceNumber = async (image: string) => {
-    confirmAlert({
-      title: 'Enter the reference number',
-      message:
-        'Please enter the reference number. Make sure you are transferring the funds to the correct account and same bank',
-      buttons: [
-        {
-          label: 'Submit',
-          onClick: async () => {
-            if (referenceNumber === '') {
-              toast.error('Please enter a valid reference number');
-              return;
-            }
-            await handleAddScreenshot(image, '');
-          },
-        },
-      ],
-      customUI: ({ onClose }) => {
-        return (
-          <div className="rounded-xl p-4 p-1 bg-primary text-white w-[75vw] md:w-[400px]">
-            <h1 className="font-bold text-xl">Enter the reference number</h1>
-            <p className="text-sm opacity-90">
-              Please enter the reference number. Make sure you are transferring
-              the funds to the correct account and same bank
-            </p>
+  useEffect(() => {
+    if (sale?.screenshots?.[0]) {
+      setSelectedImage(sale.screenshots[0].imageUrl);
+    }
+  }, [sale]);
 
-            <input
-              type="text"
-              className="w-full p-2 mt-2 rounded-md"
-              placeholder="Reference Number"
-              onChange={(e) => setReferenceNumber(e.target.value)}
-            />
-            <div className="flex justify-between mt-2">
-              <button className="text-white" onClick={onClose}>
-                Cancel
-              </button>
-              <button
-                onClick={async () => {
-                  await handleAddScreenshot(image, '');
-                  onClose();
-                }}
-                className="float-right p-2 font-medium rounded-md bg-white text-black"
-              >
-                Add Screenshot
-              </button>
-            </div>
-          </div>
-        );
-      },
-    });
-  };
+  // const takeReferenceNumber = async (image: string) => {
+  //   confirmAlert({
+  //     title: 'Enter the reference number',
+  //     message:
+  //       'Please enter the reference number. Make sure you are transferring the funds to the correct account and same bank',
+  //     buttons: [
+  //       {
+  //         label: 'Submit',
+  //         onClick: async () => {
+  //           if (referenceNumber === '') {
+  //             toast.error('Please enter a valid reference number');
+  //             return;
+  //           }
+  //           await handleAddScreenshot(image, '');
+  //         },
+  //       },
+  //     ],
+  //     customUI: ({ onClose }) => {
+  //       return (
+  //         <div className="rounded-xl p-4 p-1 bg-secondary text-white w-[75vw] md:w-[400px]">
+  //           <h1 className="font-bold text-xl">Enter the reference number</h1>
+  //           <p className="text-sm opacity-90">
+  //             Please enter the reference number. Make sure you are transferring
+  //             the funds to the correct account and same bank
+  //           </p>
+
+  //           <input
+  //             type="text"
+  //             className="w-full p-2 mt-2 rounded-md"
+  //             placeholder="Reference Number"
+  //             // value={referenceNumber}
+  //             onChange={(e) => setReferenceNumber(e.target.value)}
+  //           />
+  //           <div className="flex justify-between mt-2">
+  //             <button className="text-white" onClick={onClose}>
+  //               Cancel
+  //             </button>
+  //             <button
+  //               onClick={async () => {
+  //                 await handleAddScreenshot(image, '');
+  //                 onClose();
+  //               }}
+  //               className="float-right p-2 font-medium rounded-md bg-primary text-secondary hover:bg-primary/90 hover:text-white transition-colors"
+  //             >
+  //               Add Screenshot
+  //             </button>
+  //           </div>
+  //         </div>
+  //       );
+  //     },
+  //   });
+  // };
 
   const confirmPaymentReceived = async () => {
     confirmAlert({
@@ -390,7 +414,7 @@ const SaleDetail = () => {
         'Are you sure you want to confirm payment received? If received, kindly enter the reference id of the payment. We ask for payments to ensure that the seller receives the payment and avoid any mistake.',
       customUI: ({ onClose }) => {
         return (
-          <div className="rounded-xl p-4 p-1 bg-black text-white w-[75vw] md:w-[400px]">
+          <div className="rounded-xl p-4 p-1 bg-secondary text-white w-[75vw] md:w-[400px]">
             <h1 className="font-bold text-xl">Confirm Payment Received</h1>
             <p className="text-sm opacity-90">
               Are you sure you want to confirm payment received? If received,
@@ -403,6 +427,7 @@ const SaleDetail = () => {
               type="text"
               className="w-full p-2 mt-2 rounded-md"
               placeholder="Reference Number"
+              // value={referenceNumber}
               onChange={(e) => setReferenceNumber(e.target.value)}
             />
             <div className="flex justify-between mt-2">
@@ -414,7 +439,7 @@ const SaleDetail = () => {
                   await handlePaymentReceived();
                   onClose();
                 }}
-                className="float-right p-2 font-medium rounded-md bg-white text-black"
+                className="float-right p-2 font-medium rounded-md  bg-primary text-secondary hover:bg-primary/90 hover:text-white transition-colors"
               >
                 Confirm Payment
               </button>
@@ -427,15 +452,15 @@ const SaleDetail = () => {
 
   const handleAddScreenshot = async (imageUrl: string, method: string) => {
     try {
-      if (toCurrency.name === 'ETH') {
+      if (toCurrency.name === 'ETH' || toCurrency.name === 'eth') {
         await markPaid(sale.onChainSaleId);
       }
       if (imageUrl.indexOf('vercel') === -1) {
         await addScreenshotMutation({
           saleId: sale.id,
           imageUrl,
-          referenceId: referenceNumber,
-          method: '66fb0f0fc2a69f59952e04ed',
+          referenceId: '',
+          method: '',
         });
       }
       toast.success('Screenshot added successfully');
@@ -458,7 +483,7 @@ const SaleDetail = () => {
         toast.error('Reference number is incorrect');
         return;
       }
-      if (toCurrency.name === 'ETH') {
+      if (toCurrency.name === 'ETH' || toCurrency.name === 'eth') {
         await confirmPayment(sale?.onChainSaleId);
         await markPaidMutation({
           saleId: sale?.id,
@@ -757,8 +782,7 @@ const SaleDetail = () => {
                         <div className="flex items-center gap-2">
                           <BrickWall size={16} className="" />
                           <span className=" font-medium capitalize">
-                            {/* {sale?.amount / toCurrency?.x} {toCurrency?.name} */}
-                            {sale?.amount} {toCurrency?.name}
+                            {sale?.amount / toCurrency?.x} {toCurrency?.name}
                           </span>
                         </div>
                       </div>
@@ -945,7 +969,7 @@ const SaleDetail = () => {
                   <div className="flex flex-col gap-3">
                     <h2 className="font-medium text-white ">Payment Proof</h2>
 
-                    {sale?.screenshots && sale?.screenshots?.length > 0 ? (
+                    {isSeller && (
                       <>
                         <h2 className="text-xs text-white">
                           Check the proof sent from the buyer.
@@ -955,7 +979,7 @@ const SaleDetail = () => {
                           onClick={() => setIsModalOpen(true)}
                         >
                           <Image
-                            src="/rampz/eth.png"
+                            src={sale?.screenshots?.[0]?.imageUrl}
                             alt="ETH"
                             width={100}
                             height={180}
@@ -970,7 +994,8 @@ const SaleDetail = () => {
                           </div>
                         </div>
                       </>
-                    ) : (
+                    )}
+                    {isBuyer && (
                       <>
                         <h2 className="text-xs text-white">
                           Upload the image and notify the seller
@@ -987,12 +1012,12 @@ const SaleDetail = () => {
                             id="proof-upload"
                             type="file"
                             className="hidden"
-                            onChange={handleFileChange}
+                            onChange={handleImageChange}
                             accept="image/*"
                           />
-                          {file && ( // Display the selected image if available
+                          {selectedImage && ( // Display the selected image if available
                             <Image
-                              src={URL.createObjectURL(file)} // Create a URL for the selected file
+                              src={selectedImage} // Create a URL for the selected file
                               alt="Selected Proof"
                               width={169} // Set width to fit the button
                               height={169} // Set height to fit the button
@@ -1000,11 +1025,11 @@ const SaleDetail = () => {
                             />
                           )}
                           {/* Display selected file name if any */}
-                          {file && (
+                          {/* {selectedImage && (
                             <div className="absolute bottom-2 px-2 text-sm text-secondary max-w-sm truncate">
-                              {file.name}
+                              {selectedImage.name}
                             </div>
-                          )}
+                          )} */}
                         </label>
                       </>
                     )}
@@ -1029,10 +1054,20 @@ const SaleDetail = () => {
                 {showConfirmPaymentSentButton && (
                   <div className="flex justify-between ">
                     <button
+                      disabled={addScreenshotFetching}
                       className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 pr-10 flex gap-2 rounded-lg transition-colors"
-                      onClick={() => {
-                        takeReferenceNumber(image);
-                      }}
+                      onClick={
+                        // () => {
+                        //   takeReferenceNumber(image);
+                        // }
+                        () => {
+                          selectedImage
+                            ? handleAddScreenshot(image, '')
+                            : toast.error(
+                                'Please upload the proof image first.'
+                              );
+                        }
+                      }
                     >
                       {/* <div>
                                 {loading ? (
@@ -1143,11 +1178,11 @@ const SaleDetail = () => {
       </div>
       {markingDisputed && <AppLoading />}
 
-      {isModalOpen && (
+      {isModalOpen && selectedImage && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
           <div className="relative">
             <Image
-              src="/rampz/eth.png"
+              src={selectedImage}
               alt="ETH"
               width={500} // Adjust width for full screen
               height={500} // Adjust height for full screen
