@@ -17,6 +17,7 @@ import { gql, useMutation } from 'urql';
 import toast from 'react-hot-toast';
 import saveImages from '@/utils/saveImages';
 import { AppContext } from '@/utils/context';
+import { useRouter } from 'next/navigation';
 
 // export const MATCH_SELLER_MUTATION = gql`
 //   mutation Mutation(
@@ -67,6 +68,9 @@ const Payment = ({
   setIsNewRamp,
   ...props
 }: any) => {
+
+  const router = useRouter();
+
   // const [
   //   {
   //     fetching: fetchingMatchSeller,
@@ -121,12 +125,14 @@ const Payment = ({
         });
       }
       toast.success('Screenshot added successfully');
+      router.push("/on-ramp/pending-transaction")
     } catch (error) {
       toast.error('Failed to add screenshot');
     }
   };
 
   return (
+    <>
     <div className="flex items-center justify-center min-h-screen">
       <ShadowBox className="bg-secondary bg-opacity-70 w-[444px] p-4">
         <ShadowBox className="bg-[#D2E1D9] rounded-lg flex flex-col gap-4 p-4">
@@ -164,13 +170,7 @@ const Payment = ({
                 height={169} // Set height to fit the button
                 className="absolute inset-0 w-full h-full object-cover rounded-lg" // Style the image
               />
-            )}
-            {/* Display selected file name if any */}
-            {/* {selectedImage && (
-              <div className="absolute bottom-2 px-2 text-sm text-secondary max-w-sm truncate">
-                {file.name}
-              </div>
-            )} */}
+            )} 
           </label>
 
           {/* Transaction details */}
@@ -212,7 +212,8 @@ const Payment = ({
           </div>
         </ShadowBox>
       </ShadowBox>
-    </div>
+    </div> 
+    </>
   );
 };
 
