@@ -4,14 +4,41 @@ import { PlusIcon } from 'lucide-react';
 import Image from 'next/image'; // Import Image from next/image
 import type React from 'react';
 
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 import { gql, useMutation } from 'urql';
 import toast from 'react-hot-toast';
 import saveImages from '@/utils/saveImages';
+import { AppContext } from '@/utils/context';
 
-export const MATCH_SELLER_MUTATION = gql`
-  mutation Mutation(
+// export const MATCH_SELLER_MUTATION = gql`
+//   mutation Mutation(
+//     $saleId: String!
+//     $imageUrl: String!
+//     $method: String!
+//     $referenceId: String!
+//   ) {
+//     addScreenshot(
+//       saleId: $saleId
+//       imageUrl: $imageUrl
+//       method: $method
+//       referenceId: $referenceId
+//     ) {
+//       id
+//       imageUrl
+//     }
+//   }
+// `;
+
+const ADD_SCREENSHOT = gql`
+  mutation AddScreenshot(
     $saleId: String!
     $imageUrl: String!
     $method: String!
@@ -25,6 +52,8 @@ export const MATCH_SELLER_MUTATION = gql`
     ) {
       id
       imageUrl
+      method
+      paidById
     }
   }
 `;
@@ -38,66 +67,63 @@ const Payment = ({
   setIsNewRamp,
   ...props
 }: any) => {
-  const [
-    {
-      fetching: fetchingMatchSeller,
-      error: errorMatchSeller,
-      data: dataMatchSeller,
-    },
-    mutateMatchSeller,
-  ] = useMutation(MATCH_SELLER_MUTATION);
+  // const [
+  //   {
+  //     fetching: fetchingMatchSeller,
+  //     error: errorMatchSeller,
+  //     data: dataMatchSeller,
+  //   },
+  //   mutateMatchSeller,
+  // ] = useMutation(MATCH_SELLER_MUTATION);
+  const {
+    context: { user },
+  } = useContext(AppContext);
 
-  const [file, setFile] = useState<File | null>(null);
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+  const saleId = user?.id;
+
+  const [{ fetching: addScreenshotFetching }, addScreenshotMutation] =
+    useMutation(ADD_SCREENSHOT);
+
+  const [image, setImage] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64String = (e.target as any).result;
+      setImage(base64String);
+    };
+    reader.readAsDataURL(file as File);
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
     }
   };
 
-  const handleSubmit = async () => {
-    if (!file) {
-      toast.error('Please upload a proof of payment.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = async () => {
-      const base64Image = reader.result as string;
-
-      try {
-        // Upload image to Vercel Blob and get URL
-        const [imageUrl] = await saveImages([base64Image]);
-
-        if (!imageUrl) {
-          toast.error('Failed to upload image.');
-          return;
-        }
-
-        // Send the uploaded image URL to the backend
-        const result = await mutateMatchSeller({
-          saleId: 'dummySaleId', // Replace with actual saleId
-          imageUrl, // Use uploaded image URL
-          method: 'dummyMethod', // Replace with actual method
-          referenceId: 'dummyReferenceId', // Replace with actual referenceId
+  // useEffect(() => {
+  //   if (sale?.screenshots?.[0]) {
+  //     setSelectedImage(sale.screenshots[0].imageUrl);
+  //   }
+  // }, [sale]);
+  const handleAddScreenshot = async (imageUrl: string, method: string) => {
+    try {
+      // if (toCurrency.name === 'ETH' || toCurrency.name === 'eth') {
+      //   await markPaid(sale.onChainSaleId);
+      // }
+      if (imageUrl.indexOf('vercel') === -1) {
+        await addScreenshotMutation({
+          saleId: saleId,
+          imageUrl,
+          referenceId: '',
+          method: '',
         });
-
-        if (result.error) {
-          toast.error('Proof not submitted.');
-          console.error('Error Proof not submitted:', result.error);
-        } else {
-          toast.success('Proof submitted successfully!');
-          setIsNewRamp(false);
-        }
-      } catch (error) {
-        console.error('Error occurred while submitting the proof', error);
-        toast.error('Error occurred while submitting the proof.');
       }
-    };
-
-    reader.onerror = () => {
-      toast.error('Failed to read the file.');
-    };
+      toast.success('Screenshot added successfully');
+    } catch (error) {
+      toast.error('Failed to add screenshot');
+    }
   };
 
   return (
@@ -127,12 +153,12 @@ const Payment = ({
               id="proof-upload"
               type="file"
               className="hidden"
-              onChange={handleFileChange}
+              onChange={handleImageChange}
               accept="image/*"
             />
-            {file && ( // Display the selected image if available
+            {selectedImage && ( // Display the selected image if available
               <Image
-                src={URL.createObjectURL(file)} // Create a URL for the selected file
+                src={selectedImage} // Create a URL for the selected file
                 alt="Selected Proof"
                 width={169} // Set width to fit the button
                 height={169} // Set height to fit the button
@@ -140,11 +166,11 @@ const Payment = ({
               />
             )}
             {/* Display selected file name if any */}
-            {file && (
+            {/* {selectedImage && (
               <div className="absolute bottom-2 px-2 text-sm text-secondary max-w-sm truncate">
                 {file.name}
               </div>
-            )}
+            )} */}
           </label>
 
           {/* Transaction details */}
@@ -169,10 +195,19 @@ const Payment = ({
               Cancel
             </button>
             <button
-              onClick={handleSubmit} // Updated handler
+              onClick={
+                // () => {
+                //   takeReferenceNumber(image);
+                // }
+                () => {
+                  selectedImage
+                    ? handleAddScreenshot(image, '')
+                    : toast.error('Please upload the proof image first.');
+                }
+              }
               className="bg-primary hover:bg-secondary py-2 rounded-lg text-secondary hover:text-white disabled:cursor-not-allowed font-medium transition-colors duration-300"
             >
-              {fetchingMatchSeller ? 'Submitting...' : 'Submit'}
+              {addScreenshotFetching ? 'Submitting...' : 'Submit'}
             </button>
           </div>
         </ShadowBox>
