@@ -155,7 +155,7 @@ const OnRamp = () => {
                         options={paymentMethod}
                         value={selectedPaymentMethod}
                         onChange={setSelectedPaymentMethod}
-                        className="bg-secondary border"
+                        className="bg-secondary border min-w-[140px]"
                       />
                     </div>
                   </div>

@@ -120,7 +120,7 @@ const NewOffRamp = ({
                         options={paymentMethodOffRamp}
                         value={selectedPaymentMehodOffRamp}
                         onChange={setSelectedPaymentMehodOffRamp}
-                        className="bg-secondary border"
+                        className="bg-secondary border min-w-[140px]"
                       />
                     </div>
                   </div>

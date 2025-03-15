@@ -830,7 +830,7 @@ const SaleDetail = () => {
                         <div>
                           <div className="flex justify-between items-center mb-2">
                             <div className="flex flex-col gap-1 text-xs">
-                              <p>Payment Method Name</p>
+                              <p className="uppercase">Payment Method Name</p>
                               <span className="">
                                 {paymentMethods[selectedPaymentMethodIndex]
                                   ?.name || 'N/A'}
@@ -979,7 +979,10 @@ const SaleDetail = () => {
                           onClick={() => setIsModalOpen(true)}
                         >
                           <Image
-                            src={sale?.screenshots?.[0]?.imageUrl}
+                            src={
+                              sale?.screenshots?.[0]?.imageUrl ||
+                              '/rampz/wait.png'
+                            }
                             alt="ETH"
                             width={100}
                             height={180}
@@ -1178,11 +1181,11 @@ const SaleDetail = () => {
       </div>
       {markingDisputed && <AppLoading />}
 
-      {isModalOpen && selectedImage && (
+      {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
           <div className="relative">
             <Image
-              src={selectedImage}
+              src={selectedImage || '/rampz/wait.png'}
               alt="ETH"
               width={500} // Adjust width for full screen
               height={500} // Adjust height for full screen

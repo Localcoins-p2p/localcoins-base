@@ -98,7 +98,7 @@ export default function Dropdown({
                   }}
                 >
                   {option.icon && (
-                    <div className="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary">
+                    <div className="flex items-center justify-center w-8 h-8 mr-2 p-3 rounded-full bg-primary">
                       <span className="text-white font-bold">
                         {option.icon}
                       </span>
