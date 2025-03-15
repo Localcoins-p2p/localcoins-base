@@ -73,7 +73,7 @@ const NewOffRamp = ({
     <>
       <div className="flex items-center justify-center min-h-screen">
         <form onSubmit={handleSubmit}>
-          <ShadowBox className="w-[444px] bg-secondary bg-opacity-70">
+          <ShadowBox className="w-[444px] bg-secondary bg-opacity-70 p-4 rounded-lg">
             <ShadowBox className="bg-[#D2E1D9] flex flex-col gap-4 p-4">
               <div className="flex items-center gap-4 ">
                 <MoveLeft
@@ -120,7 +120,7 @@ const NewOffRamp = ({
                         options={paymentMethodOffRamp}
                         value={selectedPaymentMehodOffRamp}
                         onChange={setSelectedPaymentMehodOffRamp}
-                        className="bg-secondary border"
+                        className="bg-secondary border min-w-[140px]"
                       />
                     </div>
                   </div>
