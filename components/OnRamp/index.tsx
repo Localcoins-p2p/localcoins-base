@@ -113,12 +113,12 @@ const OnRamp = () => {
       const result = await mutateRampAmount({
         amount: amountTo.amountToReceive,
       });
+      console.log(">>>", result);
 
       if (result.error) {
         toast.error('Error occurred while on-ramping.');
+        return;
       } else {
-        toast.success('Successfully on-ramped.');
-        router.push("/on-ramp/proof") 
       }
 
       if (result.data?.matchSeller?.publicKey) {
@@ -126,7 +126,7 @@ const OnRamp = () => {
         await createEscrow(sellerKey, amountTo.amountToReceive + '');
         // security issue: take unit price from backend
         const prices = await getCryptoPrice('ethereum');
-        createSale({
+        const response = await createSale({
           amount: amountTo.amountToReceive,
           unitPrice: prices?.php,
           isFloating: false,
@@ -138,6 +138,7 @@ const OnRamp = () => {
           currency: CURRENCY_ETH,
           sellerPublicKey: sellerKey,
         });
+        router.push("/on-ramp/proof?saleId=" + response.data.createSale.id) 
       }
     } catch (error) {
       console.log('ERROR', error);

@@ -251,7 +251,6 @@ export const addScreenshot = isLoggedIn(
       data: {
         saleId,
         imageUrl: image,
-        methodId: method,
         paidById: user.id as string,
         referenceId,
       },
