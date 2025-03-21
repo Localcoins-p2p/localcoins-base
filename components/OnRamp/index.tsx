@@ -10,6 +10,7 @@ import { createEscrow } from '@/utils/base-calls';
 import { CREATE_SALE } from '../Elements/FilterPanel';
 import { BLOCKCHAIN_BASE, CURRENCY_ETH } from '@/constants';
 import Payment from '../OnOffRamp/Payment';
+import { useRouter } from 'next/navigation';
 
 export const RAMP_AMOUNT = gql`
   mutation Mutation($amount: Float!) {
@@ -20,13 +21,13 @@ export const RAMP_AMOUNT = gql`
 `;
 
 const OnRamp = () => {
+  const router = useRouter();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('php');
   const [selectedPaymentMehodToSend, setSelectedPaymentMehodToSend] =
     useState('php');
   const [selectedPaymentMehodToRecieve, setSelectedPaymentMehodToRecieve] =
     useState('ETH');
-  const [isChecked, setIsChecked] = useState(false);
-  const [isNewRamp, setIsNewRamp] = useState(false);
+  const [isChecked, setIsChecked] = useState(false); 
   const [isExpanded, setIsExpanded] = useState(false);
   const [amountTo, setAmountTo] = useState({
     amountToSend: 0,
@@ -117,7 +118,7 @@ const OnRamp = () => {
         toast.error('Error occurred while on-ramping.');
       } else {
         toast.success('Successfully on-ramped.');
-        setIsNewRamp(true);
+        router.push("/on-ramp/proof") 
       }
 
       if (result.data?.matchSeller?.publicKey) {
@@ -167,17 +168,7 @@ const OnRamp = () => {
   ];
 
   return (
-    <>
-      {isNewRamp ? (
-        <Payment
-          paymentMethod={selectedPaymentMethod}
-          paymentPendingMethod={selectedPaymentMehodToRecieve}
-          pendingAmount={amountTo.amountToReceive}
-          name={'Anwar'}
-          accountNumber={'64672534765467'}
-          setIsNewRamp={setIsNewRamp}
-        />
-      ) : (
+    <> 
         <div className="flex items-center justify-center min-h-screen">
           <ShadowBox className="w-[444px] bg-secondary bg-opacity-70 p-4 ">
             <ShadowBox className="bg-[#D2E1D9] p-4 ">
@@ -316,8 +307,7 @@ const OnRamp = () => {
               </button>
             </ShadowBox>
           </ShadowBox>
-        </div>
-      )}
+        </div> 
     </>
   );
 };

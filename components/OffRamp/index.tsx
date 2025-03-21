@@ -70,6 +70,9 @@ const OffRamp = () => {
   const [{ data: SellerSales }] = useQuery({ query: SELLER_SALES });
   const [{ data: BuyerSales }] = useQuery({ query: BUYER_SALES });
 
+  console.log(SellerSales, 'SellerSales');
+  console.log(BuyerSales, 'BuyerSales');
+
   const getStatus = (txn: any) => {
     if (txn.canceledAt) return 'Canceled';
     if (txn.finishedAt) return 'Finished';
